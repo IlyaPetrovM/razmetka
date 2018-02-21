@@ -1,0 +1,154 @@
+/*Стили*/
+.Track,.TrackMedia,.TrackText{
+    height: 1em;
+    margin: 3px auto;
+    position: relative;
+    opacity: 0.8;
+}
+.TrackMedia{
+    background: #dca;
+}
+.TrackText{
+    background: #ccc;
+}
+.TrackText input[type='radio']{
+    float:left;
+    left:5px;
+    position: absolute;
+}
+#buttonPlayAndMark, #buttonPlay{
+    width: 40px;
+}
+.interv{
+    position: absolute;
+/*    display: inline-block;*/
+    float: left;
+    
+    background-color: black;
+    height: 100%;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-color: aqua;
+    border-bottom-width: 0px;
+    border-top-width: 0px;
+    border-style: solid;
+    opacity: 0.3;
+}
+.interv:hover{
+    opacity: 0.5;
+    cursor: pointer;
+}
+.wrapper{
+    overflow:auto;
+    width: 100%;
+    min-height: 6em;
+    max-height: 40%;
+    margin:1m auto;
+    padding-bottom: 1em;
+    position: relative;
+    
+}
+.timeline{
+    background: #dfd;
+/*    min-width: auto;*/
+    height: 2em;
+    width: max-content;
+}/*
+#trackChooser{
+    float: left;
+    display: inline-block;
+    min-height: 3em;
+    max-height: 40%;
+    background: gray;
+    width: 40px;
+}*/
+.milestone{
+    border-left: 0px rgba(0,0,0,100) dashed;
+    color:  black;
+    float:  left;
+    height: 100%;
+    -moz-user-select:   none;
+    -khtml-user-select: none;
+    user-select: none; 
+    font-family: monospace;
+    font-size: 9pt;
+    overflow: hidden;
+}
+.milestone2{
+    background: #ccc;
+}
+.playing{
+    background: red;
+}
+.sequence{
+    width:fit-content;
+    position: relative;
+    opacity: 0.8;
+    max-height: 40%;
+}
+.choosen{
+    background: #090;
+}
+.wrapperCursor{
+/*    display: inline-block;*/
+    min-height: fit-content;
+    position: relative;
+}
+#cursorPlay,.cursor{
+    background: green;
+    height: 100%;
+    width:1px;
+    position: absolute;
+/*    top:50%;*/
+}
+#cursorPlay{
+    background:none;
+    width: 1px;
+    border-left: 2px solid #f00; 
+    padding: 0px;
+/*    border: none;*/
+}
+html{
+    overflow: hidden;
+}
+#descr{
+    overflow-y:scroll;
+    height: 400px;
+/*  background-color: #fcf;*/
+}
+.textField{
+    background-color:lightgreen;
+}
+
+.ivlDescr{
+/*    position: inherit;*/
+    display: block;
+    margin: 0 auto;
+    display: table-row;
+}
+.textDescr{
+    padding: 5px;
+    margin: 0px;
+    font-size: 12pt;
+    font-family: monospace;
+    border: none;
+    display: table-cell;
+/*    float: right;*/
+/*    width: max-content;*/
+}
+.timeField{
+    font-family: monospace;   
+    width: 70px;
+    display: table-cell;
+}
+#timeDisplay{
+    font-family: monospace;
+    font-size: 16pt;
+    margin: 0;
+    padding: 2px;
+    width: fit-content;
+    font-weight: 1000;
+}
+.hidden {
+    display: none;
+}
