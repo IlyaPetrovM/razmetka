@@ -1,11 +1,12 @@
 /*
 FIXME:
- - При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
- - Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
+ + Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
  - Текстовые Интервалы заезжают на кружочки выбора дорожки 
+ - Если аудио очень большое, то есть 2-3 часа, то изменение масштаба таймлинии сильно тормозит процесс (долго работает)
  - Текстовые интервалы привязать к аудио
+ - При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
 Пожелания:
- +++ Прослушать выбранный интервал (не обязательно переходить курсором на него!)
+ --- Прослушать выбранный интервал (не обязательно переходить курсором на него!)
  - Удаление любого интервала
  - Переделать Кнопку "Маркировать" (опустить карандаш) 
  - Кнопки "Вернуться на N секунд" 
@@ -525,7 +526,7 @@ class VizTrackText extends VizTrack{
                 ivl=undefined;
             }
         },false);
-        document.addEventListener('stopPlayingAndMark', function(event){
+        document.addEventListener('stopPlayAndMark', function(event){
             thistrack.radio.disabled = false;
             if(ivl!=undefined && thistrack.radio.checked && ivl.viz.choosen){
                 ivl.viz.choosen = false;
@@ -603,13 +604,28 @@ class CursorPlay{
                     thisCursor.time_s = thisCursor.time_s + 1.0/prec;
                 }, 1000/prec);
         },false);
+        var allowMove = true;
+        
+        document.addEventListener('startPlayAndMark',function(){
+            allowMove = false;
+        },false);
+        document.addEventListener('stopPlayAndMark',function(){
+            allowMove = true;
+        },false);
+        document.addEventListener('cantPlay',function(){
+            allowMove = true;
+        },false);
         
         timeline.onclick = function(e){
-            let x_px = e.clientX;            
-            let scroll_px = wrapper.scrollLeft;
-            let cursor = document.getElementsByClassName('cursor')[0];
-            let offset_px = cursor.parentElement.offsetLeft;
-            thisCursor.time_s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value); 
+            if(allowMove){
+                let x_px = e.clientX;            
+                let scroll_px = wrapper.scrollLeft;
+                let cursor = document.getElementsByClassName('cursor')[0];
+                let offset_px = cursor.parentElement.offsetLeft;
+                thisCursor.time_s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value); 
+            }else{
+                console.log('Низя двигать курсор во время маркировки');
+            }
         }
         
         document.addEventListener('stopPlaying',function(e){
@@ -774,9 +790,8 @@ class VizInterview{
             }
         };
         this.butAddTrackMedia.innerText = 'Добавить аудио-дорожку';
-        this.butAddTrackMedia.onmouseover = function(e){
-            new Hint('Нажмите, чтобы добавить аудио',e.pageX,e.pageY);
-        }
+        this.butAddTrackMedia.title = 'Нажмите, чтобы добавить аудио';
+
         controls.appendChild(this.butAddTrackMedia); 
         this.butAddTrackText = document.createElement('button');
         this.butAddTrackText.interview = interview;
@@ -818,9 +833,8 @@ class VizInterview{
             if(buttonPlay.innerText=='||'){        
                 buttonPlay.innerText='▶';
                 buttonPlayAndMark.innerText = 'M▶';
-                var stopPlayingAndMarkEvent = new CustomEvent('stopPlayingAndMark');
-                document.dispatchEvent(stopPlayingAndMarkEvent);
-
+                var stopPlayAndMarkEvent = new CustomEvent('stopPlayAndMark');
+                document.dispatchEvent(stopPlayAndMarkEvent);
             }
             else{
                 if(cp.time_s < timeline.timeline.len_s - 0.05){
@@ -832,7 +846,7 @@ class VizInterview{
                 }
             }
         };
-        document.addEventListener('stopPlayingAndMark',function(e){
+        document.addEventListener('stopPlayAndMark',function(e){
                 var stopPlayingEvent = new CustomEvent('stopPlaying');
                 document.dispatchEvent(stopPlayingEvent);
         },false);
