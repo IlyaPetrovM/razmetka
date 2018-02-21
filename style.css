@@ -1,5 +1,5 @@
 /*Стили*/
-.Track,.TrackMedia,.TrackText{
+.Track,.TrackMedia,.TrackText,.trackChooserRadio{
     height: 1em;
     margin: 3px auto;
     position: relative;
@@ -10,12 +10,14 @@
 }
 .TrackText{
     background: #ccc;
+/*    overflow-y: visible;*/
 }
-.TrackText input[type='radio']{
-    float:left;
-    left:5px;
-    position: absolute;
+.trackChooserRadio{
+    opacity: 1;
+    display: block;
+    margin-right: 0px;
 }
+
 #buttonPlayAndMark, #buttonPlay{
     width: 40px;
 }
@@ -34,7 +36,7 @@
     border-style: solid;
     opacity: 0.3;
 }
-.interv:hover{
+.interv.hover,.interv:hover{
     opacity: 0.5;
     cursor: pointer;
 }
@@ -53,15 +55,30 @@
 /*    min-width: auto;*/
     height: 2em;
     width: max-content;
-}/*
-#trackChooser{
+}
+#bigwrapper{
+    width: 100%;
+/*    clear: both;*/
+/*    display: table-row;*/
+/*    padding-left: 30px;*/
+}
+#trackChooserPanel{
+    margin-top: 2em;
     float: left;
-    display: inline-block;
+    display: block;
     min-height: 3em;
-    max-height: 40%;
-    background: gray;
-    width: 40px;
-}*/
+    height: 100%;
+    background: transparent;
+    width: 30px;
+}
+.wrapperCursor{
+    display: block;
+    min-height: fit-content;
+    position: relative;
+    width: calc(100% - 30px);
+    float: left;
+/*    overflow-x: scroll;*/
+}
 .milestone{
     border-left: 0px rgba(0,0,0,100) dashed;
     color:  black;
@@ -89,11 +106,6 @@
 .choosen{
     background: #090;
 }
-.wrapperCursor{
-/*    display: inline-block;*/
-    min-height: fit-content;
-    position: relative;
-}
 #cursorPlay,.cursor{
     background: green;
     height: 100%;
@@ -114,6 +126,7 @@ html{
 #descr{
     overflow-y:scroll;
     height: 400px;
+    clear: both;
 /*  background-color: #fcf;*/
 }
 .textField{
@@ -121,25 +134,29 @@ html{
 }
 
 .ivlDescr{
-/*    position: inherit;*/
     display: block;
     margin: 0 auto;
     display: table-row;
+}
+.ivlDescr.hover,.ivlDescr:hover{
+    background: #ded;
 }
 .textDescr{
     padding: 5px;
     margin: 0px;
     font-size: 12pt;
     font-family: monospace;
-    border: none;
+    border: 1px solid #ccc;
     display: table-cell;
 /*    float: right;*/
-/*    width: max-content;*/
+    min-width: 100px;
 }
 .timeField{
     font-family: monospace;   
     width: 70px;
     display: table-cell;
+    border: 1px solid #ccc;
+    text-align: center;
 }
 #timeDisplay{
     font-family: monospace;

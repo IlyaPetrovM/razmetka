@@ -1,7 +1,7 @@
 /*
 FIXME:
- + Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
- - Текстовые Интервалы заезжают на кружочки выбора дорожки 
+ 0.05 Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
+ 0.06 Текстовые Интервалы заезжают на кружочки выбора дорожки, описание интервала и фрагмент на дорожке синхронно подсвечиваются
  - Если аудио очень большое, то есть 2-3 часа, то изменение масштаба таймлинии сильно тормозит процесс (долго работает)
  - Текстовые интервалы привязать к аудио
  - При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
@@ -197,8 +197,23 @@ class VizIntervalText extends VizInterval {
         this.ivlDescr.appendChild(this.timeFieldEnd);
         this.ivlDescr.appendChild(this.textDescr);
         var descr = document.getElementById('descr');
-        descr.appendChild(this.ivlDescr);
         this.update();
+        var thisInterval = this;
+        
+        thisInterval.viz.addEventListener('mouseover',function(){
+            thisInterval.ivlDescr.classList.add('hover');
+        },false);
+        thisInterval.viz.addEventListener('mouseleave',function(){
+            thisInterval.ivlDescr.classList.remove('hover');
+        },false);
+        
+        this.ivlDescr.addEventListener('mouseover',function(){
+            thisInterval.viz.classList.add('hover');
+        },false);
+        this.ivlDescr.addEventListener('mouseleave',function(){
+            thisInterval.viz.classList.remove('hover');
+        },false);
+        descr.appendChild(this.ivlDescr);
         this.textDescr.focus();
     }
     update(){
@@ -411,6 +426,9 @@ class VizTrackMedia extends VizTrack{
         super(parent,track);
         this.div.className = "TrackMedia";
         this.div.onclick = this.addInterval;
+        this.radio = document.createElement('div');
+        this.radio.className = 'trackChooserRadio';
+        trackChooserPanelMedia.appendChild(this.radio);
     }
     addInterval(event){
             if(event.target.track != null){
@@ -473,6 +491,7 @@ class VizTrackText extends VizTrack{
         var thistrack = this;
 //        var buttonPlay = new ButtonPlayAndMark(this.div);
         this.radio = document.createElement('input');
+        this.radio.className = 'trackChooserRadio';
         this.radio.type = 'radio';
         this.radio.name = 'trackChooser';
         this.radio.realstate = false;
@@ -486,7 +505,7 @@ class VizTrackText extends VizTrack{
             }
         };
         
-        this.div.appendChild(this.radio);
+        trackChooserPanelText.appendChild(this.radio);
         var ivl;
         document.addEventListener('startPlayAndMark',function(e){
             thistrack.radio.disabled = true;
@@ -762,8 +781,12 @@ class VizInterview{
         var seq = document.createElement('div');
         seq.className = 'sequence';
         
-        var trackChooser = document.createElement('div');
-        trackChooser.id = 'trackChooser';
+        var trackChooserPanel = document.createElement('div');
+        trackChooserPanel.id = 'trackChooserPanel';
+        var trackChooserPanelText = document.createElement('div');
+        trackChooserPanelText.id = 'trackChooserPanelText';
+        var trackChooserPanelMedia = document.createElement('div');
+        trackChooserPanelMedia.id = 'trackChooserPanelMedia';
         
         var wrapperCursor = document.createElement('div');
         wrapperCursor.className='wrapperCursor';
@@ -856,16 +879,20 @@ class VizInterview{
         controls.appendChild(buttonPlayAndMark);
         var timeline = new Timeline(seq,controls);
         var cp = new CursorPlay(timeline.timeline,timeline.zoom);
-        
+        var bigwrapper = document.createElement('div');
+        bigwrapper.id = 'bigwrapper';
         seq.appendChild(panelMedia);
         seq.appendChild(panelText); 
         new MenuIntervalControls(controls);
         wrapper.appendChild(seq);
         let timeDisplay = new TimeDisplay(wrapperCursor,controls) 
         wrapperCursor.appendChild(wrapper);
+        trackChooserPanel.appendChild(trackChooserPanelMedia);
+        trackChooserPanel.appendChild(trackChooserPanelText);
+        bigwrapper.appendChild(trackChooserPanel);
+        bigwrapper.appendChild(wrapperCursor);
         parent.appendChild(controls);
-        parent.appendChild(trackChooser);
-        parent.appendChild(wrapperCursor);
+        parent.appendChild(bigwrapper);
         parent.appendChild(descr);
     }
 }
