@@ -2,9 +2,10 @@
 FIXME:
  0.05 Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
  0.06 Текстовые Интервалы заезжают на кружочки выбора дорожки, описание интервала и фрагмент на дорожке синхронно подсвечиваются
+ 0.07 При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
+ - При перемещении аудиоинтервала новые майлстоуны создаются неправильного размера
  - Если аудио очень большое, то есть 2-3 часа, то изменение масштаба таймлинии сильно тормозит процесс (долго работает)
  - Текстовые интервалы привязать к аудио
- - При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
 Пожелания:
  --- Прослушать выбранный интервал (не обязательно переходить курсором на него!)
  - Удаление любого интервала
@@ -98,17 +99,16 @@ class VizInterval {
         this.viz.choosen=false;
         document.addEventListener('cursorPlays',
             function(event){
-                var cursPos = parseFloat(event.cursorPos_pc); 
-                    var intervalLeft = parseFloat(thisInterval.viz.style.left);
-                    var intervalRight = intervalLeft +
-                                        parseFloat(thisInterval.viz.style.width);
+                    var cursPos_s = event.cursorPos_s; 
+                    var intervalLeft_s = thisInterval.viz.interval.start_s;
+                    var intervalRight_s = thisInterval.viz.interval.end_s;
                 if(!plays){
-                    if(cursPos >=intervalLeft && cursPos <= intervalRight){
-                        plays=true;
+                    if(cursPos_s >=intervalLeft_s && cursPos_s <= intervalRight_s){
+                        plays = true;
                         thisInterval.startPlay();
                     }
                 }else{
-                    if(cursPos >=intervalRight){
+                    if(cursPos_s >=intervalRight_s){
                         plays=false;
                         thisInterval.stopPlay();
                     }
@@ -166,10 +166,20 @@ class VizInterval {
 class VizIntervalMedia extends VizInterval {
     constructor(parent,data){
         super(parent,data);
+        var thisInterval = this;
+        document.addEventListener('cursorChangePos',function(e){
+            let abs_s = e.time_s;
+            let rel_s = abs_s - thisInterval.viz.interval.start_s;
+            if(rel_s > 0 && rel_s < thisInterval.viz.interval.audio.duration){
+                thisInterval.viz.interval.audio.currentTime = rel_s;
+            }else{
+                thisInterval.viz.interval.audio.currentTime = 0;
+            }
+                console.log(thisInterval.viz.interval.audio.currentTime);
+        },false); 
     }
-    startPlay(time){
+    startPlay(){
         super.startPlay();
-        this.viz.interval.audio.currentTime = parseFloat(cursorPlay.style.left)-parseFloat(this.viz.style.left);
         this.viz.interval.audio.play();
     }
     stopPlay(){
@@ -202,6 +212,7 @@ class VizIntervalText extends VizInterval {
         
         thisInterval.viz.addEventListener('mouseover',function(){
             thisInterval.ivlDescr.classList.add('hover');
+            thisInterval.ivlDescr.scrollIntoView(false);
         },false);
         thisInterval.viz.addEventListener('mouseleave',function(){
             thisInterval.ivlDescr.classList.remove('hover');
@@ -209,6 +220,7 @@ class VizIntervalText extends VizInterval {
         
         this.ivlDescr.addEventListener('mouseover',function(){
             thisInterval.viz.classList.add('hover');
+            thisInterval.viz.scrollIntoView(false);
         },false);
         this.ivlDescr.addEventListener('mouseleave',function(){
             thisInterval.viz.classList.remove('hover');
@@ -603,6 +615,7 @@ class CursorPlay{
         this.div.style.left = '0%';
         var thisCursor = this;
         this.time_s = 0;
+        this.div.this = this;
         timeline.appendChild(this.div);
         
         var timerId;        
@@ -635,16 +648,24 @@ class CursorPlay{
             allowMove = true;
         },false);
         
-        timeline.onclick = function(e){
+        document.addEventListener('cursorChangePos',function(e){
             if(allowMove){
+                thisCursor.time_s = e.time_s;
+            }else{
+                console.log('Низя двигать курсор во время маркировки');
+            }
+        },false);
+        
+        timeline.onclick = function(e){
+                
                 let x_px = e.clientX;            
                 let scroll_px = wrapper.scrollLeft;
                 let cursor = document.getElementsByClassName('cursor')[0];
                 let offset_px = cursor.parentElement.offsetLeft;
-                thisCursor.time_s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value); 
-            }else{
-                console.log('Низя двигать курсор во время маркировки');
-            }
+                
+                let cursorChangePosEvent = new CustomEvent('cursorChangePos');
+                cursorChangePosEvent.time_s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value);
+                document.dispatchEvent(cursorChangePosEvent);
         }
         
         document.addEventListener('stopPlaying',function(e){
@@ -709,7 +730,7 @@ class Timeline {
                 document.dispatchEvent(new CustomEvent('timelineUpdated'));
             }
         },false);
-        console.log(document.styleSheets[0]);
+
         var milestones = document.getElementsByClassName('milestone');
         for(var i = 0; i < milestones.length; i++){
             milestones[i].style.width = 50 + 'px';
@@ -900,7 +921,5 @@ class VizInterview{
 /**************************************
  Исполнение скриптов
 **************************************/
-console.log('1');
 body.interview = new Interview("int",1);
-console.log('1');
 body.VizInterview = new VizInterview(body,body.interview);
