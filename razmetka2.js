@@ -3,8 +3,7 @@ FIXME:
  0.05 Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
  0.06 Текстовые Интервалы заезжают на кружочки выбора дорожки, описание интервала и фрагмент на дорожке синхронно подсвечиваются
  0.07 При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
- - При перемещении аудиоинтервала новые майлстоуны создаются неправильного размера
- - Если аудио очень большое, то есть 2-3 часа, то изменение масштаба таймлинии сильно тормозит процесс (долго работает)
+ - Проблема с майлстоунами. При перемещении аудиоинтервала новые майлстоуны создаются неправильного размера. Если аудио очень большое, то есть 2-3 часа, то изменение масштаба таймлинии сильно тормозит процесс (долго работает)
  - Текстовые интервалы привязать к аудио
 Пожелания:
  --- Прослушать выбранный интервал (не обязательно переходить курсором на него!)
@@ -175,7 +174,6 @@ class VizIntervalMedia extends VizInterval {
             }else{
                 thisInterval.viz.interval.audio.currentTime = 0;
             }
-                console.log(thisInterval.viz.interval.audio.currentTime);
         },false); 
     }
     startPlay(){
@@ -605,10 +603,10 @@ class TrackText extends Track{
 }
 
 class CursorPlay{
-    constructor(timeline,zoom){
+    constructor(timeline){
         this.prec = 5;
         this.timeline = timeline;
-        this.zoom = zoom;
+        this.zoom = timeline.zoom;
         this.div = document.createElement('div');
         this.div.className='cursor';
         this.div.id = 'cursorPlay';
@@ -616,7 +614,7 @@ class CursorPlay{
         var thisCursor = this;
         this.time_s = 0;
         this.div.this = this;
-        timeline.appendChild(this.div);
+        this.timeline.div.appendChild(this.div);
         
         var timerId;        
         document.addEventListener('startPlayAndMark',function(){
@@ -655,18 +653,7 @@ class CursorPlay{
                 console.log('Низя двигать курсор во время маркировки');
             }
         },false);
-        
-        timeline.onclick = function(e){
-                
-                let x_px = e.clientX;            
-                let scroll_px = wrapper.scrollLeft;
-                let cursor = document.getElementsByClassName('cursor')[0];
-                let offset_px = cursor.parentElement.offsetLeft;
-                
-                let cursorChangePosEvent = new CustomEvent('cursorChangePos');
-                cursorChangePosEvent.time_s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value);
-                document.dispatchEvent(cursorChangePosEvent);
-        }
+    
         
         document.addEventListener('stopPlaying',function(e){
             clearInterval(timerId);
@@ -687,7 +674,7 @@ class CursorPlay{
         return this.__time_s;
     }
     update(){
-        this.div.style.left = this.time_s * this.zoom.value * 100.0 / this.timeline.clientWidth + '%';
+        this.div.style.left = this.time_s * this.zoom.value * 100.0 / this.timeline.div.clientWidth + '%';
     }
 }
 class Milestone{
@@ -704,57 +691,68 @@ class Milestone{
 }
 class Timeline {
     constructor(parentNode,controlNode){
-        var timeline = document.createElement('div');
-        timeline.className = 'timeline';
-        timeline.id = 'timeline';
-        timeline.len_s = 3;
+        this.div = document.createElement('div');
+        this.div.className = 'timeline';
+        this.div.id = 'timeline';
         
+        /* Масштабирование */
+        this.zoom = document.createElement('input');
+        this.zoom.id = 'zoom';
+        this.len_s = 60; // !!! Важен порядок! Сперва длина в секундах, а потом уже масштаб!
+        this.zoom_px = 10; // !!! Важен порядок! Сперва длина в секундах, а потом уже масштаб!
         
-        this.timeline = timeline;
-        for(var i = 0; i < timeline.len_s; i++){
-            new Milestone(timeline);
-        }
+        this.zoom.value = 10;
+        var thisTimeline = this;
+        this.zoom.onmousemove = this.zoom.onchange = function(e){
+            thisTimeline.zoom_px = parseInt(e.target.value);
+            e.target.title = '1 секунда =' + e.target.value+' пикселей';
+        };  
+
         document.addEventListener('intervalUpdated',function(e){
             var addition = 1;
-            if(e.interval.type=='media'){
+            if(e.interval.type == 'media'){
                 addition = 3;
             }
-//            console.log(e.interval);
             let end_s = parseInt(e.interval.end_s) + addition; // 3 is for safety
-            if(end_s > timeline.len_s){
-                let diff_s = end_s - timeline.len_s;
-                timeline.len_s = end_s;
-                for(var i = 0; i < diff_s; i++){
-                    new Milestone(timeline);
-                }
+            if(end_s > thisTimeline.len_s){
+                let diff_s = end_s - thisTimeline.len_s;
+                thisTimeline.len_s = end_s;
                 document.dispatchEvent(new CustomEvent('timelineUpdated'));
             }
         },false);
-
-        var milestones = document.getElementsByClassName('milestone');
-        for(var i = 0; i < milestones.length; i++){
-            milestones[i].style.width = 50 + 'px';
-        }
-                    
-        var zoom = document.createElement('input');
-        this.zoom = zoom;
-        zoom.id = 'zoom';
-        zoom.type = 'range';
-        zoom.min = 1;
-        zoom.value = 50;
-        zoom.step = 1;
-        zoom.max = 100;
-        zoom.onmousemove = zoom.onchange = function(e){
-            var milestones = document.getElementsByClassName('milestone');
-            for(var i = 0; i < milestones.length; i++){
-                    milestones[i].style.width = e.target.value + 'px';
-                }
-            }
         
-        controlNode.appendChild(zoom);
-        parentNode.appendChild(timeline);
+        this.div.onclick = function(e){
+                let x_px = e.clientX;            
+                let scroll_px = wrapper.scrollLeft;
+                let cursor = document.getElementsByClassName('cursor')[0];
+                let offset_px = cursor.parentElement.offsetLeft;
+                
+                let cursorChangePosEvent = new CustomEvent('cursorChangePos');
+                cursorChangePosEvent.time_s = (x_px + scroll_px - offset_px - 1)/parseFloat(thisTimeline.zoom.value);
+                document.dispatchEvent(cursorChangePosEvent);
+        }
+        
+        this.zoom.type = 'range';
+        this.zoom.min = 0.5;
+
+        this.zoom.step = 0.1;
+        this.zoom.max = 100;
+        
+        controlNode.appendChild(this.zoom);
+        parentNode.appendChild(this.div);
     }
-    
+    set len_s(val_s){
+        this.__len_s = val_s; 
+        this.div.style.width = (this.__len_s * this.zoom.value)+'px';
+        console.log(this.div.style.width);
+        console.log(this.__len_s);
+    }
+    get len_s(){
+        return this.__len_s;   
+    }
+    set zoom_px(val_px){
+        this.div.style.width = (val_px * this.len_s)+'px';
+    }
 }
 
 class TimeDisplay{
@@ -899,7 +897,7 @@ class VizInterview{
         controls.appendChild(buttonPlay);
         controls.appendChild(buttonPlayAndMark);
         var timeline = new Timeline(seq,controls);
-        var cp = new CursorPlay(timeline.timeline,timeline.zoom);
+        var cp = new CursorPlay(timeline);
         var bigwrapper = document.createElement('div');
         bigwrapper.id = 'bigwrapper';
         seq.appendChild(panelMedia);

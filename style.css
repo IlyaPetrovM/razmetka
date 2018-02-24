@@ -1,4 +1,5 @@
 /*Стили*/
+
 .Track,.TrackMedia,.TrackText,.trackChooserRadio{
     height: 1em;
     margin: 3px auto;
@@ -51,10 +52,10 @@
     
 }
 .timeline{
-    background: #dfd;
+    background: #aaa;
 /*    min-width: auto;*/
     height: 2em;
-    width: max-content;
+/*    width: max-content;*/
 }
 #bigwrapper{
     width: 100%;
