@@ -1,20 +1,9 @@
-/*
-FIXME:
- 0.05 Запретить перетаскивать курсор пока идёт маркировка (не далее начала создаваемого интервала)
- 0.06 Текстовые Интервалы заезжают на кружочки выбора дорожки, описание интервала и фрагмент на дорожке синхронно подсвечиваются
- 0.07 При остановке аудиозаписи а затем воспроизведении, воспроизведение начинается с начала (если воспроизведение с маркировкой), а если воспроизведение без маркировки, то продолжает воспроизводится с того места, где остановили (не зависит от положения курсора)
- - Проблема с майлстоунами. При перемещении аудиоинтервала новые майлстоуны создаются неправильного размера. Если аудио очень большое, то есть 2-3 часа, то изменение масштаба таймлинии сильно тормозит процесс (долго работает)
- - Текстовые интервалы привязать к аудио
-Пожелания:
- --- Прослушать выбранный интервал (не обязательно переходить курсором на него!)
- - Удаление любого интервала
- - Переделать Кнопку "Маркировать" (опустить карандаш) 
- - Кнопки "Вернуться на N секунд" 
- - Функция "Объединить указанные интервалы"
- - Отрезать кусочек интервала и присоединить его к следующему
- - Продолжить описывать выделенный интервал
- 
-*/
+/******************
+
+    source: https://github.com/IlyaPetrovM/razmetka
+
+********************/
+
 "use strict";
 var body = document.getElementsByTagName("body")[0];
 
@@ -694,11 +683,11 @@ class Timeline {
         this.div = document.createElement('div');
         this.div.className = 'timeline';
         this.div.id = 'timeline';
-        
         /* Масштабирование */
         this.zoom = document.createElement('input');
         this.zoom.id = 'zoom';
         this.len_s = 60; // !!! Важен порядок! Сперва длина в секундах, а потом уже масштаб!
+        this.div.owner = this;
         this.zoom_px = 10; // !!! Важен порядок! Сперва длина в секундах, а потом уже масштаб!
         
         this.zoom.value = 10;
@@ -777,12 +766,15 @@ class TimeDisplay{
         timeParent.appendChild(p);
         cursorParent.appendChild(cursor);
     }
-    static sec2str(s){
+    static sec2str(val_s){
         let str;
-        let se = parseInt(s % 60);
-            let ms = parseInt((s%60)*100)%100;
-            let mi = parseInt(s / 60) % 60;
-            let ho = parseInt(s / 360) % 24;
+        let s = 0;
+        if(val_s > 0) s = val_s;
+//        let fmt = ;
+        let se = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s % 60));
+            let ms = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:3}).format(parseInt((s%60)*100)%100);
+            let mi = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 60) % 60);
+            let ho = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 360) % 24);
             str =  ho+':'+mi+':'+se+'.'+ms;
         return str;
     }
@@ -879,7 +871,8 @@ class VizInterview{
                 document.dispatchEvent(stopPlayAndMarkEvent);
             }
             else{
-                if(cp.time_s < timeline.timeline.len_s - 0.05){
+                console.log(timeline);
+                if(cp.time_s < timeline.len_s - 0.05){
                 buttonPlay.innerText='||';
                 buttonPlayAndMark.innerText = 'M||';
                     var startPlayAndMarkEvent = new CustomEvent('startPlayAndMark');

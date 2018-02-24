@@ -158,6 +158,7 @@ html{
     display: table-cell;
     border: 1px solid #ccc;
     text-align: center;
+    padding: 0 5px;
 }
 #timeDisplay{
     font-family: monospace;
