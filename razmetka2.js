@@ -5,135 +5,64 @@
 ********************/
 
 "use strict";
+
 var body = document.getElementsByTagName("body")[0];
-
-
-/**************************************
-    Interval
-*************************************/
-class Interval {
-    constructor(start_s, end_s){
-        if(start_s > end_s){
-            end_s = start_s + 1;
-        }
-        this.start_s = start_s;
-        this.end_s = end_s;
-        Interval.cnt = (Interval.cnt || 0)+1;
-        this.index=Interval.cnt;
-        console.log('Создан интервал ',Interval.cnt);
-        
-    }
-    set start_s(val){
-        this.__start_s = val;
-        var intervalUpdatedEvent = new CustomEvent('intervalUpdated');
-        intervalUpdatedEvent.interval = this;
-        setTimeout(function(){document.dispatchEvent(intervalUpdatedEvent);},0);
-    }
-    get start_s(){
-        return this.__start_s;
-    }
-    set end_s(val){
-        this.__end_s=val;
-        var intervalUpdatedEvent = new CustomEvent('intervalUpdated');
-        intervalUpdatedEvent.interval = this;
-        setTimeout(function(){document.dispatchEvent(intervalUpdatedEvent);},0);
-    }
-    get end_s(){
-        return this.__end_s;
-    }
-    duration_s(){
-        return this.end_s - this.start_s;
-    }
-}
-
-/**************************************
-    Interval Media
-**************************************/
-class IntervalMedia extends Interval{
-    constructor(path,start_s,end_s){
-        super(start_s,end_s);
-        this.path = path;
-        this.audio = new Audio(path);
-        this.audio.load();
-        this.type = 'media';
-    }
-}
-    
-/**************************************
-    Interval Text
-**************************************/
-class IntervalText extends Interval{
-    constructor(start_s,end){
-        super(start_s,end);
-        this.type = 'text';
-    }
-}
-
+import IntervalMedia from "./IntervalMedia.js";
+import IntervalText from './IntervalText.js';    
 
 /**************************************
  Viz Interval
 **************************************/
 class VizInterval {
-    constructor(parentNode,data){
-        
-        this.viz=document.createElement('div');
+    constructor(parentNode, data){
+        this.viz = document.createElement('div');
         this.viz.className = 'interv';
         this.viz.interval = data;
         this.viz.title = data.index;
+        
         parentNode.appendChild(this.viz);
-        var plays=false;
-        var played=false;
-        var thisInterval = this;
-        this.viz.choosen=false;
-        document.addEventListener('cursorPlays',
-            function(event){
-                    var cursPos_s = event.cursorPos_s; 
-                    var intervalLeft_s = thisInterval.viz.interval.start_s;
-                    var intervalRight_s = thisInterval.viz.interval.end_s;
-                if(!plays){
-                    if(cursPos_s >=intervalLeft_s && cursPos_s <= intervalRight_s){
-                        plays = true;
-                        thisInterval.startPlay();
-                    }
-                }else{
-                    if(cursPos_s >=intervalRight_s){
-                        plays=false;
-                        thisInterval.stopPlay();
-                    }
-                }
-            },false);
+        
+        this.plays = false;
+        var played = false;
+        this.viz.choosen = false;
         this.update();
-        document.addEventListener('stopPlaying',function(){plays=false;thisInterval.stopPlay();},false);
-        document.addEventListener('moveInterval',function(e){
-            if(thisInterval.viz.choosen){
-                var evIntrs = new CustomEvent('checkIntersect');
-                evIntrs.index = thisInterval.viz.interval.index;
-                evIntrs.start_s = parseFloat(thisInterval.viz.interval.start_s) + parseFloat(e.step_s);
-                evIntrs.end_s = parseFloat(thisInterval.viz.interval.end_s) + parseFloat(e.step_s);
-                console.log('moveInterval',e,evIntrs,thisInterval.viz.interval.start_s);
-                document.dispatchEvent(evIntrs);
+        
+        document.addEventListener('intervalUpdated',this.update.bind(this));
+        document.addEventListener('cursorPlays',this.highlight.bind(this));
+        document.addEventListener('stopPlaying',this.unHighlight.bind(this));
+        document.addEventListener('moveInterval',this.checkIntersect.bind(this));
+        document.addEventListener('timelineUpdated',this.update.bind(this));
+    }
+    
+    highlight(cursorPlaysEvent){
+        var cursPos_s = cursorPlaysEvent.cursorPos_s; 
+        var intervalLeft_s = this.viz.interval.start_s;
+        var intervalRight_s = this.viz.interval.end_s;
+        if(!this.plays){
+            if(cursPos_s >= intervalLeft_s && cursPos_s <= intervalRight_s){
+                this.plays = true;
+                this.startPlay();
             }
-        },false);
-        document.addEventListener('resizeInterval',function(e){
-            if(thisInterval.viz.resize){
-                var evIntrs = new CustomEvent('checkIntersect');
-                evIntrs.index = thisInterval.viz.interval.index;
-                evIntrs.start_s = thisInterval.viz.interval.start_s;
-                evIntrs.end_s = thisInterval.viz.interval.end_s + e.step_s;
-                document.dispatchEvent(evIntrs);
+        }else{
+            if(cursPos_s >=intervalRight_s){
+                this.plays = false;
+                this.stopPlay();
             }
-        },false);
-        document.addEventListener('motionApproved',function(e){
-            if(thisInterval.viz.interval.index == e.index){
-                thisInterval.viz.interval.start_s = parseFloat(e.start_s);
-                thisInterval.viz.interval.end_s = parseFloat(e.end_s);
-                thisInterval.update();
-                console.log('motionApproved',e,thisInterval.viz.interval.start_s);
-            }
-        },false)
-        document.addEventListener('timelineUpdated',function(){
-            thisInterval.update();
-        },false);
+        }
+    }
+
+    checkIntersect(e) {
+        if(this.viz.choosen){
+            var evIntrs = new CustomEvent('checkIntersect');
+            evIntrs.media = this.viz.interval;
+            evIntrs.step_s = + parseFloat(e.step_s); //????
+            document.dispatchEvent(evIntrs);
+        }
+    }
+
+    unHighlight() {
+        this.plays=false;
+        this.stopPlay();
     }
     startPlay(){
         this.viz.classList.add('playing');
@@ -141,11 +70,17 @@ class VizInterval {
     stopPlay(){
         this.viz.classList.remove('playing');
     }
+    updateEvt(e){
+        if(e.interval === this.viz.interval){
+            this.update();
+        }
+    }
     update(){
-        var W_px = parseFloat(this.viz.parentElement.clientWidth);
-        var zoom_px = parseFloat(document.getElementById('zoom').value);
-        this.viz.style.left = this.viz.interval.start_s * zoom_px * 100.0 / W_px + '%';
-        this.viz.style.width = this.viz.interval.duration_s() * zoom_px * 100.0 / W_px + '%';
+        
+            var W_px = parseFloat(this.viz.parentElement.clientWidth);
+            var zoom_px = parseFloat(document.getElementById('zoom').value);
+            this.viz.style.left = this.viz.interval.start_s * zoom_px * 100.0 / W_px + '%';
+            this.viz.style.width = this.viz.interval.duration_s() * zoom_px * 100.0 / W_px + '%';
     }
 }
 /**************************************
@@ -154,21 +89,44 @@ class VizInterval {
 class VizIntervalMedia extends VizInterval {
     constructor(parent,data){
         super(parent,data);
-        var thisInterval = this;
-        document.addEventListener('cursorChangePos',function(e){
-            let abs_s = e.time_s;
-            let rel_s = abs_s - thisInterval.viz.interval.start_s;
-            if(rel_s > 0 && rel_s < thisInterval.viz.interval.audio.duration){
-                thisInterval.viz.interval.audio.currentTime = rel_s;
-            }else{
-                thisInterval.viz.interval.audio.currentTime = 0;
-            }
-        },false); 
+        
+        document.addEventListener('moveIntervalMediaEvent',this.move.bind(this));
+        document.addEventListener('cursorChangePos', this.reactOnCursor.bind(this)); 
+        document.addEventListener('motionApprovedMedia',this.move.bind(this));
     }
+    
+    reactOnCursor(cursorChangePosEvent) {
+        let abs_s = cursorChangePosEvent.time_s;
+        let rel_s = abs_s - this.viz.interval.start_s;
+        if(rel_s > 0 && rel_s < this.viz.interval.audio.duration){
+            this.viz.interval.cursorOn = true;
+            this.viz.interval.audio.currentTime = rel_s;
+        }else{
+            this.viz.interval.cursorOn = false;
+            this.viz.interval.audio.currentTime = 0;
+        }
+    }
+
+    move(event) {
+        if(this.viz.choosen){
+            this.moveTextIntervals(event.step_s);
+            this.viz.interval.move(event.step_s);
+            this.update();
+        }
+    }
+    
+    moveTextIntervals(step_s){
+        for(let i=0; i<this.viz.interval.textIntervals.length; i++){
+            this.viz.interval.textIntervals[i].viz.interval.move(step_s);
+        }
+    }
+    
     startPlay(){
         super.startPlay();
+        this.viz.interval.cursorOn = true;
         this.viz.interval.audio.play();
     }
+    
     stopPlay(){
         super.stopPlay();
         this.viz.interval.audio.pause();
@@ -179,42 +137,59 @@ class VizIntervalMedia extends VizInterval {
  Viz Interval Text
 **************************************/
 class VizIntervalText extends VizInterval {
-    constructor(parent,data){
-        super(parent,data);
-        this.ivlDescr = document.createElement('div');
+    
+    constructor(parent, data, media){
+        super(parent, data);
+        this.media = media;
+        this.media.textIntervals.push(this); // Удобно потом двигать текстовый интервал из медиа
+        
         this.timeFieldStart = document.createElement('time');
         this.timeFieldEnd = document.createElement('time');
+        
         this.textDescr = document.createElement('div');
         this.textDescr.setAttribute('contenteditable',true); 
-        this.ivlDescr.className='ivlDescr';
-        this.timeFieldStart.className='timeField';      
-        this.timeFieldEnd.className='timeField';  
-        this.textDescr.className='textDescr';
+        this.textDescr.className = 'textDescr';
+        this.textDescr.focus();
+        
+        this.timeFieldStart.className = 'timeField';      
+        this.timeFieldEnd.className = 'timeField';  
+        
+        
+        this.ivlDescr = document.createElement('div');
+        this.ivlDescr.className = 'ivlDescr';
         this.ivlDescr.appendChild(this.timeFieldStart);
         this.ivlDescr.appendChild(this.timeFieldEnd);
         this.ivlDescr.appendChild(this.textDescr);
-        var descr = document.getElementById('descr');
-        this.update();
-        var thisInterval = this;
-        
-        thisInterval.viz.addEventListener('mouseover',function(){
-            thisInterval.ivlDescr.classList.add('hover');
-            thisInterval.ivlDescr.scrollIntoView(false);
-        },false);
-        thisInterval.viz.addEventListener('mouseleave',function(){
-            thisInterval.ivlDescr.classList.remove('hover');
-        },false);
-        
-        this.ivlDescr.addEventListener('mouseover',function(){
-            thisInterval.viz.classList.add('hover');
-            thisInterval.viz.scrollIntoView(false);
-        },false);
-        this.ivlDescr.addEventListener('mouseleave',function(){
-            thisInterval.viz.classList.remove('hover');
-        },false);
         descr.appendChild(this.ivlDescr);
-        this.textDescr.focus();
+        
+        this.update();
+      
+        this.viz.addEventListener('mouseover',this.scrollTo.bind(this.ivlDescr));   
+        this.viz.addEventListener('mouseleave',this.scrollTo.bind(this.ivlDescr));
+        this.ivlDescr.addEventListener('mouseover',this.scrollTo.bind(this.viz));
+        this.ivlDescr.addEventListener('mouseleave',this.scrollTo.bind(this.viz));
     }
+//    
+//    move(e) {
+//        if(this.media.index == e.index){    
+//            let moveIntervalTextEvent =new CustomEvent('moveInterval');
+//            moveIntervalTextEvent.step_s = e.step_s;
+//            document.dispatchEvent(moveIntervalTextEvent);        
+//        }
+//    }
+
+    scrollTo() {
+        this.classList.toggle('hover');
+        this.scrollIntoView(false);
+    }
+
+    moveReally(e) {
+        this.viz.interval.start_s += parseFloat(e.step_s);
+        this.viz.interval.end_s += parseFloat(e.step_s);
+        this.update();
+    }
+
+    
     update(){
         super.update();
         if(this.timeFieldStart){
@@ -241,23 +216,6 @@ class Track{
         this.intervals = [];
         this.cnt = 0;
         var thistrack = this;
-        document.addEventListener('checkIntersect',
-        function(e){
-                console.log('checkIntersect',e);
-            var ivl = thistrack.intervals.filter(function(interval){
-                return interval.index == e.index;
-            })[0];
-            if(ivl!=undefined){
-            if(!thistrack.intersectAny(e.start_s,e.end_s,e.index)){
-                var motionApprovedEvent = new CustomEvent('motionApproved');
-                motionApprovedEvent.start_s = e.start_s;
-                motionApprovedEvent.end_s = e.end_s;
-                motionApprovedEvent.index = e.index;
-                document.dispatchEvent(motionApprovedEvent);
-            }else{
-                alert("Элементы не должны пересекаться");
-            }}
-        },false);
     }
     setTitle(title_){
         while(title_ == undefined || title_ == ''){
@@ -304,14 +262,35 @@ class Track{
         }
     }
     addInterval(_interv){
-        if(!this.intersectAny(_interv.start_s,_interv.end_s)){
+        if(!this.intersectAny(_interv.start_s,_interv.end_s)){ 
+            let leftIvl = this.findLeft(_interv);
+            if(leftIvl!=undefined){ // ссылки на соседей
+                _interv.leftInterval = leftIvl;
+                _interv.rightInterval =  leftIvl.rightInterval;
+                leftIvl.rightInterval = _interv;
+                console.log(_interv);
+            }
             this.intervals.push(_interv);
-            console.log(this.intervals);
             this.cnt++;
             return true;
         }else{
             alert("Элементы не должны пересекаться");
             return false;
+        }
+    }
+    findLeft(ivl){
+        if(this.intervals.length>0){
+            let max_i = 0;
+            for(let i=0; i < this.intervals.length; i++){
+                if(this.intervals[i].end_s > this.intervals[max_i].end_s && 
+                  this.intervals[i].end_s < ivl.end_s)
+                    {
+                        max_i = i;
+                    }
+            }
+            return this.intervals[max_i];
+        }else{
+            return undefined;
         }
     }
     deleteInterval(interval){
@@ -354,145 +333,10 @@ class VizTrack{
         this.div = document.createElement('div');
         this.div.className = "Track";
         this.div.track = track; 
-        var thistrack = this;
-        parent.appendChild(this.div);
-    }
-    addInterval(e){
-        console.log("VizTrack");
-    }
-    showDescription(){
-        
-    }
-    static pix2sec(offset_px){ 
-        let offset_s = parseFloat(offset_px) / parseFloat(zoom.value); 
-        return offset_s;
-    }
-    static pc2sec(offset_pc){ 
-        let offset_px = (offset_pc * timeline.clientWidth) / 100.0; 
-        let offset_s = VizTrack.pix2sec(offset_px);
-        return offset_s;
-    }
-}
-class MenuIntervalControls{
-    constructor(parentNode){
-        var iControl = document.createElement('div');
-        iControl.id='iControl';
-        iControl.style.display='none';
-        var counter = 0;
-        var bMoveLeft = document.createElement('button');
-        var inputMoveStep = document.createElement('input');
-        var bMoveRight = document.createElement('button');
-        bMoveLeft.innerText='<<';
-        bMoveRight.innerText='>>';
-        bMoveLeft.id='bMoveLeft';
-        bMoveRight.id='bMoveRight';
-        bMoveLeft.onclick = function(){
-            var moveIntervalEvent =new CustomEvent('moveInterval');
-            moveIntervalEvent.step_s = -parseFloat(inputMoveStep.value);
-            console.log(moveIntervalEvent);
-            document.dispatchEvent(moveIntervalEvent);
-        }
-        bMoveRight.onclick = function(){
-            var moveIntervalEvent = new CustomEvent('moveInterval');
-            moveIntervalEvent.step_s = parseFloat(inputMoveStep.value);
-            console.log(moveIntervalEvent);
-            document.dispatchEvent(moveIntervalEvent);
-        }
-        inputMoveStep.type='number';
-        inputMoveStep.value = 1.0;
-        inputMoveStep.max = 180.0;
-        inputMoveStep.step = 0.1;
-        inputMoveStep.min = 0.00;
-        iControl.appendChild(bMoveLeft);
-        iControl.appendChild(bMoveRight);
-        iControl.appendChild(inputMoveStep);
-        parentNode.appendChild(iControl);
-        document.addEventListener('intervalChoosen',function(){counter++; iControl.style.display='block';},false);
-        document.addEventListener('intervalUnchoosen',
-            function(){
-                counter--;
-            if(counter == 0){
-                iControl.style.display='none';
-            }
-        },false);
-    }
-}
-/**************************************
- VizTrackMedia
-**************************************/
-class VizTrackMedia extends VizTrack{
-    constructor(parent,track){
-        super(parent,track);
-        this.div.className = "TrackMedia";
-        this.div.onclick = this.addInterval;
-        this.radio = document.createElement('div');
-        this.radio.className = 'trackChooserRadio';
-        trackChooserPanelMedia.appendChild(this.radio);
-    }
-    addInterval(event){
-            if(event.target.track != null){
-                var fileinput = document.getElementById('fileInput');
-                fileinput.viztrack=event.target;
-                fileinput.onchange = function(e){
-                    window.URL = window.URL || window.webkitURL;
-                    var path = window.URL.createObjectURL(e.target.files[0]);
-                    console.log(path);
-                    var audio = new Audio(path);
-                    audio.parentEvent = e;
-                    audio.ondurationchange = function(ev){
-                        console.log(audio.duration);
-                        var ivl = new IntervalMedia(path,
-                                                    VizTrack.pix2sec(event.offsetX),
-                                                    VizTrack.pix2sec(event.offsetX)+audio.duration);
-                        
-                        if(event.target.track.addInterval(ivl)){
-                            new VizIntervalMedia(event.target,ivl);
-                        }
-                    }
-                    resetform.reset();
-                };
-                $("#fileInput").trigger("click");
-            }else if(event.target.interval != null){
-                if(event.target.choosen){
-                    document.dispatchEvent(new CustomEvent('intervalUnchoosen',event.target));
-                    event.target.classList.remove('choosen');
-                    event.target.choosen = false;
-                }else{
-                    document.dispatchEvent(new CustomEvent('intervalChoosen',event.target));
-                    event.target.classList.add('choosen');
-                    event.target.choosen = true;
-                }
-                console.log('Нажат элемент медиа');
-            }
-    }
-
-}
-
-class ButtonPlayAndMark{
-    constructor(parentNode){
-
-        parentNode.appendChild(this.radio);
-    }
-}
-
-/**************************************
-VizTrackText
-**************************************/
-class VizTrackText extends VizTrack{
-    constructor(parent,track){
-        super(parent,track);
-//        this.drag = false;
-        var dragStart_pc =0;
-        var dragEnd_pc =dragStart_pc;
-        var selection = document.createElement('div');
-        
-        this.div.className = "TrackText";
-        var thistrack = this;
-//        var buttonPlay = new ButtonPlayAndMark(this.div);
+                
         this.radio = document.createElement('input');
-        this.radio.className = 'trackChooserRadio';
         this.radio.type = 'radio';
-        this.radio.name = 'trackChooser';
+        this.radio.className = 'trackChooserRadio';
         this.radio.realstate = false;
         this.radio.onclick = function(e){
             if(e.target.realstate){
@@ -503,60 +347,225 @@ class VizTrackText extends VizTrack{
                 
             }
         };
+
+        parent.appendChild(this.div);
+    }
+    addInterval(e){
+        console.log("VizTrack");
+    }
+
+    static pix2sec(offset_px){ 
+        let offset_s = parseFloat(offset_px) / parseFloat(zoom.value); 
+        return offset_s;
+    }
+    static pc2sec(offset_pc){ 
+        let offset_px = (offset_pc * timeline.clientWidth) / 100.0; 
+        let offset_s = VizTrack.pix2sec(offset_px);
+        return offset_s;
+    }
+}
+
+class MenuIntervalControls{
+
+    constructor(parentNode){
+        this.iControl = document.createElement('div');
+        this.iControl.id = 'iControl';
+        this.iControl.style.display='none';
+        this.counter = 0;
+        var bMoveLeft = document.createElement('button');
+        var bMoveRight = document.createElement('button');
         
+        bMoveLeft.innerText = '<<';
+        bMoveRight.innerText = '>>';
+        bMoveLeft.id = 'bMoveLeft';
+        bMoveRight.id = 'bMoveRight';
+        
+        var inputMoveStep = document.createElement('input');
+        inputMoveStep.id = 'inputMoveStep';
+        inputMoveStep.type='number';
+        inputMoveStep.value = 1.0;
+        inputMoveStep.max = 180.0;
+        inputMoveStep.step = 0.1;
+        inputMoveStep.min = 0.00;
+        this.iControl.appendChild(bMoveLeft);
+        this.iControl.appendChild(bMoveRight);
+        this.iControl.appendChild(inputMoveStep);
+        parentNode.appendChild(this.iControl);
+        
+        
+        bMoveLeft.onclick = this.sendStepToMove.bind( this,  false);
+        bMoveRight.onclick = this.sendStepToMove.bind( this, true );
+        document.addEventListener( 'intervalChoosen', this.showMotionControl.bind(this,true) );
+        document.addEventListener( 'intervalUnchoosen', this.showMotionControl.bind(this,false) );
+    }
+    
+     showMotionControl(show) {
+        if(show){
+            this.counter++; 
+            this.iControl.style.display = 'block';
+        }else{
+            this.counter--;
+            if(this.counter == 0){
+                this.iControl.style.display = 'none';
+            }
+        }
+    }
+    
+    sendStepToMove(right) {
+        let step_s = -parseFloat(inputMoveStep.value);
+        if(right){
+            step_s = parseFloat(inputMoveStep.value)
+        }
+        var moveIntervalEvent = new CustomEvent('moveIntervalMediaEvent');
+        moveIntervalEvent.step_s = parseFloat(step_s);
+        console.log(moveIntervalEvent);
+        document.dispatchEvent(moveIntervalEvent);
+    }
+}
+/**************************************
+ VizTrackMedia
+**************************************/
+class VizTrackMedia extends VizTrack{
+    
+    constructor(parent, track){
+        super(parent, track);
+        this.div.className = "TrackMedia";
+        this.div.addEventListener('click',this.processClick.bind(this));
+
+        this.radio.name = 'trackChooserMedia';
+        trackChooserPanelMedia.appendChild(this.radio);
+        document.addEventListener('getMediaIntervalEvent',this.getMediaInterval.bind(this));
+    }
+    
+    getMediaInterval(getMediaIntervalEvent) {
+        if(this.radio.checked){
+            let intervals = this.div.track.intervals.filter( 
+                function(ivl){
+                    return ivl.cursorOn === true;
+                } 
+            );
+            if(intervals[0] != undefined){
+                getMediaIntervalEvent.trackText.connect(intervals[0]);
+            }
+        }
+    }
+
+    createInterval(path, audio, clickEvent) { // event appends to the enduuu
+        var ivl = new IntervalMedia( path,
+                                    VizTrack.pix2sec(clickEvent.offsetX),
+                                    VizTrack.pix2sec(clickEvent.offsetX) + audio.duration );
+        if( this.div.track.addInterval(ivl) ){
+            new VizIntervalMedia(clickEvent.target, ivl);
+        }
+    }
+
+    processClick(clickEvent){
+            if(clickEvent.target.track != null){
+                fileInput.viztrack = clickEvent.target;
+                fileInput.onchange = function(e){
+                    window.URL = window.URL || window.webkitURL;
+                    var path = window.URL.createObjectURL(e.target.files[0]);
+                    var audio = new Audio(path);
+                    audio.parentEvent = e;
+                    audio.ondurationchange = 
+                        this.createInterval.bind(this, path, audio, clickEvent); // and Event in the end
+                    resetform.reset();
+                }.bind(this);
+                $("#fileInput").trigger("click");
+            }else if(clickEvent.target.interval != null){
+                if(clickEvent.target.choosen){
+                    document.dispatchEvent(new CustomEvent('intervalUnchoosen', clickEvent.target));
+                    clickEvent.target.classList.remove('choosen');
+                    clickEvent.target.choosen = false;
+                }else{
+                    document.dispatchEvent(new CustomEvent('intervalChoosen',clickEvent.target));
+                    clickEvent.target.classList.add('choosen');
+                    clickEvent.target.choosen = true;
+                }
+                console.log('Нажат элемент медиа');
+            }
+    }
+} /// class end
+
+/**************************************
+VizTrackText
+**************************************/
+class VizTrackText extends VizTrack{
+    constructor(parent,track){
+        super(parent,track);
+        this.div.className = "TrackText";
+                
+        var dragStart_pc = 0;
+        var dragEnd_pc = dragStart_pc;
+        
+        var selection = document.createElement('div');
+
+        this.radio.name = 'trackChooserText';
         trackChooserPanelText.appendChild(this.radio);
-        var ivl;
+        
+        this.ivl = null;
+        
         document.addEventListener('startPlayAndMark',function(e){
-            thistrack.radio.disabled = true;
-            if(thistrack.radio.checked)
+            this.radio.disabled = true;
+            if(this.radio.checked)
             {
                 console.log(parseFloat(e.cursorPos_pc));
-                var ivltext = new IntervalText(VizTrack.pc2sec(parseFloat(e.cursorPos_pc)),
-                                               VizTrack.pc2sec(parseFloat(e.cursorPos_pc))+0.01);
-                if(thistrack.div.track.addInterval(ivltext))
-                {
-                    ivl = new VizIntervalText(thistrack.div, ivltext);
-                    ivl.viz.choosen = true;                    
-                }
+                let getMediaIntervalEvent = new CustomEvent('getMediaIntervalEvent');
+                getMediaIntervalEvent.trackText = this;
+                document.dispatchEvent(getMediaIntervalEvent);
             }
-        },false);
+        }.bind(this));
+        
         document.addEventListener('cursorPlays',function(e){
-            if(ivl!=undefined){
-            if(thistrack.radio.checked && ivl.viz.choosen)
-            {
-                if(!thistrack.div.track.intersectAny(ivl.viz.interval.start_s,
-                                                 VizTrack.pc2sec(parseFloat(e.cursorPos_pc)),
-                                                 ivl.viz.interval.index)){
-                    ivl.viz.interval.end_s = VizTrack.pc2sec(parseFloat(e.cursorPos_pc))-0.05;
-                    ivl.update();
-                }else{
-                    var stopPlayingEvent = new CustomEvent('stopPlaying');
-                    document.dispatchEvent(stopPlayingEvent);
-                    console.log('Пересечение!');
+            if(this.ivl != undefined){
+                if(this.radio.checked && this.ivl.viz.choosen)
+                {
+                    if( !this.div.track.intersectAny(this.ivl.viz.interval.start_s,
+                                                     VizTrack.pc2sec( parseFloat(e.cursorPos_pc) ),
+                                                     this.ivl.viz.interval.index) ){
+                        this.ivl.viz.interval.end_s = VizTrack.pc2sec( parseFloat(e.cursorPos_pc) )-0.05;
+                        this.ivl.update();
+                    }else{
+                        var stopPlayingEvent = new CustomEvent('stopPlaying');
+                        document.dispatchEvent(stopPlayingEvent);
+                        console.log('Пересечение!');
+                    }
                 }
             }
-            }
-        },false);
+        }.bind(this));
+        
         document.addEventListener('cantPlay',function(){
-            thistrack.radio.disabled = false;
-            if(ivl!=undefined && thistrack.radio.checked && ivl.viz.choosen){
-                ivl.viz.choosen = false;
-                ivl=undefined;
+            this.radio.disabled = false;
+            if(this.ivl != undefined && this.radio.checked && this.ivl.viz.choosen){
+                this.ivl.viz.choosen = false;
+                this.ivl = undefined;
             }
-        },false);
+        }.bind(this));
+        
         document.addEventListener('stopPlayAndMark', function(event){
-            thistrack.radio.disabled = false;
-            if(ivl!=undefined && thistrack.radio.checked && ivl.viz.choosen){
-                ivl.viz.choosen = false;
-                ivl=undefined;
+            this.radio.disabled = false;
+            if(this.ivl!=undefined && this.radio.checked && this.ivl.viz.choosen){
+                this.ivl.viz.choosen = false;
+                this.ivl=undefined;
             }
-        },false);
+        }.bind(this));
+    }
+    
+    connect(intervalMedia){
+        var ivltext = new IntervalText(cursorPlay.this.time_s,
+                                       cursorPlay.this.time_s+0.01);
+        if(this.div.track.addInterval(ivltext))
+        {
+            console.log(intervalMedia);
+            this.ivl = new VizIntervalText(this.div, ivltext, intervalMedia);
+            this.ivl.viz.choosen = true;                    
+        }
     }
     addInterval(event){
         if(event.target.track!=null){
-            
-                console.log('Нажата дорожка');
-            }else if(event.target.interval != null){
+            console.log('Нажата дорожка');
+        }else {
+            if(event.target.interval != null){
                 if(event.target.choosen){
                     document.dispatchEvent(new CustomEvent('intervalUnchoosen',{'detail':event.target}));
                     event.target.classList.remove('choosen');
@@ -569,6 +578,7 @@ class VizTrackText extends VizTrack{
                     console.log('Нажат элемент текст');
                 }
             }
+        }
     }
 }
 
@@ -579,6 +589,25 @@ TrackMedia
 class TrackMedia extends Track{
     constructor(title){
         super(title);
+        var thistrack=this;
+        document.addEventListener('checkIntersect',
+        function(e){
+                console.log('checkIntersect',e);
+            var ivl = thistrack.intervals.filter(function(interval){
+                return interval.index == e.index;
+            })[0];
+            if(ivl!=undefined){
+            if(!thistrack.intersectAny(e.start_s,e.end_s,e.index)){
+                var motionApprovedMediaEvent = new CustomEvent('motionApprovedMedia');
+                motionApprovedMediaEvent.start_s = e.start_s;
+                motionApprovedMediaEvent.end_s = e.end_s;
+                motionApprovedMediaEvent.index = e.index;
+                motionApprovedMediaEvent.step_s = e.step_s;
+                document.dispatchEvent(motionApprovedMediaEvent);
+            }else{
+                alert("Элементы не должны пересекаться");
+            }}
+        });
     }
 }
 
@@ -609,7 +638,7 @@ class CursorPlay{
         document.addEventListener('startPlayAndMark',function(){
             var startPlayEvent = new CustomEvent('startPlay');
                 document.dispatchEvent(startPlayEvent);
-        },false);
+        });
         
         document.addEventListener('startPlay',function(){
                     const   prec=25;    
@@ -622,18 +651,18 @@ class CursorPlay{
                     document.dispatchEvent(cursorPlaysEvent);
                     thisCursor.time_s = thisCursor.time_s + 1.0/prec;
                 }, 1000/prec);
-        },false);
+        });
         var allowMove = true;
         
         document.addEventListener('startPlayAndMark',function(){
             allowMove = false;
-        },false);
+        });
         document.addEventListener('stopPlayAndMark',function(){
             allowMove = true;
-        },false);
+        });
         document.addEventListener('cantPlay',function(){
             allowMove = true;
-        },false);
+        });
         
         document.addEventListener('cursorChangePos',function(e){
             if(allowMove){
@@ -641,15 +670,18 @@ class CursorPlay{
             }else{
                 console.log('Низя двигать курсор во время маркировки');
             }
-        },false);
-    
+        });
+        
+        document.addEventListener('timelineUpdated',function(){
+            thisCursor.update();
+        });
         
         document.addEventListener('stopPlaying',function(e){
             clearInterval(timerId);
-        },false);
+        });
         document.addEventListener('cantPlay',function(e){
             clearInterval(timerId);
-        },false);
+        });
     }
     set time_s(val_s){
         if(val_s <= this.timeline.len_s){
@@ -687,8 +719,8 @@ class Timeline {
         this.zoom = document.createElement('input');
         this.zoom.id = 'zoom';
         this.len_s = 60; // !!! Важен порядок! Сперва длина в секундах, а потом уже масштаб!
-        this.div.owner = this;
         this.zoom_px = 10; // !!! Важен порядок! Сперва длина в секундах, а потом уже масштаб!
+        this.div.owner = this;
         
         this.zoom.value = 10;
         var thisTimeline = this;
@@ -772,7 +804,7 @@ class TimeDisplay{
         if(val_s > 0) s = val_s;
 //        let fmt = ;
         let se = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s % 60));
-            let ms = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:3}).format(parseInt((s%60)*100)%100);
+            let ms = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:3}).format(parseInt((s%60)*1000)%1000);
             let mi = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 60) % 60);
             let ho = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 360) % 24);
             str =  ho+':'+mi+':'+se+'.'+ms;
@@ -912,5 +944,6 @@ class VizInterview{
 /**************************************
  Исполнение скриптов
 **************************************/
+
 body.interview = new Interview("int",1);
 body.VizInterview = new VizInterview(body,body.interview);
