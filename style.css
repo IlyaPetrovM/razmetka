@@ -1,4 +1,13 @@
 /*Стили*/
+#interviewChooser{
+    margin: 0 auto;
+    border: 2px solid gray;
+    text-align: center;
+}
+.interviewLink{
+    display: block;
+    margin:0 auto;
+}
 
 .Track,.TrackMedia,.TrackText,.trackChooserRadio{
     height: 1em;

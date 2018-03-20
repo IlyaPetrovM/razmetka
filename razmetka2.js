@@ -7,6 +7,8 @@
 "use strict";
 
 var body = document.getElementsByTagName("body")[0];
+const Act = new exports.Act();
+import IDbTable from './IDbTable.js';
 import IntervalMedia from "./IntervalMedia.js";
 import IntervalText from './IntervalText.js';    
 
@@ -212,7 +214,7 @@ Track
 **************************************/
 class Track{
     constructor(title_){
-        this.setTitle(title_);
+        this.title = title_;
         this.intervals = [];
         this.cnt = 0;
         var thistrack = this;
@@ -309,11 +311,30 @@ class Track{
 /**************************************
     Interview
 **************************************/
-class Interview{
-    constructor(_title,_num){
+class Interview extends IDbTable{
+    constructor(_title, _date, wsClient){
+        super();
         this.title = _title;
-        this.num = _num;
+        this.id = 1553;
+        this._date = _date;
         this.tracks = [];
+        this.wsClient = wsClient;
+        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+    }
+    insert(){
+        this.wsClient.send('insert Interview values ('+ this.title +')');
+    }
+    select(id){
+        
+    }
+    update(id){
+        
+    }
+    remove(id){
+        
+    }
+    processMessageFromServer(inMsg){
+            console.log(inMsg);
     }
     addTrack(track){
         if(track.title != undefined && track.title != ""){
@@ -324,7 +345,88 @@ class Interview{
         }
     }
 }    
-
+class InterviewChooser{
+    constructor(wsocket,parentNode){
+        this.wsClient = wsocket;
+        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+        this.div = document.createElement('div');
+        this.div.id = 'interviewChooser';
+        this.buttonAdd = document.createElement('button');
+        this.buttonAdd.innerHTML = 'Добавить интервью';
+        this.buttonAdd.id = 'createInterviewButton';
+        this.buttonAdd.addEventListener('click',this.createInterview.bind(this));
+        this.div.appendChild(this.buttonAdd);
+        this.interviews = [];
+        parentNode.appendChild(this.div);
+        this.wsClient.onopen = this.select.bind(this);
+    }
+    createInterview(){
+        let title_ = '', date_ = '2018-03-18';
+        let send = true;
+        while(title_ === null || title_ === ''){
+            title_ = prompt("Введите название интервью","Интервью 1");
+            if(title_ === null){
+                send = false;
+                break;
+            }
+        }
+        if(send){
+            this.wsClient.send(JSON.stringify({
+                action: Act.CREATE,
+                sender:"InterviewChooser",
+                table:'Interview',
+                title:title_,
+                date:date_
+            }));
+        }
+//        this.createLink(title_);
+//        var inter = new Interview(title_,date_,this.wsClient);
+//        inter.insert();
+//       this.interviews.push(inter);
+    }
+    select(){
+//        if(this.wsClient.state !== 'CONNECTING'){
+            let outMsg = JSON.stringify({
+                action: Act.LOAD,
+                table:  'Interview',
+                sender: 'InterviewChooser'
+            });
+            this.wsClient.send(outMsg);
+            console.log(outMsg);
+//        }
+    }
+    processMessageFromServer(inMsg){
+        let msg = JSON.parse(inMsg.data);
+        console.log(msg);
+        
+            switch(msg.action){
+                case Act.CREATE:
+                    this.createLink(msg);
+                    console.log('CREATE');
+                    break;
+                case Act.UPDATE:
+                    console.log('UPDATE');
+                    break;
+                case Act.LOAD:
+                    if(msg.sender === "InterviewChooser"){
+                    for(let i in msg.result){
+                        this.createLink(msg.result[i]);
+                    }
+                    }
+                    break;
+                default:
+                    console.log('Неизвестная команда:',msg.action);
+            
+        }
+    }
+    createLink(inte){
+        var a = document.createElement('a');
+        a.className = 'interviewLink';
+        a.href = '#';
+        a.innerHTML =`${inte.id}  ${inte.title}`;
+        this.div.appendChild(a);
+    }
+}
 /**************************************
 VizTrack
 **************************************/
@@ -878,6 +980,7 @@ class VizInterview{
         buttonPlayAndMark.id = 'buttonPlayAndMark';
         
         buttonPlay.onclick = function(e){
+                    body.interview.insert();
             if(buttonPlay.innerText=='||'){        
                 buttonPlay.innerText='▶';
                 
@@ -938,12 +1041,16 @@ class VizInterview{
         parent.appendChild(controls);
         parent.appendChild(bigwrapper);
         parent.appendChild(descr);
+
     }
 }
 
 /**************************************
  Исполнение скриптов
 **************************************/
+var wsClient = new WebSocket('ws://localhost:8081');
+//body.interview = new Interview("New Interview!",webSock);
 
-body.interview = new Interview("int",1);
-body.VizInterview = new VizInterview(body,body.interview);
+//body.VizInterview = new VizInterview(body,body.interview);
+
+var ic = new InterviewChooser(wsClient,body);
