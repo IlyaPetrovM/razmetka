@@ -10,7 +10,6 @@ export default class IntervalMedia extends Interval{
         this.path = path;
         this.audio = new Audio(path);
         this.audio.load();
-        this.type = 'media';
         this.textIntervals = new Array();
     }
 
