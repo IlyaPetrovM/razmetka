@@ -1,4 +1,9 @@
 /*Стили*/
+#editGroupButtons{
+    position:fixed;
+    height: 1.5em;
+    right: 5px;
+}
 #interviewChooser{
     margin: 0 auto;
     border: 2px solid gray;
@@ -7,6 +12,7 @@
 .interviewLink{
     display: block;
     margin:0 auto;
+    height: 1.5em;
 }
 
 .Track,.TrackMedia,.TrackText,.trackChooserRadio{

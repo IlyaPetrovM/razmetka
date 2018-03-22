@@ -3331,7 +3331,7 @@
 							},
 							"name": "_date",
 							"type": "DATE",
-							"length": 0,
+							"length": "8",
 							"primaryKey": false,
 							"foreignKey": false,
 							"nullable": false,

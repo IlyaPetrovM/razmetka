@@ -312,17 +312,20 @@ class Track{
     Interview
 **************************************/
 class Interview extends IDbTable{
-    constructor(_title, _date, wsClient){
+    constructor(_id, _title, _date, wsClient){
         super();
         this.title = _title;
-        this.id = 1553;
+        this.id = _id;
         this._date = _date;
         this.tracks = [];
-        this.wsClient = wsClient;
-        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+//        this.wsClient = wsClient;
+//        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+    }
+    get name(){
+        return "Interview";
     }
     insert(){
-        this.wsClient.send('insert Interview values ('+ this.title +')');
+//        this.wsClient.send('insert Interview values ('+ this.title +')');
     }
     select(id){
         
@@ -333,7 +336,7 @@ class Interview extends IDbTable{
     remove(id){
         
     }
-    processMessageFromServer(inMsg){
+    remove(inMsg){
             console.log(inMsg);
     }
     addTrack(track){
@@ -356,12 +359,38 @@ class InterviewChooser{
         this.buttonAdd.id = 'createInterviewButton';
         this.buttonAdd.addEventListener('click',this.createInterview.bind(this));
         this.div.appendChild(this.buttonAdd);
-        this.interviews = [];
+        this.interviews = {};
+        this.interviewItems = {};
+        
+        this.editGroupButtons = document.createElement('div');
+        this.editGroupButtons.id = 'editGroupButtons';
+        this.targetItem = undefined;
+        this.buttonEdit = document.createElement('button');
+        this.buttonDel = document.createElement('button');
+        this.buttonEdit.title = "Редактировать";
+        this.buttonDel.title = "Удалить";
+        this.buttonEdit.innerHTML = "&#9998;";
+        this.buttonDel.innerHTML = "&#10006;";
+        this.buttonEdit.className = "buttonEdit";
+        this.buttonDel.className = 'buttonDel';
+        this.buttonEdit.onclick = this.update.bind(this);
+        this.buttonDel.onclick = this.remove.bind(this); // Чтобы передавать как параметр только один выбранный элемент
+        
+        this.editGroupButtons.appendChild(this.buttonEdit);
+        this.editGroupButtons.appendChild(this.buttonDel);
+         this.div.appendChild(this.editGroupButtons);
         parentNode.appendChild(this.div);
         this.wsClient.onopen = this.select.bind(this);
+        
     }
+    get table(){
+        return "Interview";
+    }
+    get sender(){
+        return "InterviewChooser";
+    } 
     createInterview(){
-        let title_ = '', date_ = '2018-03-18';
+        let title_ = '', date_ = new Date('1992-01-13');
         let send = true;
         while(title_ === null || title_ === ''){
             title_ = prompt("Введите название интервью","Интервью 1");
@@ -373,10 +402,10 @@ class InterviewChooser{
         if(send){
             this.wsClient.send(JSON.stringify({
                 action: Act.CREATE,
-                sender:"InterviewChooser",
-                table:'Interview',
+                sender:this.sender,
+                table:this.table,
                 title:title_,
-                date:date_
+                _date:date_
             }));
         }
 //        this.createLink(title_);
@@ -388,8 +417,8 @@ class InterviewChooser{
 //        if(this.wsClient.state !== 'CONNECTING'){
             let outMsg = JSON.stringify({
                 action: Act.LOAD,
-                table:  'Interview',
-                sender: 'InterviewChooser'
+                table:  this.table,
+                sender: this.sender
             });
             this.wsClient.send(outMsg);
             console.log(outMsg);
@@ -400,31 +429,114 @@ class InterviewChooser{
         console.log(msg);
         
             switch(msg.action){
+                case Act.ERROR:
+                    alert('Данные отправленные в базу данных не были сохранены. Попробуйте ещё раз.');
+                    break;
                 case Act.CREATE:
                     this.createLink(msg);
                     console.log('CREATE');
                     break;
                 case Act.UPDATE:
+                    this.processUpdate(msg);
                     console.log('UPDATE');
                     break;
                 case Act.LOAD:
-                    if(msg.sender === "InterviewChooser"){
-                    for(let i in msg.result){
-                        this.createLink(msg.result[i]);
+                    if(msg.sender === this.sender){
+                        for(let i in msg.result){
+                            this.createLink(msg.result[i]);
+                        }
                     }
-                    }
+                    break;
+                case Act.DELETE:
+                    this.deleteLink(msg.id);
+                    console.log('DELETE');
                     break;
                 default:
                     console.log('Неизвестная команда:',msg.action);
             
         }
     }
+    
+    deleteLink(id){
+        this.div.removeChild(this.interviewItems[id]);
+    }
+    openInterview(id){
+        
+    }
+    closeInterview(id){
+        
+    }
+    
+    updateLink(inte, a) {
+        let d = new Date(inte._date);
+        let month = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getMonth()+1);
+        let day = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getDate());
+        a.innerHTML =`${inte.id} ${d.getFullYear()}-${month}-${day} ${inte.title}`;
+        a.onmouseover = this.drawControl.bind(this,a);
+    }
+
     createLink(inte){
         var a = document.createElement('a');
         a.className = 'interviewLink';
         a.href = '#';
-        a.innerHTML =`${inte.id}  ${inte.title}`;
+        console.log(inte);
+        
+        
+        a._id = inte.id;
+        this.interviews[inte.id] = new Interview(inte.id, inte.title, inte._date, this.wsClient);
+        this.interviewItems[inte.id] = a;
+        this.updateLink(inte, this.interviewItems[inte.id]);
         this.div.appendChild(a);
+    }
+    
+    drawControl(targetItem,e){
+        let rect = targetItem.getBoundingClientRect();
+        this.editGroupButtons.style.top = rect.y + 'px';
+        this.targetItem = targetItem;
+    }
+    
+    update(onClickEvent){
+        let msg_obj = {
+            action: Act.UPDATE,
+            table: this.table,
+            sender: this.sender,
+            id:this.targetItem._id,
+            data:{}
+        };
+        for(let key in this.interviews[this.targetItem._id]){
+            if(key !== 'id' && key !== 'tracks'){
+                let val = prompt(`${key}`, this.interviews[this.targetItem._id][key]);
+                if(val){
+                        msg_obj.data[key] = val; 
+                }
+            }
+        }
+        let outMsg = JSON.stringify(msg_obj);
+        this.wsClient.send(outMsg);
+        console.log(outMsg);
+    }
+    
+    processUpdate(msg){
+        for(let key in this.interviews[msg.id]){
+            if(msg.data[key]){
+                this.interviews[msg.id][key] = msg.data[key];
+            }
+        }
+        this.updateLink(this.interviews[msg.id], this.interviewItems[msg.id]);
+    }
+    
+    remove(_id,onClickEvent){
+        console.log(_id);
+        let res = confirm('Вы уверены, что хотите удалить интервью?');
+        if(res){
+           let outMsg = JSON.stringify({
+                action:Act.DELETE,
+                id:this.targetItem._id,
+               table:this.table,
+               sender:this.sender
+           });     
+           this.wsClient.send(outMsg);
+        }
     }
 }
 /**************************************

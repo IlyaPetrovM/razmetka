@@ -34,50 +34,103 @@ class Server{
         wsocket.on('message',this.processMessage.bind(this,id));
         wsocket.on('close',this.processClose.bind(this,id));
     }
-    
+
     processMessage(id,inMsg){
-        console.log(id,inMsg,Act.CREATE);
+        console.log('\n',id,inMsg);
         var msg = JSON.parse(inMsg);
-        let sql;
+        
+        
         switch(msg.action){
             case Act.CREATE:
-                if(msg.table === 'Interview'){
-                    sql = `INSERT INTO ${msg.table} (title, _date) VALUES ('${msg.title}','${msg.date}');`;
-                }
-                this.sqlClient.query( sql, function(err, result){
-                    if(err) throw err;
-                    this.sqlClient.query( `SELECT LAST_INSERT_ID();`,function(error, selectRes){
-                        if(error) throw error;
-                        msg['id'] = selectRes[0]['LAST_INSERT_ID()']; 
-                        let outMsg = JSON.stringify(msg);
-                        for(let key in this.clients){
-                            this.clients[key].send(outMsg);
-                        }
-                        console.log('msg: ' + outMsg);
-                    }.bind(this) );
-                    console.log('result: ' + JSON.stringify(result));
-                }.bind(this) );
+                var ret = this.insert(msg);
+                msg = ret.msg;
                 break;
             case Act.LOAD:
-                if(msg.id){
-                    sql = `SELECT * FROM ${msg.table} WHERE id=${msg.id};`;
-                }else{
-                    sql = `SELECT * FROM ${msg.table};`;
-                }
-                this.sqlClient.query( sql, this.processSelect.bind(this,id,msg) );
+                this.select(msg, id);
                 console.log('LOAD');
+                break;
+            case Act.UPDATE:
+                this.update(msg);
+                console.log('UPDATE');
+                break;
+            case Act.DELETE:
+                this.remove(msg);
+                console.log('DELETE');
                 break;
             default:
                 console.log("Неизвестная команда: ",msg.action);
         }
     }
+    update(msg){
+        let equations = [];
+        for(let key in msg.data){
+            if(key==='_date'){
+                let d = new Date(msg.data[key]).toISOString().slice(0,19).replace('T',' ');
+                equations.push(`${key}='${d}'`);  
+            }else{
+                equations.push(`${key}='${msg.data[key]}'`);    
+            }
+        }
+        let sql = `UPDATE ${msg.table} SET ${equations.join(',')} WHERE id=${msg.id};`;
+        this.sqlClient.query(sql, function(err, updateRes){
+            if(err) throw err;
+            let outMsg = JSON.stringify(msg);
+            for(let key in this.clients){
+                this.clients[key].send(outMsg);
+            }
+            console.log(updateRes);
+        }.bind(this));
+    }
+    remove(msg){
+        let sql;
+        sql = `DELETE FROM ${msg.table} WHERE id=${msg.id};`;
+        var outMsg = JSON.stringify(msg);
+        this.sqlClient.query(sql, function(err,deleteRes){
+            if(err) throw err;
+            for(let key in this.clients){
+                this.clients[key].send(outMsg);
+            }
+            console.log(deleteRes);
+        }.bind(this));
+    }
+    
+    insert(msg) {
+        let sql;
+        if(msg.table === 'Interview'){
+            console.log(msg._date);
+            let d = new Date(msg._date).toISOString().slice(0,19).replace('T',' ');
+            sql = `INSERT INTO ${msg.table} (title, _date) VALUES ('${msg.title}', '${d}');`;
+        }
+        this.sqlClient.query( sql, function(err, result){
+            if(err) throw err;
+            msg['id'] = result.insertId; 
+            let outMsg = JSON.stringify(msg);
+            for(let key in this.clients){
+                this.clients[key].send(outMsg);
+            }
+            console.log('msg: ' + outMsg);
+        }.bind(this) );
+        return {msg};
+    }
+    
+    select(msg, id) {
+        let sql;
+        if(msg.id){
+            sql = `SELECT * FROM ${msg.table} WHERE id=${msg.id};`;
+        }else{
+            sql = `SELECT * FROM ${msg.table};`;
+        }
+        this.sqlClient.query( sql, this.processSelect.bind(this,id,msg) );
+    }
+    
     processSelect(id, msg, err, selectRes){
         if(err) throw err;
         let outMsgJs = msg;
         outMsgJs['result'] = selectRes;
         let outMsg = JSON.stringify(outMsgJs);
         this.clients[id].send(outMsg);
-        console.log(`${id} ${outMsg}`);
+        console.log(`${id}:\n ${selectRes[0]._date.toISOString()}`);
+        console.log(`${id}:\n ${outMsg}`);
     }
     processClose(id){
         console.log('Соединение ' + id + ' закрыто');

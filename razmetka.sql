@@ -30,7 +30,7 @@ CREATE TABLE `IntervalMedia` (
 CREATE TABLE `Interview` (
     `id` INT AUTO_INCREMENT NOT NULL,
     `title` VARCHAR(255) NOT NULL,
-    `_date` DATE NOT NULL,
+    `_date` TIMESTAMP NOT NULL,
     PRIMARY KEY (`id`)
 );
 
