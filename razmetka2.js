@@ -318,26 +318,23 @@ class Interview extends IDbTable{
         this.id = _id;
         this._date = _date;
         this.tracks = [];
+        this.wsClient = wsClient;
 //        this.wsClient = wsClient;
 //        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
     }
+    show(parentNode){
+        this.load();
+        this.viz = new VizInterview(parentNode,this);
+    }
+    hide(){
+        this.viz.hide();
+        delete this.viz;
+    }
+    load(){
+        console.log('LOAD TRACKS');
+    }
     get name(){
         return "Interview";
-    }
-    insert(){
-//        this.wsClient.send('insert Interview values ('+ this.title +')');
-    }
-    select(id){
-        
-    }
-    update(id){
-        
-    }
-    remove(id){
-        
-    }
-    remove(inMsg){
-            console.log(inMsg);
     }
     addTrack(track){
         if(track.title != undefined && track.title != ""){
@@ -347,11 +344,42 @@ class Interview extends IDbTable{
             return false;
         }
     }
-}    
+}  
+class InterviewLink{
+    constructor(inte, intChooser){
+       var a = document.createElement('a');
+        a.className = 'interviewLink';
+        a.href = '#';
+        console.log(inte);
+        this.intChooser = intChooser;
+        
+        a._id = inte.id;
+        this.a = a;
+        this.inte = inte;
+       
+        
+        this.updateLink();
+        this.intChooser.div.appendChild(a); 
+        this.a.onmouseover = this.intChooser.drawControl.bind(this.intChooser,this.a);
+        this.a.onclick = this.showInterview.bind(this);
+    }
+    showInterview(){
+        this.intChooser.hide(this.inte);
+        this.inte.show(this.intChooser.parentNode);
+    }
+    updateLink() {
+        let d = new Date(this.inte._date);
+        let month = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getMonth()+1);
+        let day = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getDate());
+        this.a.innerHTML =`${this.inte.id} ${d.getFullYear()}-${month}-${day} ${this.inte.title}`;
+    }
+    delete(){
+        this.intChooser.div.removeChild(this.a);
+    }
+}
 class InterviewChooser{
     constructor(wsocket,parentNode){
-        this.wsClient = wsocket;
-        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+        
         this.div = document.createElement('div');
         this.div.id = 'interviewChooser';
         this.buttonAdd = document.createElement('button');
@@ -359,7 +387,12 @@ class InterviewChooser{
         this.buttonAdd.id = 'createInterviewButton';
         this.buttonAdd.addEventListener('click',this.createInterview.bind(this));
         this.div.appendChild(this.buttonAdd);
-        this.interviews = {};
+        
+        this.buttonHide = document.createElement('button');
+        this.buttonHide.innerHTML = 'X';
+        this.buttonHide.id = 'buttonHide';
+        this.buttonHide.onclick = this.hide.bind(this);
+        
         this.interviewItems = {};
         
         this.editGroupButtons = document.createElement('div');
@@ -378,10 +411,13 @@ class InterviewChooser{
         
         this.editGroupButtons.appendChild(this.buttonEdit);
         this.editGroupButtons.appendChild(this.buttonDel);
-         this.div.appendChild(this.editGroupButtons);
+        this.div.appendChild(this.editGroupButtons);
         parentNode.appendChild(this.div);
-        this.wsClient.onopen = this.select.bind(this);
-        
+        parentNode.appendChild(this.buttonHide);
+        this.parentNode = parentNode;
+        this.wsClient = wsocket;
+        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+        this.wsClient.onopen = this.select.bind(this);  
     }
     get table(){
         return "Interview";
@@ -424,16 +460,30 @@ class InterviewChooser{
             console.log(outMsg);
 //        }
     }
+    processLoad(msg) {
+        if(msg.sender === this.sender){
+            for(let i in msg.result){
+                var inter = new Interview(msg.result[i].id, msg.result[i].title, msg.result[i]._date, this.wsClient);
+                this.interviewItems[msg.result[i].id] = new InterviewLink(inter,this);
+            }
+        }
+    }
+
+    processDelete(msg) {
+        this.interviewItems[msg.id].delete();
+    }
+
     processMessageFromServer(inMsg){
         let msg = JSON.parse(inMsg.data);
         console.log(msg);
         
             switch(msg.action){
                 case Act.ERROR:
-                    alert('Данные отправленные в базу данных не были сохранены. Попробуйте ещё раз.');
+                    this.processError(msg);
+                    console.log('ERROR');
                     break;
                 case Act.CREATE:
-                    this.createLink(msg);
+                   this.processCreate(msg);
                     console.log('CREATE');
                     break;
                 case Act.UPDATE:
@@ -441,14 +491,11 @@ class InterviewChooser{
                     console.log('UPDATE');
                     break;
                 case Act.LOAD:
-                    if(msg.sender === this.sender){
-                        for(let i in msg.result){
-                            this.createLink(msg.result[i]);
-                        }
-                    }
+                    this.processLoad(msg);
+                    console.log('LOAD');
                     break;
                 case Act.DELETE:
-                    this.deleteLink(msg.id);
+                    this.processDelete(msg);
                     console.log('DELETE');
                     break;
                 default:
@@ -456,39 +503,29 @@ class InterviewChooser{
             
         }
     }
-    
-    deleteLink(id){
-        this.div.removeChild(this.interviewItems[id]);
+    processCreate(msg){
+         var inter = new Interview(msg.id, msg.title, msg._date, this.wsClient);
+                    this.interviewItems[msg.id] = new InterviewLink(inter,this);
     }
-    openInterview(id){
-        
+   processError(msg){
+       alert('Данные отправленные в базу данных не были сохранены. Попробуйте ещё раз.');
+   } 
+   hide(activeInterview){
+       this.div.classList.add('hidden');
+       this.buttonHide.innerHTML = 'Список интервью';
+       this.buttonHide.onclick = this.show.bind(this);
+       this.activeInterview = activeInterview;
+       console.log(this.activeInterview);
+   }
+    show(){
+        this.div.classList.remove('hidden');
+        this.buttonHide.innerHTML = 'X';
+        this.buttonHide.onclick = this.hide.bind(this);
+        console.log(this.activeInterview);
+//        if(this.activeInterview){
+            this.activeInterview.hide();
+//        }
     }
-    closeInterview(id){
-        
-    }
-    
-    updateLink(inte, a) {
-        let d = new Date(inte._date);
-        let month = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getMonth()+1);
-        let day = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getDate());
-        a.innerHTML =`${inte.id} ${d.getFullYear()}-${month}-${day} ${inte.title}`;
-        a.onmouseover = this.drawControl.bind(this,a);
-    }
-
-    createLink(inte){
-        var a = document.createElement('a');
-        a.className = 'interviewLink';
-        a.href = '#';
-        console.log(inte);
-        
-        
-        a._id = inte.id;
-        this.interviews[inte.id] = new Interview(inte.id, inte.title, inte._date, this.wsClient);
-        this.interviewItems[inte.id] = a;
-        this.updateLink(inte, this.interviewItems[inte.id]);
-        this.div.appendChild(a);
-    }
-    
     drawControl(targetItem,e){
         let rect = targetItem.getBoundingClientRect();
         this.editGroupButtons.style.top = rect.y + 'px';
@@ -522,7 +559,7 @@ class InterviewChooser{
                 this.interviews[msg.id][key] = msg.data[key];
             }
         }
-        this.updateLink(this.interviews[msg.id], this.interviewItems[msg.id]);
+        this.interviewItems[msg.id].updateLink();
     }
     
     remove(_id,onClickEvent){
@@ -1000,7 +1037,7 @@ class TimeDisplay{
         
         var cursor = document.createElement('div');
         cursor.className='cursor';
-        window.addEventListener('mousemove',function (e) {
+        cursorParent.addEventListener('mousemove',function (e) {
             let x_px = e.pageX;
             let scroll_px = wrapper.scrollLeft;
             let cursor = document.getElementsByClassName('cursor')[0];
@@ -1030,8 +1067,11 @@ class TimeDisplay{
  VizInterview
 **************************************/
 class VizInterview{
-    constructor(parent,interview){
-        
+    constructor(parentNode,interview){
+        this.parentNode = parentNode;
+        var parent = document.createElement('div');
+        this.parent = parent;
+        parentNode.appendChild(this.parent);
         this.interview = interview;
         document.title = 'Интервью';
         
@@ -1153,7 +1193,14 @@ class VizInterview{
         parent.appendChild(controls);
         parent.appendChild(bigwrapper);
         parent.appendChild(descr);
-
+        
+    }
+    show(){
+        this.parent.classList.remove('hidden');
+    }
+    hide(){
+//        this.parent.classList.add('hidden');
+        this.parentNode.removeChild(this.parent);
     }
 }
 

@@ -15,4 +15,16 @@ export default class IDbTable {
     insert(data){
         
     }
+    processSelect(msg){
+        
+    }
+    processUpdate(msg){
+        
+    }
+    processRemove(msg){
+        
+    }
+    processInsert(msg){
+        
+    }
 }

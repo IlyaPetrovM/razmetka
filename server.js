@@ -129,7 +129,7 @@ class Server{
         outMsgJs['result'] = selectRes;
         let outMsg = JSON.stringify(outMsgJs);
         this.clients[id].send(outMsg);
-        console.log(`${id}:\n ${selectRes[0]._date.toISOString()}`);
+//        console.log(`${id}:\n ${selectRes[0]._date.toISOString()}`);
         console.log(`${id}:\n ${outMsg}`);
     }
     processClose(id){
