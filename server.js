@@ -1,7 +1,7 @@
 //server.js
 var act = new require('./act.js').Act;
 const Act = new act();
-console.log(Act.CREATE);
+
 class Server{
     constructor(_port){
         var WebSocketServer = new require('ws');
@@ -97,13 +97,23 @@ class Server{
     insert(msg) {
         let sql;
         if(msg.table === 'Interview'){
-            console.log(msg._date);
-            let d = new Date(msg._date).toISOString().slice(0,19).replace('T',' ');
-            sql = `INSERT INTO ${msg.table} (title, _date) VALUES ('${msg.title}', '${d}');`;
+            let d = new Date(msg.data._date).toISOString().slice(0,19).replace('T',' ');
+            sql = `INSERT INTO ${msg.table} (title, _date) VALUES ('${msg.data.title}', '${d}');`;
+        }else{
+            let valuesList='', keysList='';
+            for(let key in msg.data){
+                keysList += `${key},`;
+                valuesList += `'${msg.data[key]}',`;
+                console.log('\n'+ key + ':' + msg.data[key]+'\n');
+            }
+            keysList = keysList.slice(0,keysList.length-1);
+            valuesList = valuesList.slice(0,valuesList.length-1);
+            sql = `INSERT INTO ${msg.table} (${keysList}) VALUES (${valuesList});`;
+            console.log('\n'+sql+'\n');
         }
         this.sqlClient.query( sql, function(err, result){
             if(err) throw err;
-            msg['id'] = result.insertId; 
+            msg.data['id'] = result.insertId; 
             let outMsg = JSON.stringify(msg);
             for(let key in this.clients){
                 this.clients[key].send(outMsg);

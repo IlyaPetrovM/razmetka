@@ -4,7 +4,7 @@ import IDbTable from "./IDbTable.js";
 /**************************************
     Interval
 *************************************/
-export default class Interval extends IDbTable {
+export default class Interval  {
     constructor(start_s, end_s){
         if(start_s > end_s){
             end_s = start_s + 1;
