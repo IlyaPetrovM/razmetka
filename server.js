@@ -125,11 +125,12 @@ class Server{
     
     select(msg, id) {
         let sql;
-        if(msg.id){
-            sql = `SELECT * FROM ${msg.table} WHERE id=${msg.id};`;
+        if(msg.where){
+            sql = `SELECT * FROM ${msg.table} WHERE ${msg.where}`;
         }else{
             sql = `SELECT * FROM ${msg.table};`;
         }
+        console.log(sql);
         this.sqlClient.query( sql, this.processSelect.bind(this,id,msg) );
     }
     

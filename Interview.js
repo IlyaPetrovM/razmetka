@@ -4,6 +4,7 @@
 import VizInterview from './VizInterview.js';
 import IDbTable from './IDbTable.js';
 import TrackMedia from './TrackMedia.js';
+import TrackText from './TrackText.js';
 export default class Interview extends IDbTable{
     constructor(_title, _date, wsClient,id_){
         super(wsClient);
@@ -14,6 +15,8 @@ export default class Interview extends IDbTable{
         this.onidupdated = function(newid){};
         this.onupdate = function(){};
         this.ondelete = function(){};
+        this.trackMediaCreated = function(){};
+        this.trackTextCreated = function(){};
     }
     get table(){
         return 'Interview';
@@ -24,7 +27,6 @@ export default class Interview extends IDbTable{
     
 
     create(){
-        //TODO 09.04.2018
         super.create({title:this.title, _date:this._date },this.table);
         console.log('Interview create');
     }
@@ -44,12 +46,11 @@ export default class Interview extends IDbTable{
         super.remove(this.id, this.table);
     }
     processDelete(msg){
-        //TODO 09.04.2018
         console.log('processDelete' + this.id);
         this.ondelete(this.id);
     }
     processError(){
-        //TODO 09.04.2018
+        //TODO Interview Error
     }
     get data(){
         return {'title':0,
@@ -61,8 +62,8 @@ export default class Interview extends IDbTable{
         for(let k in this){
             console.log(k);
         }
-        this.load();
         this.viz = new VizInterview(parentNode,this);
+        this.load();
     }
     
     hide(){
@@ -76,38 +77,59 @@ export default class Interview extends IDbTable{
     }
     
     load(){
-        super.load(this.table);
+        console.log('load Interview');
+        super.load('Track',`int_id = ${this.id}`);
+        console.log('1....load Interview');
     }
     
     processLoad(msg){
-        console.log('pass');
-    }
-    
-    addTrackMedia(track){
-        super.create({title:track.title,_type:'Media',int_id:this.id},'Track');
-    }
-    addTrackText(track){
-        //TODO addTrackText
-        console.log('todo me');
-    }
-    processCreate(msg){
-        //TODO 09.04.2018
+        console.log('2....load Interview');
         if(msg.table === 'Track'){
-        switch(msg.data._type){
+            for(let i in msg.result){
+                this.createTrackSwitch(msg.result[i]);
+            }
+        }
+        console.log('done');
+    }
+    addTrackMedia(title){
+        super.create(
+            {
+                title:title,
+                _type:'Media',
+                int_id:this.id
+            },'Track');
+    }
+    addTrackText(title){
+        super.create(
+            {
+                title:title,
+                _type:'Text',
+                int_id:this.id
+            },'Track');
+    }
+    createTrackSwitch(data) {
+         console.log('3....load Interview',data);
+        switch(data._type){
             case 'Media':
-                this.tracks.push(new TrackMedia(msg.data.title, msg.data.id));
+                var track = new TrackMedia(data.title, data.id);
+                this.tracks.push(track);
+                this.trackMediaCreated(track);
+                console.log('4....load Interview');
                 console.log(this.tracks);
-                // TODO VizTrackMedia
-            break;
-            case 'Text':
-                this.tracks.push(new TrackText(msg.data.title, msg.data.id));
-                //TODO VizTrackText
                 break;
-        }}
-//        if(this.id===undefined){
-//            this.id = msg.data.id;
-//            console.log(msg);
-//            this.onidupdated(this.id);
-//        }
+            case 'Text':
+                var track  = new TrackText(data.title, data.id);
+                this.tracks.push(track);
+                this.trackTextCreated(track);
+                break;
+        }
+    }
+
+
+    processCreate(msg){
+        if(msg.table === 'Track'){
+            let data = msg.data;
+            this.createTrackSwitch(data);
+        }
     }
 }  

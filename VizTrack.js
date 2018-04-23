@@ -7,6 +7,7 @@ export default class VizTrack{
         this.div = document.createElement('div');
         this.div.className = "Track";
         this.div.track = track; 
+        this.div.title = track.id + " " +track.title;
                 
         this.radio = document.createElement('input');
         this.radio.type = 'radio';

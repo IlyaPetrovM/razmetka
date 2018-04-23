@@ -17,11 +17,7 @@ export default class VizInterview{
         this.butAddTrackMedia = document.createElement('button');
         this.butAddTrackMedia.interview = interview;
         this.butAddTrackMedia.onclick = function(){
-            let trackMedia = new TrackMedia('Дорожка аудио');
-            
-            this.interview.addTrackMedia(trackMedia,function(){
-                new VizTrackMedia(panelMedia, trackMedia);
-            });
+            this.interview.addTrackMedia('Дорожка аудио');
         };
         this.butAddTrackMedia.innerText = 'Добавить аудио-дорожку';
         this.butAddTrackMedia.title = 'Нажмите, чтобы добавить аудио';
@@ -29,13 +25,13 @@ export default class VizInterview{
     }
 
     constructor(parentNode,interview){
-        
+
         this.parentNode = parentNode;
         var parent = document.createElement('div');
         this.parent = parent;
         parentNode.appendChild(this.parent);
         this.interview = interview;
-        document.title = 'Интервью';
+        document.title = interview.title;
         
         var seq = document.createElement('div');
         seq.className = 'sequence';
@@ -64,17 +60,20 @@ export default class VizInterview{
         var panelText = document.createElement('div');
         panelText.className='panelText';
         
-
+        this.interview.trackMediaCreated = function(track){
+                new VizTrackMedia(panelMedia,track);
+        }.bind(this);
+        this.interview.trackTextCreated = function(track){
+                new VizTrackText(panelText,track);
+        }.bind(this);   
+        console.log('0....load Interview');
+        
         this.addMediaButton(interview, panelMedia, controls); 
         
         this.butAddTrackText = document.createElement('button');
         this.butAddTrackText.interview = interview;
         this.butAddTrackText.onclick = function(){
-            let trackText = new TrackText('Текстовая дорожка');
-            if(this.interview.addTrackText(trackText)){
-            console.log('Track');
-                new VizTrackText(panelText,trackText);
-            }
+            this.interview.addTrackText('Текстовая дорожка');
         };
         this.butAddTrackText.innerText = 'Добавить текстовую дорожку';
         

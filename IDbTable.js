@@ -13,11 +13,12 @@ export default class IDbTable {
         throw Error('неизвесная реализация');
         return undefined;
     }
-    load(table){
+    load(table,where){
         let outMsg = JSON.stringify({
             action: Act.LOAD,
             table: table,
-            sender: this.sender
+            sender: this.sender,
+            where: where
         });
         this.wsClient.send(outMsg);
     }
