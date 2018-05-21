@@ -3,7 +3,8 @@
 VizTrack
 **************************************/
 export default class VizTrack{
-    constructor(parent,track){
+    constructor(parent,track,panelParent){
+
         this.div = document.createElement('div');
         this.div.className = "Track";
         this.div.track = track; 
@@ -22,9 +23,27 @@ export default class VizTrack{
                 
             }
         };
+        this.buttonDelete = document.createElement('button');
+        this.buttonDelete.className = 'buttonDeleteTrack';
+        this.buttonDelete.innerHTML = 'x';
+        this.buttonDelete.onclick = function(e){
+            if(confirm('Вы уверены что хотите удалить дорожку?')){
+//            this.div.track.remove.bind(this.div.track);
+                console.log('Дорожка удалена');
+            }else{
+                console.log('Отмена');
+            }
+        }
 
+        this.panel = document.createElement('div');
+        this.panel.className = 'trackPanel';
+        
+        this.panel.appendChild(this.radio);
+        this.panel.appendChild(this.buttonDelete);
+        panelParent.appendChild(this.panel);
         parent.appendChild(this.div);
     }
+
     addInterval(e){
         console.log("VizTrack");
     }

@@ -1,0 +1,165 @@
+/*Стили*/
+#editGroupButtons{
+    position:fixed;
+    height: 1.5em;
+    right: 5px;
+}
+#interviewChooser{
+    margin: 0 auto;
+    border: 2px solid gray;
+    text-align: center;
+}
+.interviewLink{
+    display: block;
+    margin:0 auto;
+    height: 1.5em;
+}
+
+
+
+
+#buttonPlayAndMark, #buttonPlay{
+    width: 40px;
+}
+.interv{
+    position: absolute;
+/*    display: inline-block;*/
+    float: left;
+    
+    background-color: black;
+    height: 100%;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-color: aqua;
+    border-bottom-width: 0px;
+    border-top-width: 0px;
+    border-style: solid;
+    opacity: 0.3;
+}
+.interv.hover,.interv:hover{
+    opacity: 0.5;
+    cursor: pointer;
+}
+.wrapper{
+    overflow:auto;
+    width: 100%;
+    min-height: 6em;
+    max-height: 40%;
+    margin:1m auto;
+    padding-bottom: 1em;
+    position: relative;
+    
+}
+.timeline{
+    background: #aaa;
+/*    min-width: auto;*/
+    height: 2em;
+/*    width: max-content;*/
+}
+#bigwrapper{
+    width: 100%;
+/*    clear: both;*/
+/*    display: table-row;*/
+/*    padding-left: 30px;*/
+}
+
+.wrapperCursor{
+    display: block;
+    min-height: fit-content;
+    position: relative;
+    width: calc(100% - 30px);
+    float: left;
+/*    overflow-x: scroll;*/
+}
+.milestone{
+    border-left: 0px rgba(0,0,0,100) dashed;
+    color:  black;
+    float:  left;
+    height: 100%;
+    -moz-user-select:   none;
+    -khtml-user-select: none;
+    user-select: none; 
+    font-family: monospace;
+    font-size: 9pt;
+    overflow: hidden;
+}
+.milestone2{
+    background: #ccc;
+}
+.playing{
+    background: red;
+}
+.sequence{
+    width:fit-content;
+    position: relative;
+    opacity: 0.8;
+    max-height: 40%;
+}
+.choosen{
+    background: #090;
+}
+#cursorPlay,.cursor{
+    background: green;
+    height: 100%;
+    width:1px;
+    position: absolute;
+/*    top:50%;*/
+}
+#cursorPlay{
+    background:none;
+    width: 1px;
+    border-left: 2px solid #f00; 
+    padding: 0px;
+/*    border: none;*/
+}
+html{
+    overflow: hidden;
+}
+#descr{
+    overflow-y:scroll;
+    height: 400px;
+    clear: both;
+/*  background-color: #fcf;*/
+}
+.textField{
+    background-color:lightgreen;
+}
+
+.ivlDescr{
+    display: block;
+    margin: 0 auto;
+    display: table-row;
+}
+.ivlDescr.hover,.ivlDescr:hover{
+    background: #ded;
+}
+.textDescr{
+    padding: 5px;
+    margin: 0px;
+    font-size: 12pt;
+    font-family: monospace;
+    border: 1px solid #ccc;
+    display: table-cell;
+/*    float: right;*/
+    min-width: 100px;
+}
+
+.timeField{
+    font-family: monospace;   
+    width: 70px;
+    display: table-cell;
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 0 5px;
+}
+#timeDisplay{
+    font-family: monospace;
+    font-size: 16pt;
+    margin: 0;
+    padding: 2px;
+    width: fit-content;
+    font-weight: 1000;
+}
+.hidden {
+    display: none;
+}

@@ -1,12 +1,12 @@
 import VizTrack from './VizTrack.js';
 import VizIntervalText from './VizIntervalText.js';
-import IntervalText from './IntervalText.js';
+import IntervalText from '../IntervalText.js';
 /**************************************
 VizTrackText
 **************************************/
 export default class VizTrackText extends VizTrack{
-    constructor(parent,track){
-        super(parent,track);
+    constructor(parent,track,parentPanel){
+        super(parent,track,parentPanel);
         this.div.className = "TrackText";
                 
         var dragStart_pc = 0;
@@ -15,7 +15,9 @@ export default class VizTrackText extends VizTrack{
         var selection = document.createElement('div');
 
         this.radio.name = 'trackChooserText';
-        trackChooserPanelText.appendChild(this.radio);
+        this.panel.classList.add('trackCPanelText');
+//        trackChooserPanelText.appendChild(this.buttonDelete);
+//        trackChooserPanelText.appendChild(this.radio);
         
         this.ivl = null;
         console.log(this);

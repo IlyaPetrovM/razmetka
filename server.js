@@ -1,6 +1,37 @@
 //server.js
-var act = new require('./act.js').Act;
+var act = new require('./js/act.js').Act;
 const Act = new act();
+
+var sys = require ('util'),
+url = require('url'),
+http = require('http'),
+qs = require('querystring');
+//var static = require('node-static');
+//var file = new static.Server('.');
+var fs = require('fs');
+//
+//http.createServer(function (req, res) {
+//    if(req.method=='POST') {
+//            var body='';
+//            req.on('data', function (data) {
+//                body +=data;
+//            });
+//            req.on('end',function(){
+//                var POST =  qs.parse(body);
+//                console.log(GET);
+//            });
+//    }
+//    else if(req.method=='GET') {
+//        var url_parts = url.parse(req.url,true);
+//        console.log(url_parts.query);
+//        fs.readFile('interview.html',function(err,data){
+//            res.write(data+`Hello client! query: ${url_parts.query['id']}`);
+//            res.end();
+//        });
+//    }
+////    file.serve(req, res);
+//}).listen(8080);
+//console.log('Server running on port 8080');
 
 class Server{
     constructor(_port){
@@ -14,7 +45,7 @@ class Server{
         
         this.mysql = require('mysql');
         this.sqlClient = this.mysql.createConnection({
-            host:'localhost',
+            host:'127.0.0.1',
             port:3333,
             user:'admin',
             password:'IL15OHM.m',

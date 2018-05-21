@@ -5,8 +5,8 @@ import Timeline from './Timeline.js';
 import CursorPlay from './CursorPlay.js';
 import MenuIntervalControls from './MenuIntervalControls.js';
 
-import TrackMedia from './TrackMedia.js';
-import TrackText from './TrackText.js';
+import TrackMedia from '../TrackMedia.js';
+import TrackText from '../TrackText.js';
 
 import VizTrackMedia from './VizTrackMedia.js';
 import VizTrackText from './VizTrackText.js';
@@ -26,6 +26,26 @@ export default class VizInterview{
 
     constructor(parentNode,interview){
 
+                var parseSearch = function(str){
+            let query = {};
+            str.split('?').forEach(function(s){
+                let pairs = s.split('&');
+                pairs.forEach(function(p){
+                    let tmp=p.split('=');
+                    let key = tmp[0];
+                    let value = tmp[1];
+                    query[key] = value;
+                });
+            });
+            return query;
+        }
+        let s = window.location.search;
+        let q = parseSearch(s);
+        console.log(s,q['id']);
+        if(q.id){
+            document.title='Интервью '+q['id'];
+        }
+        
         this.parentNode = parentNode;
         var parent = document.createElement('div');
         this.parent = parent;
@@ -36,12 +56,9 @@ export default class VizInterview{
         var seq = document.createElement('div');
         seq.className = 'sequence';
         
-        var trackChooserPanel = document.createElement('div');
-        trackChooserPanel.id = 'trackChooserPanel';
-        var trackChooserPanelText = document.createElement('div');
-        trackChooserPanelText.id = 'trackChooserPanelText';
-        var trackChooserPanelMedia = document.createElement('div');
-        trackChooserPanelMedia.id = 'trackChooserPanelMedia';
+        var trackControlPanel = document.createElement('div');
+        trackControlPanel.id = 'trackChooserPanel';
+       
         
         var wrapperCursor = document.createElement('div');
         wrapperCursor.className='wrapperCursor';
@@ -61,10 +78,10 @@ export default class VizInterview{
         panelText.className='panelText';
         
         this.interview.trackMediaCreated = function(track){
-                new VizTrackMedia(panelMedia,track);
+                new VizTrackMedia(panelMedia,track,trackControlPanel);
         }.bind(this);
         this.interview.trackTextCreated = function(track){
-                new VizTrackText(panelText,track);
+                new VizTrackText(panelText,track,trackControlPanel);
         }.bind(this);   
         console.log('0....load Interview');
         
@@ -139,14 +156,11 @@ export default class VizInterview{
         wrapper.appendChild(seq);
         let timeDisplay = new TimeDisplay(wrapperCursor,controls) 
         wrapperCursor.appendChild(wrapper);
-        trackChooserPanel.appendChild(trackChooserPanelMedia);
-        trackChooserPanel.appendChild(trackChooserPanelText);
-        bigwrapper.appendChild(trackChooserPanel);
+        bigwrapper.appendChild(trackControlPanel);
         bigwrapper.appendChild(wrapperCursor);
         parent.appendChild(controls);
         parent.appendChild(bigwrapper);
         parent.appendChild(descr);
-        
     }
     show(){
         this.parent.classList.remove('hidden');
@@ -156,3 +170,6 @@ export default class VizInterview{
         this.parentNode.removeChild(this.parent);
     }
 }
+//var interv = new Interview('Интервью в деревне')
+console.log('load interview');
+var vi = new VizInterview(document.body,undefined);

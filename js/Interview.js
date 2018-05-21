@@ -1,22 +1,89 @@
 /**************************************
     Interview
 **************************************/
-import VizInterview from './VizInterview.js';
-import IDbTable from './IDbTable.js';
+//import IDbTable from './IDbTable.js';
+import Publisher from './Publisher.js';
 import TrackMedia from './TrackMedia.js';
 import TrackText from './TrackText.js';
-export default class Interview extends IDbTable{
-    constructor(_title, _date, wsClient,id_){
+export default class Interview extends Publisher{
+    constructor(id,_title, _date, wsClient){
         super(wsClient);
         this.title = _title;
-        this.id = id_;
+        var __id = id;
+        this.id = id;
         this._date = _date;
-        this.tracks = [];
         this.onidupdated = function(newid){};
         this.onupdate = function(){};
         this.ondelete = function(){};
         this.trackMediaCreated = function(){};
         this.trackTextCreated = function(){};
+        this.getId = function(){
+            return __id;
+        }
+        
+        var __tracks = {};
+        var __date = _date;
+        var __title = _title;
+        this.getTitle = function(){
+            return __title;
+        }
+        this.tracks = {};
+        this.meLoaded = function(me){
+            __date = me._date;
+            __title = me.title;
+            this.update(this);
+        }
+        this.loadMe = function(id){
+            
+        }
+        
+        this.trackAdded = function(track){
+            //TODO
+            __tracks[track.getId()] = track;
+            this.update(this);
+        }
+        this.addTrack = function(track){
+            //TODO
+            this.trackAdded(track);
+        }
+        
+        this.trackRemoved = function(id){
+            //TODO
+            delete __tracks[id];
+            this.update(this);
+        }
+        this.removeTrack = function(id){
+            //TODO
+            this.trackRemoved(id);
+        }
+        
+        this.tracksLoaded = function(tracks){
+            //TODO
+            __tracks = tracks;
+            this.update(this);
+        }
+        this.loadTracks = function(){
+            //TODO
+        }
+        
+        this.interviewEdited = function(iw){
+            //TODO
+            if(iw._date){
+                __date = iw._date;
+            }
+            if(iw.title){
+                __title = iw.title;
+            }
+            this.update(this);
+        }
+        this.editInterview = function(iw){
+            //TODO
+            this.interviewEdited(iw);
+        }
+        this.getDate = function(){
+            return __date;
+        }
+        
     }
     get table(){
         return 'Interview';
@@ -42,9 +109,6 @@ export default class Interview extends IDbTable{
         this.onupdate();
     }
     
-    remove(){
-        super.remove(this.id, this.table);
-    }
     processDelete(msg){
         console.log('processDelete' + this.id);
         this.ondelete(this.id);
@@ -62,7 +126,7 @@ export default class Interview extends IDbTable{
         for(let k in this){
             console.log(k);
         }
-        this.viz = new VizInterview(parentNode,this);
+//        this.viz = new VizInterview(parentNode,this);
         this.load();
     }
     
@@ -112,14 +176,15 @@ export default class Interview extends IDbTable{
         switch(data._type){
             case 'Media':
                 var track = new TrackMedia(data.title, data.id);
-                this.tracks.push(track);
+                this.tracks[data.id] = track;
                 this.trackMediaCreated(track);
                 console.log('4....load Interview');
                 console.log(this.tracks);
                 break;
             case 'Text':
                 var track  = new TrackText(data.title, data.id);
-                this.tracks.push(track);
+                
+                this.tracks[data.id] = track;
                 this.trackTextCreated(track);
                 break;
         }

@@ -3,8 +3,8 @@ import Track from './Track.js';
 TrackMedia
 **************************************/
 export default class TrackMedia extends Track{
-    constructor(title,id){
-        super(title,id);
+    constructor(title,id,wsClient){
+        super(title,id,wsClient);
         var thistrack=this;
         document.addEventListener('checkIntersect',
         function(e){

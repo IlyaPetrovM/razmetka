@@ -1,15 +1,61 @@
 import IDbTable from './IDbTable.js';
+import Publisher from './Publisher.js';
 /**************************************
 Track
 **************************************/
-export default class Track {
-    constructor(title_,id){
+export default class Track extends Publisher {
+    constructor(title_,id,wsClient){
+        super(wsClient) /// TODO
         this.id = id;
         this.title = title_;
         this.intervals = [];
         this.cnt = 0;
         var thistrack = this;
+        
+        var __intervals = {};
+        this.intervalAdded = function(ivl){
+            //TODO
+        }
+        this.addInterval = function(ivl){
+            //TODO
+        }
+        
+        this.intervalRemoved = function(id){
+            //TODO
+        }
+        this.removeInterval = function(id){
+            //TODO
+        }
+        
+        this.intervalsLoaded = function(){
+            //TODO
+        }
+        this.loadIntervals = function(){
+            //TODO
+        }
+        
+        this.trackEdited = function(track){
+            //TODO
+        }
+        this.editTrack = function(track){
+            //TODO
+        }
     }
+    get table(){
+        return 'Interview';
+    }
+    get sender(){
+        return 'Interview'+this.id;
+    }
+    remove(){
+        super.remove(this.id, this.table);
+    }
+    processDelete(msg){
+        console.log('processDelete' + this.id);
+        this.ondelete(this.id);
+    }
+
+
     setTitle(title_){
         while(title_ == undefined || title_ == ''){
             title_ = prompt("Введите название дорожки","Дорожка");

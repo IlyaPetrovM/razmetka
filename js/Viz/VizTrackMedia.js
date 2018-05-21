@@ -1,18 +1,18 @@
 import VizTrack from './VizTrack.js';
 import VizIntervalMedia from './VizIntervalMedia.js';
-import IntervalMedia from './IntervalMedia.js';
+import IntervalMedia from '../IntervalMedia.js';
 /**************************************
  VizTrackMedia
 **************************************/
 export default class VizTrackMedia extends VizTrack{
     
-    constructor(parent, track){
-        super(parent, track);
+    constructor(parent, track,parentPanel){
+        super(parent, track,parentPanel);
         this.div.className = "TrackMedia";
         this.div.addEventListener('click',this.processClick.bind(this));
 
         this.radio.name = 'trackChooserMedia';
-        trackChooserPanelMedia.appendChild(this.radio);
+        this.panel.classList.add('trackCPanelMedia');
         document.addEventListener('getMediaIntervalEvent',this.getMediaInterval.bind(this));
     }
     

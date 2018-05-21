@@ -1,0 +1,46 @@
+/* Track */
+.Track,.TrackMedia,.TrackText{
+    opacity: 0.8;    
+}
+.Track,.TrackMedia,.TrackText,.trackPanel{
+    height: 0.9em;
+    margin: 6px auto;
+    position: relative;
+    padding: 0;
+}
+.trackPanel{
+/*    background: red;*/
+}
+.trackChooserRadio,.buttonDeleteTrack{
+    width: 20px;
+    margin: auto;
+    display: inline-block;
+    margin: 0;
+}
+.buttonDeleteTrack{
+    line-height: 1em;
+    border: none;
+    color:red;
+    background: transparent;
+}
+.buttonDeleteTrack:hover{
+    background: #ccc;
+}
+.TrackMedia, .trackCPanelMedia{
+    background: #dca;
+}
+.TrackText,.trackCPanelText{
+    background: #ccc;
+/*    overflow-y: visible;*/
+}
+
+#trackChooserPanel{
+    margin-top: 2em;
+    float: left;
+    display: block;
+    min-height: 3em;
+    height: 100%;
+    background: transparent;
+    width: fit-content;
+/*    border: 2px gray solid;*/
+}
