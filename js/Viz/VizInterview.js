@@ -10,7 +10,7 @@ import TrackText from '../TrackText.js';
 
 import Timeline from './Timeline.js';
 import CursorPlay from './CursorPlay.js';
-import MenuIntervalControls from './MenuIntervalControls.js';
+import MenuFragmentControls from './MenuFragmentControls.js';
 
 import VizTrackMedia from './VizTrackMedia.js';
 import VizTrackText from './VizTrackText.js';
@@ -132,7 +132,7 @@ export default class VizInterview extends Subscriber{
         __bigwrapper.id = 'bigwrapper';
         __seq.appendChild(__panelMedia);
         __seq.appendChild(__panelText); 
-        new MenuIntervalControls(__controls);
+        new MenuFragmentControls(__controls);
         __wrapper.appendChild(__seq);
         let timeDisplay = new TimeDisplay(__wrapperCursor,__controls) 
         __wrapperCursor.appendChild(__wrapper);
@@ -152,9 +152,13 @@ export default class VizInterview extends Subscriber{
                     switch(track.getType()){
                         case 'Media':
                             __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia);
+                            track.addSubscriber(__vizTracks[track.getId()]);
+                            console.log(track);
+                            track.update(track);
                             break;
                         case 'Text':
                             __vizTracks[track.getId()] = new VizTrackText(__panelText,track,__trackControlPanelText);
+                            track.addSubscriber(__vizTracks[track.getId()]);
                             break;
                         default:
                             console.error("Неизвестный тип трека",track.getType());

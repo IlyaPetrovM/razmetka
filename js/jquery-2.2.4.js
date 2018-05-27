@@ -7042,15 +7042,15 @@ jQuery.fx.timer = function( timer ) {
 	}
 };
 
-jQuery.fx.interval = 13;
+jQuery.fx.fragment = 13;
 jQuery.fx.start = function() {
 	if ( !timerId ) {
-		timerId = window.setInterval( jQuery.fx.tick, jQuery.fx.interval );
+		timerId = window.setFragment( jQuery.fx.tick, jQuery.fx.fragment );
 	}
 };
 
 jQuery.fx.stop = function() {
-	window.clearInterval( timerId );
+	window.clearFragment( timerId );
 
 	timerId = null;
 };

@@ -21,7 +21,7 @@ export default class CursorPlay{
         
         document.addEventListener('startPlay',function(){
                     const   prec=25;    
-            timerId = setInterval(function() { 
+            timerId = setFragment(function() { 
                     thisCursor.div.scrollIntoView(false);
 
                     var cursorPlaysEvent = new CustomEvent('cursorPlays');
@@ -56,10 +56,10 @@ export default class CursorPlay{
         });
         
         document.addEventListener('stopPlaying',function(e){
-            clearInterval(timerId);
+            clearFragment(timerId);
         });
         document.addEventListener('cantPlay',function(e){
-            clearInterval(timerId);
+            clearFragment(timerId);
         });
     }
     set time_s(val_s){

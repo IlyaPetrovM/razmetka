@@ -1,11 +1,11 @@
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS `IntervalText`;
-DROP TABLE IF EXISTS `IntervalMedia`;
+DROP TABLE IF EXISTS `FragmentText`;
+DROP TABLE IF EXISTS `FragmentMedia`;
 DROP TABLE IF EXISTS `Interview`;
 DROP TABLE IF EXISTS `Track`;
 SET FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE `IntervalText` (
+CREATE TABLE `FragmentText` (
     `id` INT AUTO_INCREMENT NOT NULL,
     `start_s` FLOAT NOT NULL,
     `end_s` FLOAT NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE `IntervalText` (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `IntervalMedia` (
+CREATE TABLE `FragmentMedia` (
     `id` INT AUTO_INCREMENT NOT NULL,
     `start_s` FLOAT NOT NULL,
     `end_s` FLOAT NOT NULL,
@@ -41,9 +41,9 @@ CREATE TABLE `Track` (
     PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `IntervalText` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
-ALTER TABLE `IntervalText` ADD FOREIGN KEY (`media_id`) REFERENCES `Track`(`id`);
-ALTER TABLE `IntervalText` ADD FOREIGN KEY (`track_id`) REFERENCES `Track`(`id`);
-ALTER TABLE `IntervalMedia` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
-ALTER TABLE `IntervalMedia` ADD FOREIGN KEY (`track_id`) REFERENCES `Interview`(`id`);
+ALTER TABLE `FragmentText` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
+ALTER TABLE `FragmentText` ADD FOREIGN KEY (`media_id`) REFERENCES `Track`(`id`);
+ALTER TABLE `FragmentText` ADD FOREIGN KEY (`track_id`) REFERENCES `Track`(`id`);
+ALTER TABLE `FragmentMedia` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
+ALTER TABLE `FragmentMedia` ADD FOREIGN KEY (`track_id`) REFERENCES `Interview`(`id`);
 ALTER TABLE `Track` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);

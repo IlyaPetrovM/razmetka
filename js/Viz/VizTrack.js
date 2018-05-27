@@ -6,7 +6,7 @@ export default class VizTrack extends Subscriber{
     constructor(parent,track,panelParent){
         super();
         var __track = track;
-        __track.addSubscriber(this);
+        
         this.div = document.createElement('div');
         this.div.className = "Track";
         this.div.track = track; 
@@ -44,7 +44,11 @@ export default class VizTrack extends Subscriber{
         this.panel.appendChild(this.buttonDelete);
         panelParent.appendChild(this.panel);
         parent.appendChild(this.div);
-        
+//        
+//        this.onUpdate = function(track){
+//            console.log('update track');
+//            this.div.title = track.getId() + " " +track.getTitle();
+//        }
         this.onPublisherRemove = function(){
             console.log(this.panel);
             panelParent.removeChild(this.panel);
@@ -52,7 +56,7 @@ export default class VizTrack extends Subscriber{
         }
     }
 
-    addInterval(e){
+    addFragment(e){
         console.log("VizTrack");
     }
 

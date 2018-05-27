@@ -1,14 +1,14 @@
-import VizInterval from './VizInterval.js';
+import VizFragment from './VizFragment.js';
 import TimeDisplay from './TimeDisplay.js';
 /**************************************
- Viz Interval Text
+ Viz Fragment Text
 **************************************/
-export default class VizIntervalText extends VizInterval {
+export default class VizFragmentText extends VizFragment {
     
     constructor(parent, data, media){
         super(parent, data);
         this.media = media;
-        this.media.textIntervals.push(this); // Удобно потом двигать текстовый интервал из медиа
+        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
         
         this.timeFieldStart = document.createElement('time');
         this.timeFieldEnd = document.createElement('time');
@@ -41,9 +41,9 @@ export default class VizIntervalText extends VizInterval {
 //    
 //    move(e) {
 //        if(this.media.index == e.index){    
-//            let moveIntervalTextEvent =new CustomEvent('moveInterval');
-//            moveIntervalTextEvent.step_s = e.step_s;
-//            document.dispatchEvent(moveIntervalTextEvent);        
+//            let moveFragmentTextEvent =new CustomEvent('moveFragment');
+//            moveFragmentTextEvent.step_s = e.step_s;
+//            document.dispatchEvent(moveFragmentTextEvent);        
 //        }
 //    }
 
@@ -53,8 +53,8 @@ export default class VizIntervalText extends VizInterval {
     }
 
     moveReally(e) {
-        this.viz.interval.start_s += parseFloat(e.step_s);
-        this.viz.interval.end_s += parseFloat(e.step_s);
+        this.viz.fragment.start_s += parseFloat(e.step_s);
+        this.viz.fragment.end_s += parseFloat(e.step_s);
         this.update();
     }
 
@@ -62,8 +62,8 @@ export default class VizIntervalText extends VizInterval {
     update(){
         super.update();
         if(this.timeFieldStart){
-            this.timeFieldStart.innerText= TimeDisplay.sec2str(this.viz.interval.start_s);
-            this.timeFieldEnd.innerText= TimeDisplay.sec2str(this.viz.interval.end_s);
+            this.timeFieldStart.innerText= TimeDisplay.sec2str(this.viz.fragment.start_s);
+            this.timeFieldEnd.innerText= TimeDisplay.sec2str(this.viz.fragment.end_s);
         }
     }
     startPlay(){

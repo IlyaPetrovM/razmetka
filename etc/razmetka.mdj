@@ -1680,7 +1680,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "IntervalMedia",
+											"text": "FragmentMedia",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -1968,7 +1968,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "IntervalText",
+											"text": "FragmentText",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -4465,7 +4465,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalAdded(i: Interval)",
+											"text": "+fragmentAdded(i: Fragment)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -4494,7 +4494,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+addInterval(i: Interval)",
+											"text": "+addFragment(i: Fragment)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -4523,7 +4523,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalRemoved(id)",
+											"text": "+fragmentRemoved(id)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -4552,7 +4552,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+removeInterval(id)",
+											"text": "+removeFragment(id)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -4581,7 +4581,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalsLoaded(iwl: Interval[0..*])",
+											"text": "+fragmentsLoaded(iwl: Fragment[0..*])",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -4610,7 +4610,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+loadIntervals()",
+											"text": "+loadFragments()",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -5707,7 +5707,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "Interval",
+											"text": "Fragment",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -5880,7 +5880,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+editInterval()",
+											"text": "+editFragment()",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -5909,7 +5909,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalEdited()",
+											"text": "+fragmentEdited()",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -6086,7 +6086,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "IntervalMedia",
+											"text": "FragmentMedia",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -6374,7 +6374,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "IntervalText",
+											"text": "FragmentText",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -11529,7 +11529,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFjRTDyE9CvLt0="
 					},
-					"name": "IntervalMedia",
+					"name": "FragmentMedia",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
@@ -11694,7 +11694,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFjRTDyE9CvLt0="
 					},
-					"name": "IntervalText",
+					"name": "FragmentText",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
@@ -12432,7 +12432,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUoy2uOa+l8="
 							},
-							"name": "intervalAdded",
+							"name": "fragmentAdded",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -12466,7 +12466,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUoy2uOa+l8="
 							},
-							"name": "addInterval",
+							"name": "addFragment",
 							"ownedElements": [
 								{
 									"_type": "UMLCollaboration",
@@ -12490,7 +12490,7 @@
 													"_parent": {
 														"$ref": "AAAAAAFjRVlouSBC3cQ="
 													},
-													"name": "addInterval",
+													"name": "addFragment",
 													"visible": true,
 													"defaultDiagram": false,
 													"ownedViews": [
@@ -12525,7 +12525,7 @@
 																	"height": 13,
 																	"autoResize": false,
 																	"underline": false,
-																	"text": "addInterval",
+																	"text": "addFragment",
 																	"horizontalAlignment": 2,
 																	"verticalAlignment": 5,
 																	"wordWrap": false
@@ -13022,7 +13022,7 @@
 																	},
 																	"edgePosition": 1,
 																	"underline": false,
-																	"text": "1 : addInterval(i: Interval)",
+																	"text": "1 : addFragment(i: Fragment)",
 																	"horizontalAlignment": 2,
 																	"verticalAlignment": 5,
 																	"wordWrap": false
@@ -13386,7 +13386,7 @@
 																	},
 																	"edgePosition": 1,
 																	"underline": false,
-																	"text": "4 : intervalAdded(i: Interval)",
+																	"text": "4 : fragmentAdded(i: Fragment)",
 																	"horizontalAlignment": 2,
 																	"verticalAlignment": 5,
 																	"wordWrap": false
@@ -13979,7 +13979,7 @@
 													"_parent": {
 														"$ref": "AAAAAAFjRVlouSBC3cQ="
 													},
-													"name": "addIntervalGate",
+													"name": "addFragmentGate",
 													"visibility": "public"
 												},
 												{
@@ -14205,7 +14205,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUoy2uOa+l8="
 							},
-							"name": "intervalRemoved",
+							"name": "fragmentRemoved",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -14237,7 +14237,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUoy2uOa+l8="
 							},
-							"name": "removeInterval",
+							"name": "removeFragment",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -14269,7 +14269,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUoy2uOa+l8="
 							},
-							"name": "intervalsLoaded",
+							"name": "fragmentsLoaded",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -14304,7 +14304,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUoy2uOa+l8="
 							},
-							"name": "loadIntervals",
+							"name": "loadFragments",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -14372,7 +14372,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFjRTDyE9CvLt0="
 					},
-					"name": "Interval",
+					"name": "Fragment",
 					"visibility": "public",
 					"attributes": [
 						{
@@ -14401,7 +14401,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUyNAe7Hlfs="
 							},
-							"name": "editInterval",
+							"name": "editFragment",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -14415,7 +14415,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFjRUyNAe7Hlfs="
 							},
-							"name": "intervalEdited",
+							"name": "fragmentEdited",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -18088,7 +18088,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "IntervalMedia",
+											"text": "FragmentMedia",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -18797,7 +18797,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "IntervalText",
+											"text": "FragmentText",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -20100,7 +20100,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+addInterval(i: Interval)",
+											"text": "+addFragment(i: Fragment)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -20129,7 +20129,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalAdded(i: Interval)",
+											"text": "+fragmentAdded(i: Fragment)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -20158,7 +20158,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+removeInterval(id)",
+											"text": "+removeFragment(id)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -20187,7 +20187,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalRemoved(id)",
+											"text": "+fragmentRemoved(id)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -20274,7 +20274,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+loadIntervals()",
+											"text": "+loadFragments()",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -20303,7 +20303,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+intervalsLoaded(iwl: Interval[0..*])",
+											"text": "+fragmentsLoaded(iwl: Fragment[0..*])",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -26379,7 +26379,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFjRTDyE9CvLt0="
 					},
-					"name": "VizIntervalText",
+					"name": "VizFragmentText",
 					"visibility": "public",
 					"isAbstract": false,
 					"isFinalSpecialization": false,

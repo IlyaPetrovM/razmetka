@@ -1,6 +1,6 @@
 import VizTrack from './VizTrack.js';
-import VizIntervalText from './VizIntervalText.js';
-import IntervalText from '../IntervalText.js';
+import VizFragmentText from './VizFragmentText.js';
+import FragmentText from '../FragmentText.js';
 /**************************************
 VizTrackText
 **************************************/
@@ -8,17 +8,23 @@ export default class VizTrackText extends VizTrack{
     constructor(parent,track,parentPanel){
         super(parent,track,parentPanel);
         this.div.className = "TrackText";
-                
+        var __div = this.div;
         var dragStart_pc = 0;
         var dragEnd_pc = dragStart_pc;
-        
+        var __vizFragments = {};
         var selection = document.createElement('div');
 
         this.radio.name = 'trackChooserText';
         this.panel.classList.add('trackCPanelText');
-//        trackChooserPanelText.appendChild(this.buttonDelete);
-//        trackChooserPanelText.appendChild(this.radio);
-        
+
+        this.onUpdate = function(track){
+//            super.onUpdate(track);
+            let frg;
+            for(let i in track.getFragments()){
+                frg = track.getFragments()[i];
+                __vizFragments[frg.getId()] = new VizFragmentText(__div,frg, undefined);
+            };
+        }
         this.ivl = null;
         console.log(this);
         document.addEventListener('startPlayAndMark',function(e){
@@ -26,9 +32,9 @@ export default class VizTrackText extends VizTrack{
             if(this.radio.checked)
             {
                 console.log(parseFloat(e.cursorPos_pc));
-                let getMediaIntervalEvent = new CustomEvent('getMediaIntervalEvent');
-                getMediaIntervalEvent.trackText = this;
-                document.dispatchEvent(getMediaIntervalEvent);
+                let getMediaFragmentEvent = new CustomEvent('getMediaFragmentEvent');
+                getMediaFragmentEvent.trackText = this;
+                document.dispatchEvent(getMediaFragmentEvent);
             }
         }.bind(this));
         
@@ -36,10 +42,10 @@ export default class VizTrackText extends VizTrack{
             if(this.ivl != undefined){
                 if(this.radio.checked && this.ivl.viz.choosen)
                 {
-                    if( !this.div.track.intersectAny(this.ivl.viz.interval.start_s,
+                    if( !this.div.track.intersectAny(this.ivl.viz.fragment.start_s,
                                                      VizTrack.pc2sec( parseFloat(e.cursorPos_pc) ),
-                                                     this.ivl.viz.interval.index) ){
-                        this.ivl.viz.interval.end_s = VizTrack.pc2sec( parseFloat(e.cursorPos_pc) )-0.05;
+                                                     this.ivl.viz.fragment.index) ){
+                        this.ivl.viz.fragment.end_s = VizTrack.pc2sec( parseFloat(e.cursorPos_pc) )-0.05;
                         this.ivl.update();
                     }else{
                         var stopPlayingEvent = new CustomEvent('stopPlaying');
@@ -67,28 +73,28 @@ export default class VizTrackText extends VizTrack{
         }.bind(this));
     }
     
-    connect(intervalMedia){
-        var ivltext = new IntervalText(cursorPlay.this.time_s,
+    connect(fragmentMedia){
+        var ivltext = new FragmentText(cursorPlay.this.time_s,
                                        cursorPlay.this.time_s+0.01);
-        if(this.div.track.addInterval(ivltext))
+        if(this.div.track.addFragment(ivltext))
         {
-            console.log(intervalMedia);
-            this.ivl = new VizIntervalText(this.div, ivltext, intervalMedia);
+            console.log(fragmentMedia);
+            this.ivl = new VizFragmentText(this.div, ivltext, fragmentMedia);
             this.ivl.viz.choosen = true;                    
         }
     }
-    addInterval(event){
+    addFragment(event){
         if(event.target.track!=null){
             console.log('Нажата дорожка');
         }else {
-            if(event.target.interval != null){
+            if(event.target.fragment != null){
                 if(event.target.choosen){
-                    document.dispatchEvent(new CustomEvent('intervalUnchoosen',{'detail':event.target}));
+                    document.dispatchEvent(new CustomEvent('fragmentUnchoosen',{'detail':event.target}));
                     event.target.classList.remove('choosen');
                     event.target.choosen = false;
                     console.log('Отпущен текст');
                 }else{
-                    document.dispatchEvent(new CustomEvent('intervalChoosen',{'detail':event.target}));
+                    document.dispatchEvent(new CustomEvent('fragmentChoosen',{'detail':event.target}));
                     event.target.classList.add('choosen');
                     event.target.choosen = true;
                     console.log('Нажат элемент текст');

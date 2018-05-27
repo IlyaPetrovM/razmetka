@@ -7,5 +7,8 @@ export default class Subscriber{
     this.onPublisherRemove = function(){
         console.log('remove signal');
     }
+//    this.onError = function(){
+//        
+//    }
    }
 }

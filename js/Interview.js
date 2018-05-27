@@ -47,10 +47,10 @@ export default class Interview extends Publisher{
         function addTrackByType(track) {
             switch(track._type){
                 case 'Media':
-                    __tracks[track.id] = new TrackMedia(track.title,track.id,__wsClient);
+                    __tracks[track.id] = new TrackMedia(track.title,track.id, track.int_id, __wsClient);
                     break;
                 case 'Text':
-                    __tracks[track.id] = new TrackText(track.title,track.id, __wsClient);
+                    __tracks[track.id] = new TrackText(track.title,track.id, track.int_id, __wsClient);
                     break;
                 default:
                     console.error("Неизвестный тип трека:",track._type);
@@ -96,9 +96,9 @@ export default class Interview extends Publisher{
         
         this.loadTracks = function(){
             let tmpTracks = [
-                {id:parseInt(Math.random()*100), title:'AudioTrack',_type:'Media'},
-                {id:parseInt(Math.random()*100), title:'Text Track',_type:'Text'},
-                {id:parseInt(Math.random()*100), title:'Text 2 Track',_type:'Text'}
+                {id:parseInt(Math.random()*100), title:'AudioTrack',_type:'Media',int_id:__id},
+                {id:parseInt(Math.random()*100), title:'Text Track',_type:'Text',int_id:__id},
+                {id:parseInt(Math.random()*100), title:'Text 2 Track',_type:'Text',int_id:__id}
             ]; //TODO remove it
             this.tracksLoaded(tmpTracks); //TODO replace by ws.send
         }

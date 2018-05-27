@@ -1,12 +1,12 @@
 
 /**************************************
- Viz Interval
+ Viz Fragment
 **************************************/
-export default class VizInterval {
+export default class VizFragment {
     constructor(parentNode, data){
         this.viz = document.createElement('div');
         this.viz.className = 'interv';
-        this.viz.interval = data;
+        this.viz.fragment = data;
         this.viz.title = data.index;
         
         parentNode.appendChild(this.viz);
@@ -16,24 +16,24 @@ export default class VizInterval {
         this.viz.choosen = false;
         this.update();
         
-        document.addEventListener('intervalUpdated',this.update.bind(this));
+        document.addEventListener('fragmentUpdated',this.update.bind(this));
         document.addEventListener('cursorPlays',this.highlight.bind(this));
         document.addEventListener('stopPlaying',this.unHighlight.bind(this));
-        document.addEventListener('moveInterval',this.checkIntersect.bind(this));
+        document.addEventListener('moveFragment',this.checkIntersect.bind(this));
         document.addEventListener('timelineUpdated',this.update.bind(this));
     }
     
     highlight(cursorPlaysEvent){
         var cursPos_s = cursorPlaysEvent.cursorPos_s; 
-        var intervalLeft_s = this.viz.interval.start_s;
-        var intervalRight_s = this.viz.interval.end_s;
+        var fragmentLeft_s = this.viz.fragment.start_s;
+        var fragmentRight_s = this.viz.fragment.end_s;
         if(!this.plays){
-            if(cursPos_s >= intervalLeft_s && cursPos_s <= intervalRight_s){
+            if(cursPos_s >= fragmentLeft_s && cursPos_s <= fragmentRight_s){
                 this.plays = true;
                 this.startPlay();
             }
         }else{
-            if(cursPos_s >=intervalRight_s){
+            if(cursPos_s >=fragmentRight_s){
                 this.plays = false;
                 this.stopPlay();
             }
@@ -43,7 +43,7 @@ export default class VizInterval {
     checkIntersect(e) {
         if(this.viz.choosen){
             var evIntrs = new CustomEvent('checkIntersect');
-            evIntrs.media = this.viz.interval;
+            evIntrs.media = this.viz.fragment;
             evIntrs.step_s = + parseFloat(e.step_s); //????
             document.dispatchEvent(evIntrs);
         }
@@ -60,7 +60,7 @@ export default class VizInterval {
         this.viz.classList.remove('playing');
     }
     updateEvt(e){
-        if(e.interval === this.viz.interval){
+        if(e.fragment === this.viz.fragment){
             this.update();
         }
     }
@@ -68,7 +68,7 @@ export default class VizInterval {
         
             var W_px = parseFloat(this.viz.parentElement.clientWidth);
             var zoom_px = parseFloat(document.getElementById('zoom').value);
-            this.viz.style.left = this.viz.interval.start_s * zoom_px * 100.0 / W_px + '%';
-            this.viz.style.width = this.viz.interval.duration_s() * zoom_px * 100.0 / W_px + '%';
+            this.viz.style.left = this.viz.fragment.start_s * zoom_px * 100.0 / W_px + '%';
+            this.viz.style.width = this.viz.fragment.duration_s() * zoom_px * 100.0 / W_px + '%';
     }
 }

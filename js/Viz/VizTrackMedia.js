@@ -1,6 +1,6 @@
 import VizTrack from './VizTrack.js';
-import VizIntervalMedia from './VizIntervalMedia.js';
-import IntervalMedia from '../IntervalMedia.js';
+import VizFragmentMedia from './VizFragmentMedia.js';
+import FragmentMedia from '../FragmentMedia.js';
 /**************************************
  VizTrackMedia
 **************************************/
@@ -10,31 +10,42 @@ export default class VizTrackMedia extends VizTrack{
         super(parent, track,parentPanel);
         this.div.className = "TrackMedia";
         this.div.addEventListener('click',this.processClick.bind(this));
-
+        var __div = this.div;
+        var __vizFragments = {};
         this.radio.name = 'trackChooserMedia';
         this.panel.classList.add('trackCPanelMedia');
-        document.addEventListener('getMediaIntervalEvent',this.getMediaInterval.bind(this));
+        document.addEventListener('getMediaFragmentEvent',this.getMediaFragment.bind(this));
+        
+        this.onUpdate = function(track){
+//            super.onUpdate(track);
+            let frg;
+            for(let i in track.getFragments()){
+                frg = track.getFragments()[i];
+                __vizFragments[frg.getId()] = new VizFragmentMedia(__div,frg);
+                console.log('update fragments');
+            }
+        }
     }
     
-    getMediaInterval(getMediaIntervalEvent) {
+    getMediaFragment(getMediaFragmentEvent) {
         if(this.radio.checked){
-            let intervals = this.div.track.intervals.filter( 
+            let fragments = this.div.track.fragments.filter( 
                 function(ivl){
                     return ivl.cursorOn === true;
                 } 
             );
-            if(intervals[0] != undefined){
-                getMediaIntervalEvent.trackText.connect(intervals[0]);
+            if(fragments[0] != undefined){
+                getMediaFragmentEvent.trackText.connect(fragments[0]);
             }
         }
     }
 
-    createInterval(path, audio, clickEvent) { // event appends to the enduuu
-        var ivl = new IntervalMedia( path,
+    createFragment(path, audio, clickEvent) { // event appends to the enduuu
+        var ivl = new FragmentMedia( path,
                                     VizTrack.pix2sec(clickEvent.offsetX),
                                     VizTrack.pix2sec(clickEvent.offsetX) + audio.duration );
-        if( this.div.track.addInterval(ivl) ){
-            new VizIntervalMedia(clickEvent.target, ivl);
+        if( this.div.track.addFragment(ivl) ){
+            new VizFragmentMedia(clickEvent.target, ivl);
         }
     }
 
@@ -47,17 +58,17 @@ export default class VizTrackMedia extends VizTrack{
                     var audio = new Audio(path);
                     audio.parentEvent = e;
                     audio.ondurationchange = 
-                        this.createInterval.bind(this, path, audio, clickEvent); // and Event in the end
+                        this.createFragment.bind(this, path, audio, clickEvent); // and Event in the end
                     resetform.reset();
                 }.bind(this);
                 $("#fileInput").trigger("click");
-            }else if(clickEvent.target.interval != null){
+            }else if(clickEvent.target.fragment != null){
                 if(clickEvent.target.choosen){
-                    document.dispatchEvent(new CustomEvent('intervalUnchoosen', clickEvent.target));
+                    document.dispatchEvent(new CustomEvent('fragmentUnchoosen', clickEvent.target));
                     clickEvent.target.classList.remove('choosen');
                     clickEvent.target.choosen = false;
                 }else{
-                    document.dispatchEvent(new CustomEvent('intervalChoosen',clickEvent.target));
+                    document.dispatchEvent(new CustomEvent('fragmentChoosen',clickEvent.target));
                     clickEvent.target.classList.add('choosen');
                     clickEvent.target.choosen = true;
                 }

@@ -1,5 +1,5 @@
 
-export default class MenuIntervalControls{
+export default class MenuFragmentControls{
 
     constructor(parentNode){
         this.iControl = document.createElement('div');
@@ -29,8 +29,8 @@ export default class MenuIntervalControls{
         
         bMoveLeft.onclick = this.sendStepToMove.bind( this,  false);
         bMoveRight.onclick = this.sendStepToMove.bind( this, true );
-        document.addEventListener( 'intervalChoosen', this.showMotionControl.bind(this,true) );
-        document.addEventListener( 'intervalUnchoosen', this.showMotionControl.bind(this,false) );
+        document.addEventListener( 'fragmentChoosen', this.showMotionControl.bind(this,true) );
+        document.addEventListener( 'fragmentUnchoosen', this.showMotionControl.bind(this,false) );
     }
     
      showMotionControl(show) {
@@ -50,9 +50,9 @@ export default class MenuIntervalControls{
         if(right){
             step_s = parseFloat(inputMoveStep.value)
         }
-        var moveIntervalEvent = new CustomEvent('moveIntervalMediaEvent');
-        moveIntervalEvent.step_s = parseFloat(step_s);
-        console.log(moveIntervalEvent);
-        document.dispatchEvent(moveIntervalEvent);
+        var moveFragmentEvent = new CustomEvent('moveFragmentMediaEvent');
+        moveFragmentEvent.step_s = parseFloat(step_s);
+        console.log(moveFragmentEvent);
+        document.dispatchEvent(moveFragmentEvent);
     }
 }

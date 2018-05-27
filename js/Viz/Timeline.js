@@ -18,12 +18,12 @@ export default class Timeline {
             e.target.title = '1 секунда =' + e.target.value+' пикселей';
         };  
 
-        document.addEventListener('intervalUpdated',function(e){
+        document.addEventListener('fragmentUpdated',function(e){
             var addition = 1;
-            if(e.interval.type == 'media'){
+            if(e.fragment.type == 'media'){
                 addition = 3;
             }
-            let end_s = parseInt(e.interval.end_s) + addition; // 3 is for safety
+            let end_s = parseInt(e.fragment.end_s) + addition; // 3 is for safety
             if(end_s > thisTimeline.len_s){
                 let diff_s = end_s - thisTimeline.len_s;
                 thisTimeline.len_s = end_s;

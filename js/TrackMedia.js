@@ -1,11 +1,14 @@
 import Track from './Track.js';
+import FragmentMedia from './FragmentMedia.js';
 /**************************************
 TrackMedia
 **************************************/
 export default class TrackMedia extends Track{
-    constructor(title,id,wsClient){
-        super(title,id,wsClient);
+    constructor(title, id, int_id, wsClient){
+        super(title, id, int_id, wsClient);
         var thistrack=this;
+        var __fragments = {};
+        this.getFragments = function(){return __fragments;}
 //        const __id = id;
 //        var __title = title;
         this.getType = function(){return 'Media';}
@@ -13,8 +16,8 @@ export default class TrackMedia extends Track{
         document.addEventListener('checkIntersect',
         function(e){
                 console.log('checkIntersect',e);
-            var ivl = thistrack.intervals.filter(function(interval){
-                return interval.index == e.index;
+            var ivl = thistrack.fragments.filter(function(fragment){
+                return fragment.index == e.index;
             })[0];
             if(ivl!=undefined){
             if(!thistrack.intersectAny(e.start_s,e.end_s,e.index)){
@@ -28,5 +31,55 @@ export default class TrackMedia extends Track{
                 alert("Элементы не должны пересекаться");
             }}
         });
+    
+    
+        //TODO 28.05.2018 2:32 Доделать обновление фрагментов
+        this.fragmentsLoaded = function(fragments){
+            //TODO
+            for(let i in fragments){
+                let frg = fragments[i];
+                __fragments[frg.id] = new FragmentMedia(frg.id,
+                                                        frg.path,
+                                                        frg.start_s,
+                                                        frg.end_s, 
+                                                        frg.track_id, 
+                                                        frg.int_id);
+            }
+            this.update(this);
+            console.log(1);
+        }
+        this.loadFragments = function(){
+            //TODO send.
+            let trs = parseInt(Math.random()*1000);
+            let tmp = [
+            {
+             id:parseInt(Math.random()*100),
+             track_id:this.getId(),
+             start_s:2,
+             end_s:10,
+             int_id:this.getInterviewId(), 
+             path:'audio/1.mp3'
+         },
+            {
+             id:parseInt(Math.random()*100),
+             track_id:this.getId(),
+             start_s:11,
+             end_s:20,
+             int_id:this.getInterviewId(),
+             path:'audio/2.mp3'
+         },
+            {
+             id:parseInt(Math.random()*100),
+             track_id:this.getId(),
+             start_s:trs+21,
+             end_s:trs+35,
+             int_id:this.getInterviewId(),
+             path:'audio/3.mp3'
+         }
+            ];
+            console.log(1);
+            this.fragmentsLoaded(tmp);
+        }
+        this.loadFragments();
     }
 }

@@ -19,12 +19,17 @@
 }
 .buttonDeleteTrack{
     line-height: 1em;
+    margin: 0;
+    padding:0;
     border: none;
-    color:red;
+    color:  gray;
     background: transparent;
 }
 .buttonDeleteTrack:hover{
-    background: #ccc;
+    border: 1px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    color:red;
 }
 .TrackMedia, .trackCPanelMedia{
     background: #dca;
