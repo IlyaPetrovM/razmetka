@@ -7,49 +7,79 @@ import TrackMedia from './TrackMedia.js';
 import TrackText from './TrackText.js';
 export default class Interview extends Publisher{
     constructor(id,_title, _date, wsClient){
-        super(wsClient);
-        this.title = _title;
+        super();
         var __id = id;
-        this.id = id;
-        this._date = _date;
-        this.onidupdated = function(newid){};
-        this.onupdate = function(){};
-        this.ondelete = function(){};
-        this.trackMediaCreated = function(){};
-        this.trackTextCreated = function(){};
-        this.getId = function(){
-            return __id;
-        }
-        
-        var __tracks = {};
         var __date = _date;
         var __title = _title;
-        this.getTitle = function(){
-            return __title;
-        }
-        this.tracks = {};
+        var __tracks = {};
+        var __wsClient = wsClient;
+
+//        this.onidupdated = function(newid){};
+//        this.onupdate = function(){};
+//        this.ondelete = function(){};
+//        this.trackMediaCreated = function(){};
+//        this.trackTextCreated = function(){};
+//        this.tracks = {};
+        
+        this.getId = function(){return __id;}
+        this.getDate = function(){return __date;}
+        this.getTitle = function(){return __title;}
+        this.getTracks = function(){return __tracks;}
+        
         this.meLoaded = function(me){
+            __id = me.id;
             __date = me._date;
             __title = me.title;
             this.update(this);
         }
-        this.loadMe = function(id){
-            
+        
+        this.loadMe = function(id_){
+            if(!id_){ 
+                console.error('id is',id_);
+                return;
+            }
+            let tmp = {id:id_,
+                          date:'2018-05-27',
+                          title:'Петров И.М.'}; //TODO removeit
+            this.meLoaded(tmp); //TODO ws.send
         }
         
+        function addTrackByType(track) {
+            switch(track._type){
+                case 'Media':
+                    __tracks[track.id] = new TrackMedia(track.title,track.id,__wsClient);
+                    break;
+                case 'Text':
+                    __tracks[track.id] = new TrackText(track.title,track.id, __wsClient);
+                    break;
+                default:
+                    console.error("Неизвестный тип трека:",track._type);
+            }
+        }
+
         this.trackAdded = function(track){
-            //TODO
-            __tracks[track.getId()] = track;
+            addTrackByType(track);
             this.update(this);
         }
-        this.addTrack = function(track){
-            //TODO
-            this.trackAdded(track);
+        this.addTrackMedia = function(_title){
+            let trackM = {
+                title: _title,
+                _type:'Media'
+            };
+            trackM['id'] = parseInt(Math.random()*100); // TODO removeIt
+            this.trackAdded(trackM); //TODO replace by ws.send
+        }
+        this.addTrackText = function(_title){
+            let trackT = {
+                title: _title,
+                _type:'Text'
+            };
+            trackT['id'] = parseInt(Math.random()*100); // TODO removeIt
+            this.trackAdded(trackT); //TODO replace by ws.send
         }
         
         this.trackRemoved = function(id){
-            //TODO
-            delete __tracks[id];
+            delete __tracks[id];            
             this.update(this);
         }
         this.removeTrack = function(id){
@@ -58,12 +88,19 @@ export default class Interview extends Publisher{
         }
         
         this.tracksLoaded = function(tracks){
-            //TODO
-            __tracks = tracks;
+            for(let t in tracks){
+                addTrackByType(tracks[t]);
+            }
             this.update(this);
         }
+        
         this.loadTracks = function(){
-            //TODO
+            let tmpTracks = [
+                {id:parseInt(Math.random()*100), title:'AudioTrack',_type:'Media'},
+                {id:parseInt(Math.random()*100), title:'Text Track',_type:'Text'},
+                {id:parseInt(Math.random()*100), title:'Text 2 Track',_type:'Text'}
+            ]; //TODO remove it
+            this.tracksLoaded(tmpTracks); //TODO replace by ws.send
         }
         
         this.interviewEdited = function(iw){
@@ -80,9 +117,8 @@ export default class Interview extends Publisher{
             //TODO
             this.interviewEdited(iw);
         }
-        this.getDate = function(){
-            return __date;
-        }
+
+        this.loadTracks();
         
     }
     get table(){
@@ -92,11 +128,11 @@ export default class Interview extends Publisher{
         return 'Interview'+this.id;
     }
     
-
-    create(){
-        super.create({title:this.title, _date:this._date },this.table);
-        console.log('Interview create');
-    }
+//
+//    create(){
+//        super.create({title:this.title, _date:this._date },this.table);
+//        console.log('Interview create');
+//    }
     
     
     update(_data){

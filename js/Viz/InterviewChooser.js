@@ -50,10 +50,6 @@ export default class InterviewChooser extends Subscriber{
         this.buttonAdd.onclick = this.create.bind(this);
         this.div.appendChild(this.buttonAdd);
         
-        this.buttonHide = document.createElement('button');
-        this.buttonHide.innerHTML = 'X';
-        this.buttonHide.id = 'buttonHide';
-        this.buttonHide.onclick = this.hide.bind(this);
         
         this.interviewItems = {};
         
@@ -87,7 +83,6 @@ export default class InterviewChooser extends Subscriber{
         this.editGroupButtons.appendChild(this.buttonDel);
         this.div.appendChild(this.editGroupButtons);
         parentNode.appendChild(this.div);
-        parentNode.appendChild(this.buttonHide);
         this.parentNode = parentNode;
         
 //        this.wsClient.onopen = this.load.bind(this);  

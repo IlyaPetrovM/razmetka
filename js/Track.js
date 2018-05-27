@@ -5,14 +5,31 @@ Track
 **************************************/
 export default class Track extends Publisher {
     constructor(title_,id,wsClient){
-        super(wsClient) /// TODO
+        super(); /// TODO
         this.id = id;
         this.title = title_;
+        
+        const __id = id;
+        var __title = title_;
+        var __type = 'Media';
+        this.getTitle = function(){return __title;}
+        this.getId = function(){return __id};
+        
         this.intervals = [];
         this.cnt = 0;
+        
         var thistrack = this;
         
         var __intervals = {};
+        
+        
+        this.trackRemoved = function(){
+            this.remove();
+        }
+        this.removeTrack = function(){
+            this.trackRemoved();//TODO send
+            
+        }
         this.intervalAdded = function(ivl){
             //TODO
         }
@@ -40,6 +57,7 @@ export default class Track extends Publisher {
         this.editTrack = function(track){
             //TODO
         }
+        
     }
     get table(){
         return 'Interview';

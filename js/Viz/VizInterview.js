@@ -1,32 +1,199 @@
 /**************************************
  VizInterview
 **************************************/
+import Subscriber from '../Subscriber.js';
+
+import Interview from '../Interview.js';
+import TrackMedia from '../TrackMedia.js';
+import TrackText from '../TrackText.js';
+
+
 import Timeline from './Timeline.js';
 import CursorPlay from './CursorPlay.js';
 import MenuIntervalControls from './MenuIntervalControls.js';
-
-import TrackMedia from '../TrackMedia.js';
-import TrackText from '../TrackText.js';
 
 import VizTrackMedia from './VizTrackMedia.js';
 import VizTrackText from './VizTrackText.js';
 import TimeDisplay from './TimeDisplay.js';
 
-export default class VizInterview{
-    addMediaButton(interview, panelMedia, controls) {
-        this.butAddTrackMedia = document.createElement('button');
-        this.butAddTrackMedia.interview = interview;
-        this.butAddTrackMedia.onclick = function(){
-            this.interview.addTrackMedia('Дорожка аудио');
-        };
-        this.butAddTrackMedia.innerText = 'Добавить аудио-дорожку';
-        this.butAddTrackMedia.title = 'Нажмите, чтобы добавить аудио';
-        controls.appendChild(this.butAddTrackMedia);
-    }
-
+export default class VizInterview extends Subscriber{
     constructor(parentNode,interview){
+        super();
+        var __vizTracks = {};
+        var __interview = interview;
+        var __parentNode = parentNode;
+        
+        var __parentDiv = document.createElement('div');
+        __parentNode.appendChild(__parentDiv);
+        document.title = interview.getId()+' '+interview.getTitle();
+        
+        var __seq = document.createElement('div');
+        __seq.className = 'sequence';
+        
+        var __trackControlPanel = document.createElement('div');
+        __trackControlPanel.id = 'trackChooserPanel';
+       
+        
+        var __wrapperCursor = document.createElement('div');
+        __wrapperCursor.className='wrapperCursor';
+        __wrapperCursor.id='wrapperCursor';
+        
+        var __wrapper = document.createElement('div');
+        __wrapper.className = 'wrapper';
+        __wrapper.id = 'wrapper';
+        
+        var __controls = document.createElement('div');
+        __controls.className = 'controls';
+        __controls.id = 'controls';
+        
+        var __descr = document.createElement('div');
+        __descr.id='descr';
+        
+        var __panelMedia = document.createElement('div');
+        __panelMedia.className='panelMedia';
+        
+        var __panelText = document.createElement('div');
+        __panelText.className='panelText';
+        
+        __interview.trackMediaCreated = function(track){
+                new VizTrackMedia(__panelMedia,track,__trackControlPanel);
+        }.bind(this);
+        __interview.trackTextCreated = function(track){
+                new VizTrackText(__panelText,track,__trackControlPanel);
+        }.bind(this);   
+        console.log('0....load Interview');
+        
+        ButtonAddTrackMedia();
+        ButtonAddTrackText();
+        
+        var __buttonPlay = document.createElement('button');
+        __buttonPlay.innerText = '▶';
+        __buttonPlay.id = 'buttonPlay';
+        __buttonPlay.onclick = function(e){
+            if(__buttonPlay.innerText=='||'){        
+                __buttonPlay.innerText='▶';
+                
+                var eventStop = new CustomEvent('stopPlaying');
+                document.dispatchEvent(eventStop);
+            }
+            else{
+                __buttonPlay.innerText='||';
+                var startPlayEvent = new CustomEvent('startPlay');
+                document.dispatchEvent(startPlayEvent);
+            }
+        };
+        
+        var __buttonPlayAndMark = document.createElement('button');
+        __buttonPlayAndMark.innerText='M▶';
+        __buttonPlayAndMark.id = 'buttonPlayAndMark';
+        
+        
 
-                var parseSearch = function(str){
+        document.addEventListener('cantPlay',function(){
+            __buttonPlay.innerText = '▶';
+            __buttonPlayAndMark.innerText='M▶';
+        },false);
+        __buttonPlayAndMark.onclick = function(e){
+            if(__buttonPlay.innerText=='||'){        
+                __buttonPlay.innerText='▶';
+                __buttonPlayAndMark.innerText = 'M▶';
+                var stopPlayAndMarkEvent = new CustomEvent('stopPlayAndMark');
+                document.dispatchEvent(stopPlayAndMarkEvent);
+            }
+            else{
+                console.log(timeline);
+                if(cp.time_s < timeline.len_s - 0.05){
+                __buttonPlay.innerText='||';
+                __buttonPlayAndMark.innerText = 'M||';
+                    var startPlayAndMarkEvent = new CustomEvent('startPlayAndMark');
+                    startPlayAndMarkEvent.cursorPos_pc = cursorPlay.style.left;
+                    document.dispatchEvent(startPlayAndMarkEvent);
+                }
+            }
+        };
+        document.addEventListener('stopPlayAndMark',function(e){
+                var stopPlayingEvent = new CustomEvent('stopPlaying');
+                document.dispatchEvent(stopPlayingEvent);
+        },false);
+        
+        var __trackControlPanelMedia = document.createElement('div');
+        __trackControlPanelMedia.id = 'trackControlPanelMedia';
+        __trackControlPanel.appendChild(__trackControlPanelMedia);
+        
+        var __trackControlPanelText = document.createElement('div');
+        __trackControlPanelText.id = 'trackControlPanelText';
+        __trackControlPanel.appendChild(__trackControlPanelText);
+        
+        __controls.appendChild(__buttonPlay);
+        __controls.appendChild(__buttonPlayAndMark);
+        var timeline = new Timeline(__seq,__controls);
+        var cp = new CursorPlay(timeline);
+        var __bigwrapper = document.createElement('div');
+        __bigwrapper.id = 'bigwrapper';
+        __seq.appendChild(__panelMedia);
+        __seq.appendChild(__panelText); 
+        new MenuIntervalControls(__controls);
+        __wrapper.appendChild(__seq);
+        let timeDisplay = new TimeDisplay(__wrapperCursor,__controls) 
+        __wrapperCursor.appendChild(__wrapper);
+        __bigwrapper.appendChild(__trackControlPanel);
+        __bigwrapper.appendChild(__wrapperCursor);
+        __parentDiv.appendChild(__controls);
+        __parentDiv.appendChild(__bigwrapper);
+        __parentDiv.appendChild(__descr);
+        
+        this.onUpdate = function(itw){
+            document.title = itw.getId()+' '+itw.getTitle();
+            
+            for(let id in itw.getTracks()){
+                let track = itw.getTracks()[id];
+                console.assert(id == track.getId(),'ids are different!',typeof id,typeof track.getId());
+                if( __vizTracks[track.getId()] === undefined){
+                    switch(track.getType()){
+                        case 'Media':
+                            __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia);
+                            break;
+                        case 'Text':
+                            __vizTracks[track.getId()] = new VizTrackText(__panelText,track,__trackControlPanelText);
+                            break;
+                        default:
+                            console.error("Неизвестный тип трека",track.getType());
+                    }
+                }
+            }
+        }
+        
+// private
+        function ButtonAddTrackMedia() {
+            var __butAddTrackMedia = document.createElement('button');
+            __butAddTrackMedia.interview = __interview;
+            __butAddTrackMedia.onclick = function(){
+                let tmp = prompt('Введите название дорожки:');
+                if(tmp){
+                    __interview.addTrackMedia(tmp);
+                }
+            };
+            __butAddTrackMedia.innerText = 'Добавить\n аудио-дорожку';
+            __butAddTrackMedia.title = 'Нажмите, чтобы добавить аудио';
+            __controls.appendChild(__butAddTrackMedia);
+        }
+
+        function ButtonAddTrackText() {
+            var __butAddTrackText = document.createElement('button');
+            __butAddTrackText.interview = interview;
+            __butAddTrackText.onclick = function(){
+                let tmp = prompt('Введите название дорожки:');
+                if(tmp){
+                    __interview.addTrackText(tmp);
+                }
+            };
+            __butAddTrackText.innerText = 'Добавить\nтекстовую дорожку'; 
+            __controls.appendChild(__butAddTrackText);
+        }
+    }   
+}
+
+ var parseSearch = function(str){
             let query = {};
             str.split('?').forEach(function(s){
                 let pairs = s.split('&');
@@ -41,135 +208,12 @@ export default class VizInterview{
         }
         let s = window.location.search;
         let q = parseSearch(s);
-        console.log(s,q['id']);
-        if(q.id){
+        console.info('Interview id:'+q['id']);
+        if(q['id']){
             document.title='Интервью '+q['id'];
         }
-        
-        this.parentNode = parentNode;
-        var parent = document.createElement('div');
-        this.parent = parent;
-        parentNode.appendChild(this.parent);
-        this.interview = interview;
-        document.title = interview.title;
-        
-        var seq = document.createElement('div');
-        seq.className = 'sequence';
-        
-        var trackControlPanel = document.createElement('div');
-        trackControlPanel.id = 'trackChooserPanel';
-       
-        
-        var wrapperCursor = document.createElement('div');
-        wrapperCursor.className='wrapperCursor';
-        wrapperCursor.id='wrapperCursor';
-        
-        var wrapper = document.createElement('div');
-        wrapper.className = 'wrapper';
-        wrapper.id = 'wrapper';
-        var controls = document.createElement('div');
-        controls.className = 'controls';
-        controls.id = 'controls';
-        var descr = document.createElement('div');
-        descr.id='descr';
-        var panelMedia = document.createElement('div');
-        panelMedia.className='panelMedia';
-        var panelText = document.createElement('div');
-        panelText.className='panelText';
-        
-        this.interview.trackMediaCreated = function(track){
-                new VizTrackMedia(panelMedia,track,trackControlPanel);
-        }.bind(this);
-        this.interview.trackTextCreated = function(track){
-                new VizTrackText(panelText,track,trackControlPanel);
-        }.bind(this);   
-        console.log('0....load Interview');
-        
-        this.addMediaButton(interview, panelMedia, controls); 
-        
-        this.butAddTrackText = document.createElement('button');
-        this.butAddTrackText.interview = interview;
-        this.butAddTrackText.onclick = function(){
-            this.interview.addTrackText('Текстовая дорожка');
-        };
-        this.butAddTrackText.innerText = 'Добавить текстовую дорожку';
-        
-        var buttonPlay = document.createElement('button');
-        var buttonPlayAndMark = document.createElement('button');
-        buttonPlay.innerText = '▶';
-        buttonPlay.id = 'buttonPlay';
-        
-        buttonPlayAndMark.innerText='M▶';
-        buttonPlayAndMark.id = 'buttonPlayAndMark';
-        
-        buttonPlay.onclick = function(e){
-            if(buttonPlay.innerText=='||'){        
-                buttonPlay.innerText='▶';
-                
-                var eventStop = new CustomEvent('stopPlaying');
-                document.dispatchEvent(eventStop);
-            }
-            else{
-                buttonPlay.innerText='||';
-                var startPlayEvent = new CustomEvent('startPlay');
-                document.dispatchEvent(startPlayEvent);
-            }
-        };
-
-        document.addEventListener('cantPlay',function(){
-            buttonPlay.innerText = '▶';
-            buttonPlayAndMark.innerText='M▶';
-        },false);
-        buttonPlayAndMark.onclick = function(e){
-            if(buttonPlay.innerText=='||'){        
-                buttonPlay.innerText='▶';
-                buttonPlayAndMark.innerText = 'M▶';
-                var stopPlayAndMarkEvent = new CustomEvent('stopPlayAndMark');
-                document.dispatchEvent(stopPlayAndMarkEvent);
-            }
-            else{
-                console.log(timeline);
-                if(cp.time_s < timeline.len_s - 0.05){
-                buttonPlay.innerText='||';
-                buttonPlayAndMark.innerText = 'M||';
-                    var startPlayAndMarkEvent = new CustomEvent('startPlayAndMark');
-                    startPlayAndMarkEvent.cursorPos_pc = cursorPlay.style.left;
-                    document.dispatchEvent(startPlayAndMarkEvent);
-                }
-            }
-        };
-        document.addEventListener('stopPlayAndMark',function(e){
-                var stopPlayingEvent = new CustomEvent('stopPlaying');
-                document.dispatchEvent(stopPlayingEvent);
-        },false);
-        
-        controls.appendChild(this.butAddTrackText);
-        controls.appendChild(buttonPlay);
-        controls.appendChild(buttonPlayAndMark);
-        var timeline = new Timeline(seq,controls);
-        var cp = new CursorPlay(timeline);
-        var bigwrapper = document.createElement('div');
-        bigwrapper.id = 'bigwrapper';
-        seq.appendChild(panelMedia);
-        seq.appendChild(panelText); 
-        new MenuIntervalControls(controls);
-        wrapper.appendChild(seq);
-        let timeDisplay = new TimeDisplay(wrapperCursor,controls) 
-        wrapperCursor.appendChild(wrapper);
-        bigwrapper.appendChild(trackControlPanel);
-        bigwrapper.appendChild(wrapperCursor);
-        parent.appendChild(controls);
-        parent.appendChild(bigwrapper);
-        parent.appendChild(descr);
-    }
-    show(){
-        this.parent.classList.remove('hidden');
-    }
-    hide(){
-//        this.parent.classList.add('hidden');
-        this.parentNode.removeChild(this.parent);
-    }
-}
-//var interv = new Interview('Интервью в деревне')
 console.log('load interview');
-var vi = new VizInterview(document.body,undefined);
+var tmpInterview = new Interview(q['id'],'Деревенское интервью',"2018-05-12");
+var vi = new VizInterview(document.body,tmpInterview);
+tmpInterview.addSubscriber(vi);
+tmpInterview.loadMe(q['id']);

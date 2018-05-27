@@ -1,14 +1,16 @@
-
+import Subscriber from '../Subscriber.js';
 /**************************************
 VizTrack
 **************************************/
-export default class VizTrack{
+export default class VizTrack extends Subscriber{
     constructor(parent,track,panelParent){
-
+        super();
+        var __track = track;
+        __track.addSubscriber(this);
         this.div = document.createElement('div');
         this.div.className = "Track";
         this.div.track = track; 
-        this.div.title = track.id + " " +track.title;
+        this.div.title = track.getId() + " " +track.getTitle();
                 
         this.radio = document.createElement('input');
         this.radio.type = 'radio';
@@ -29,7 +31,7 @@ export default class VizTrack{
         this.buttonDelete.onclick = function(e){
             if(confirm('Вы уверены что хотите удалить дорожку?')){
 //            this.div.track.remove.bind(this.div.track);
-                console.log('Дорожка удалена');
+                __track.removeTrack();
             }else{
                 console.log('Отмена');
             }
@@ -42,6 +44,12 @@ export default class VizTrack{
         this.panel.appendChild(this.buttonDelete);
         panelParent.appendChild(this.panel);
         parent.appendChild(this.div);
+        
+        this.onPublisherRemove = function(){
+            console.log(this.panel);
+            panelParent.removeChild(this.panel);
+            parent.removeChild(this.div);
+        }
     }
 
     addInterval(e){

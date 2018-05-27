@@ -3,19 +3,12 @@ import Publisher from './Publisher.js';
 export default class Expedition extends Publisher {
     constructor(title,dbClient){
         super();
-        var __title;
-        
-        this.setTitle= function(t){
-            __title = t;
-            this.update(this);
-        }
-        
-        this.getTitle = function(){
-            return __title;
-        }
-        
+        var __title;       
         var __interviews = {};
         var __dbClient = dbClient;
+        
+        this.setTitle= function(t){ __title = t;this.update(this);}
+        this.getTitle = function(){return __title;}
 
         this.interviewAdded = function(data){
             __interviews[data.id] = new Interview(data.id, data.title, data._date);
@@ -23,12 +16,15 @@ export default class Expedition extends Publisher {
         }
         
         this.addInterview = function(title,date){
-            //TODO addInterview
-            this.interviewAdded({id:1477,title:title,_date:date});
+            let tmp = {
+                title:title,
+                _date:date
+            };
+            tmp['id'] = Math.random()*100; // TODO remove it
+            this.interviewAdded(tmp); //TODO addInterview replace by ws.send
         }
         
         this.interviewRemoved = function(id){
-            __interviews[id].remove();
             delete __interviews[id];
         }
         

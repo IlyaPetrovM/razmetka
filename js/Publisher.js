@@ -10,6 +10,7 @@ export default class Publisher {
             });
         }
         this.remove = function(){
+            console.log('remove');
             subscribers.forEach(function(sub){
                 sub.onPublisherRemove();
             });

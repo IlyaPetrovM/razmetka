@@ -6,6 +6,10 @@ export default class TrackMedia extends Track{
     constructor(title,id,wsClient){
         super(title,id,wsClient);
         var thistrack=this;
+//        const __id = id;
+//        var __title = title;
+        this.getType = function(){return 'Media';}
+        
         document.addEventListener('checkIntersect',
         function(e){
                 console.log('checkIntersect',e);
