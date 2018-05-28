@@ -47,7 +47,7 @@ export default class CursorPlay{
             if(allowMove){
                 thisCursor.time_s = e.time_s;
             }else{
-                console.log('Низя двигать курсор во время маркировки');
+                console.warn('Низя двигать курсор во время маркировки');
             }
         });
         

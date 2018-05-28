@@ -23,28 +23,28 @@ export default class Track extends Publisher {
         
         var thistrack = this;
         
-        
-        
         this.trackRemoved = function(){
             this.remove();
         }
         this.removeTrack = function(){
-            this.trackRemoved();//TODO send
-            
-        }
-        this.fragmentAdded = function(ivl){
-            //TODO
-        }
-        this.addFragment = function(ivl){
-            //TODO
+            this.trackRemoved();//TODO send 
         }
         
-        this.fragmentRemoved = function(id){
-            //TODO
+        this.fragmentAdded = function(ivl){
+            console.warn('abstract method used');
+            
         }
-        this.removeFragment = function(id){
-            //TODO
+        this.addFragment = function(ivl){
+            console.warn('abstract method used');
+            // TODO хитрая проверка на пересечение
         }
+        
+//        this.fragmentRemoved = function(id){
+            // Удаление происходит из интерфейса фрагмента
+//        }
+//        this.removeFragment = function(id){
+            // Удаление происходит из интерфейса фрагмента
+//        }
         
         this.fragmentsLoaded = function(fragments){
             console.warn('abstract method used');
@@ -120,23 +120,23 @@ export default class Track extends Publisher {
             console.log("Перескает!");
         }
     }
-    addFragment(_interv){
-        if(!this.intersectAny(_interv.start_s,_interv.end_s)){ 
-            let leftIvl = this.findLeft(_interv);
-            if(leftIvl!=undefined){ // ссылки на соседей
-                _interv.leftFragment = leftIvl;
-                _interv.rightFragment =  leftIvl.rightFragment;
-                leftIvl.rightFragment = _interv;
-                console.log(_interv);
-            }
-            this.fragments.push(_interv);
-            this.cnt++;
-            return true;
-        }else{
-            alert("Элементы не должны пересекаться");
-            return false;
-        }
-    }
+//    addFragment(_interv){
+//        if(!this.intersectAny(_interv.start_s,_interv.end_s)){ 
+//            let leftIvl = this.findLeft(_interv);
+//            if(leftIvl!=undefined){ // ссылки на соседей
+//                _interv.leftFragment = leftIvl;
+//                _interv.rightFragment =  leftIvl.rightFragment;
+//                leftIvl.rightFragment = _interv;
+//                console.log(_interv);
+//            }
+//            this.fragments.push(_interv);
+//            this.cnt++;
+//            return true;
+//        }else{
+//            alert("Элементы не должны пересекаться");
+//            return false;
+//        }
+//    }
     findLeft(ivl){
         if(this.fragments.length>0){
             let max_i = 0;

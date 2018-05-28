@@ -1,10 +1,11 @@
 
 export default class MenuFragmentControls{
 
-    constructor(parentNode){
+    constructor(parentNode, target, fragment){
         this.iControl = document.createElement('div');
         this.iControl.id = 'iControl';
-        this.iControl.style.display='none';
+        this.iControl.style.display='block';
+        this.iControl.style.left = target.style.left;
         this.counter = 0;
         var bMoveLeft = document.createElement('button');
         var bMoveRight = document.createElement('button');
@@ -21,6 +22,7 @@ export default class MenuFragmentControls{
         inputMoveStep.max = 180.0;
         inputMoveStep.step = 0.1;
         inputMoveStep.min = 0.00;
+        inputMoveStep.size = '3';
         this.iControl.appendChild(bMoveLeft);
         this.iControl.appendChild(bMoveRight);
         this.iControl.appendChild(inputMoveStep);
@@ -31,6 +33,22 @@ export default class MenuFragmentControls{
         bMoveRight.onclick = this.sendStepToMove.bind( this, true );
         document.addEventListener( 'fragmentChoosen', this.showMotionControl.bind(this,true) );
         document.addEventListener( 'fragmentUnchoosen', this.showMotionControl.bind(this,false) );
+        
+        
+        var bDeleteFragment = document.createElement('button');
+        bDeleteFragment.id = 'bDeleteFragment';
+        bDeleteFragment.innerHTML = 'Удалить фрагменты';
+        bDeleteFragment.onclick = function(e){
+            if(confirm('Вы уверены, что хотите удалить выделенные фрагменты?')){
+                console.log('Удаляем'); /// TODO
+            }else{
+                console.log('Отмена удаления');
+            }
+        }
+        this.iControl.appendChild(bDeleteFragment);
+        this.removeMe = function(){
+            parentNode.removeChild(this.iControl);
+        }
     }
     
      showMotionControl(show) {

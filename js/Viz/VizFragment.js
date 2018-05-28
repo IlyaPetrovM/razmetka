@@ -1,13 +1,17 @@
-
+import Subscriber from '../Subscriber.js';
+import MenuFragmentControls from './MenuFragmentControls.js';
 /**************************************
  Viz Fragment
 **************************************/
-export default class VizFragment {
-    constructor(parentNode, data){
+export default class VizFragment extends Subscriber{
+    constructor(parentNode, fragment){
+        super();
+        var __fragment = fragment;
+        
         this.viz = document.createElement('div');
         this.viz.className = 'interv';
-        this.viz.fragment = data;
-        this.viz.title = data.index;
+        this.viz.fragment = fragment;
+        this.viz.title = fragment.getId();
         
         parentNode.appendChild(this.viz);
         
@@ -15,7 +19,35 @@ export default class VizFragment {
         var played = false;
         this.viz.choosen = false;
         this.update();
+        var __menu;
         
+        this.viz.onclick = function(e){
+            if(!__menu){
+                this.viz.classList.toggle('choosen');
+                __menu = new MenuFragmentControls(parentNode, this.viz, __fragment);
+//                __menu.showMotionControl(true);
+            }else{
+                this.viz.classList.toggle('choosen');
+                __menu.removeMe();
+                __menu = null;
+            }
+            console.log('press fragment',fragment.getId());
+        }.bind(this);
+//        document.body.addEventListener('click',function(e){
+//            console.log(e.target);
+//            if(e.target===this.viz ){
+//                e.stopImmediatePropagation();
+//            }else{
+//                if(__menu){
+//                    if(e.target === __menu.iControl){
+//                        e.stopImmediatePropagation();
+//                    }else{
+//                        __menu.removeMe();
+//                        __menu = null;
+//                    }
+//                }
+//            }
+//        }.bind(this));
         document.addEventListener('fragmentUpdated',this.update.bind(this));
         document.addEventListener('cursorPlays',this.highlight.bind(this));
         document.addEventListener('stopPlaying',this.unHighlight.bind(this));

@@ -1,10 +1,14 @@
 export default class TimeDisplay{
     constructor(cursorParent,timeParent){
         
-        var p = document.createElement('p');
-        p.id = 'timeDisplay';
-        p.this = this;
-        p.innerHTML = '00:00:00.000';
+        var mouseCursorTimeDisplay = document.createElement('p');
+        mouseCursorTimeDisplay.id = 'mouseCursorTimeDisplay';
+        mouseCursorTimeDisplay.this = this;
+        mouseCursorTimeDisplay.innerHTML = '00:00:00.000';
+        var playCursorDisplay = document.createElement('p');
+        playCursorDisplay.id = 'playCursorDisplay';
+        playCursorDisplay.this = this;
+        playCursorDisplay.innerHTML = '00:00:00.000';
         
         var cursor = document.createElement('div');
         cursor.className='cursor';
@@ -15,9 +19,13 @@ export default class TimeDisplay{
             let offset_px = cursor.parentElement.offsetLeft;
             cursor.style.left = (x_px - offset_px - 1) + 'px';
             let s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value);
-            timeDisplay.innerText = TimeDisplay.sec2str(s);
+            mouseCursorTimeDisplay.innerText = TimeDisplay.sec2str(s);
         },false);
-        timeParent.appendChild(p);
+        document.addEventListener('cursorChangePos',function(e){
+                playCursorDisplay.innerText = TimeDisplay.sec2str(e.time_s);
+        });
+        timeParent.appendChild(mouseCursorTimeDisplay);
+        timeParent.appendChild(playCursorDisplay);
         cursorParent.appendChild(cursor);
     }
     static sec2str(val_s){
@@ -29,7 +37,7 @@ export default class TimeDisplay{
             let ms = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:3}).format(parseInt((s%60)*1000)%1000);
             let mi = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 60) % 60);
             let ho = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 360) % 24);
-            str =  ho+':'+mi+':'+se+'.'+ms;
+            str = ho+':'+mi+':'+se+'.'+ms;
         return str;
     }
 }

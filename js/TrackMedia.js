@@ -31,8 +31,29 @@ export default class TrackMedia extends Track{
                 alert("Элементы не должны пересекаться");
             }}
         });
-    
-    
+        
+        
+        this.fragmentAdded = function(frg){
+            __fragments[frg.id] = new FragmentMedia(frg.id,
+                                                    frg.path,
+                                                    frg.start_s,
+                                                    frg.end_s, 
+                                                    frg.track_id, 
+                                                    frg.int_id);
+            this.update(this);
+        }
+        this.addFragment = function(path, start_s, end_s){
+            let tmp = {
+                path:    path,
+                start_s: start_s,
+                end_s:   end_s,
+                track_id:this.getId(),
+                int_id:  this.getInterviewId() 
+            };
+            tmp[id] = parseInt(Math.random()*100);
+            this.fragmentAdded(tmp);
+        }
+        
         //TODO 28.05.2018 2:32 Доделать обновление фрагментов
         this.fragmentsLoaded = function(fragments){
             //TODO
@@ -46,7 +67,6 @@ export default class TrackMedia extends Track{
                                                         frg.int_id);
             }
             this.update(this);
-            console.log(1);
         }
         this.loadFragments = function(){
             //TODO send.
@@ -77,7 +97,6 @@ export default class TrackMedia extends Track{
              path:'audio/3.mp3'
          }
             ];
-            console.log(1);
             this.fragmentsLoaded(tmp);
         }
         this.loadFragments();

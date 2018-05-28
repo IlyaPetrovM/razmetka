@@ -14,7 +14,17 @@
     margin:0 auto;
     height: 1.5em;
 }
+#iControl{
+    position: absolute;
+/*    top: -26px;*/
+    bottom: 15px;
+    opacity: 1 !important;
+    border: 2px solid; 
 
+}
+#inputMoveStep{
+    width: 50px;
+}
 
 
 
@@ -152,13 +162,20 @@ html{
     text-align: center;
     padding: 0 5px;
 }
-#timeDisplay{
+#mouseCursorTimeDisplay, #playCursorDisplay {
     font-family: monospace;
     font-size: 16pt;
     margin: 0;
     padding: 2px;
     width: fit-content;
     font-weight: 1000;
+    display: inline-block;
+}
+#mouseCursorTimeDisplay{
+    color: green;
+} 
+#playCursorDisplay{
+    color: red;
 }
 .hidden {
     display: none;

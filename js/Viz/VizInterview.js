@@ -132,7 +132,7 @@ export default class VizInterview extends Subscriber{
         __bigwrapper.id = 'bigwrapper';
         __seq.appendChild(__panelMedia);
         __seq.appendChild(__panelText); 
-        new MenuFragmentControls(__controls);
+//        new MenuFragmentControls(__controls);
         __wrapper.appendChild(__seq);
         let timeDisplay = new TimeDisplay(__wrapperCursor,__controls) 
         __wrapperCursor.appendChild(__wrapper);

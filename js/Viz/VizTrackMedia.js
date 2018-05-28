@@ -5,9 +5,10 @@ import FragmentMedia from '../FragmentMedia.js';
  VizTrackMedia
 **************************************/
 export default class VizTrackMedia extends VizTrack{
-    
-    constructor(parent, track,parentPanel){
+    constructor(parent, track, parentPanel){
         super(parent, track,parentPanel);
+        
+        var __track = track;
         this.div.className = "TrackMedia";
         this.div.addEventListener('click',this.processClick.bind(this));
         var __div = this.div;
@@ -17,13 +18,19 @@ export default class VizTrackMedia extends VizTrack{
         document.addEventListener('getMediaFragmentEvent',this.getMediaFragment.bind(this));
         
         this.onUpdate = function(track){
-//            super.onUpdate(track);
             let frg;
             for(let i in track.getFragments()){
                 frg = track.getFragments()[i];
-                __vizFragments[frg.getId()] = new VizFragmentMedia(__div,frg);
+                __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg);
                 console.log('update fragments');
             }
+        }
+
+        this.createFragment = function(path, audio, clickEvent) { // event appends to the enduuu
+            __track.addFragment(path,
+                                VizTrack.pix2sec(clickEvent.offsetX),
+                                VizTrack.pix2sec(clickEvent.offsetX) + audio.duration);
+            console.log(__track);
         }
     }
     
@@ -40,14 +47,6 @@ export default class VizTrackMedia extends VizTrack{
         }
     }
 
-    createFragment(path, audio, clickEvent) { // event appends to the enduuu
-        var ivl = new FragmentMedia( path,
-                                    VizTrack.pix2sec(clickEvent.offsetX),
-                                    VizTrack.pix2sec(clickEvent.offsetX) + audio.duration );
-        if( this.div.track.addFragment(ivl) ){
-            new VizFragmentMedia(clickEvent.target, ivl);
-        }
-    }
 
     processClick(clickEvent){
             if(clickEvent.target.track != null){
@@ -63,15 +62,15 @@ export default class VizTrackMedia extends VizTrack{
                 }.bind(this);
                 $("#fileInput").trigger("click");
             }else if(clickEvent.target.fragment != null){
-                if(clickEvent.target.choosen){
-                    document.dispatchEvent(new CustomEvent('fragmentUnchoosen', clickEvent.target));
-                    clickEvent.target.classList.remove('choosen');
-                    clickEvent.target.choosen = false;
-                }else{
-                    document.dispatchEvent(new CustomEvent('fragmentChoosen',clickEvent.target));
-                    clickEvent.target.classList.add('choosen');
-                    clickEvent.target.choosen = true;
-                }
+//                if(clickEvent.target.choosen){
+//                    document.dispatchEvent(new CustomEvent('fragmentUnchoosen', clickEvent.target));
+//                    clickEvent.target.classList.remove('choosen');
+//                    clickEvent.target.choosen = false;
+//                }else{
+//                    document.dispatchEvent(new CustomEvent('fragmentChoosen',clickEvent.target));
+//                    clickEvent.target.classList.add('choosen');
+//                    clickEvent.target.choosen = true;
+//                }
                 console.log('Нажат элемент медиа');
             }
     }
