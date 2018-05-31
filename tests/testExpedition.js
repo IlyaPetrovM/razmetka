@@ -1,4 +1,4 @@
-import Expedition from 'Expedition.js';
+import Expedition from '../js/Expedition.js';
 
 function testConstructor(){
   let ws = new WebSocket();
