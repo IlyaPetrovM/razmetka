@@ -52,8 +52,7 @@ export default class Fragment extends Publisher {
         this.rightFragment = undefined;
         this.start_s = start_s;
         this.end_s = end_s;
-        Fragment.cnt = (Fragment.cnt || 0)+1;
-        this.index=Fragment.cnt;
+        this.index=__id;
 //        console.log('Создан интервал ',Fragment.cnt);
     }
     move(step_s){

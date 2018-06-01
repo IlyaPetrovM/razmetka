@@ -4,19 +4,21 @@ import Publisher from './Publisher.js';
 Track
 **************************************/
 export default class Track extends Publisher {
-    constructor(title_, id, interview_id, wsClient){
+    constructor(title_, id, interview, wsClient){
         super(); /// TODO
         this.id = id;
         this.title = title_;
         
         const __id = id,
-              __interview_id = interview_id;
+              __interview_id = interview.getId();
         var __title = title_;
+        var __interview = interview;
         var __type = 'Media';
         var __fragments = {};
         this.getTitle = function(){return __title;}
         this.getId = function(){return __id};
         this.getInterviewId = function(){return __interview_id};
+        this.getInterview = function(){return __interview};
         this.getFragments = function(){return __fragments;}
         this.fragments = [];
         this.cnt = 0;

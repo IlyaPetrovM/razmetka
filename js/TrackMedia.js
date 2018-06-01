@@ -73,7 +73,7 @@ export default class TrackMedia extends Track{
             let trs = parseInt(Math.random()*1000);
             let tmp = [
             {
-             id:parseInt(Math.random()*100),
+             id:111,
              track_id:this.getId(),
              start_s:2,
              end_s:10,
@@ -81,7 +81,7 @@ export default class TrackMedia extends Track{
              path:'audio/1.mp3'
          },
             {
-             id:parseInt(Math.random()*100),
+             id:222,
              track_id:this.getId(),
              start_s:11,
              end_s:20,
@@ -89,7 +89,7 @@ export default class TrackMedia extends Track{
              path:'audio/2.mp3'
          },
             {
-             id:parseInt(Math.random()*100),
+             id:3333,
              track_id:this.getId(),
              start_s:trs+21,
              end_s:trs+35,
@@ -99,6 +99,5 @@ export default class TrackMedia extends Track{
             ];
             this.fragmentsLoaded(tmp);
         }
-        this.loadFragments();
     }
 }

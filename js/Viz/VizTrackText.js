@@ -18,15 +18,16 @@ export default class VizTrackText extends VizTrack{
         this.panel.classList.add('trackCPanelText');
 
         this.onUpdate = function(track){
-//            super.onUpdate(track);
             let frg;
+//            console.log('onUp');
             for(let i in track.getFragments()){
-                frg = track.getFragments()[i];
-                __vizFragments[frg.getId()] = new VizFragmentText(__div,frg, undefined);
-            };
+                    frg = track.getFragments()[i];
+//                if(track.getFragments()[i]===undefined){
+                    __vizFragments[frg.getId()] = new VizFragmentText(__div,frg);
+//                }
+            }
         }
         this.ivl = null;
-        console.log(this);
         document.addEventListener('startPlayAndMark',function(e){
             this.radio.disabled = true;
             if(this.radio.checked)

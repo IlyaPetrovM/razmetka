@@ -22,7 +22,6 @@ export default class VizTrackMedia extends VizTrack{
             for(let i in track.getFragments()){
                 frg = track.getFragments()[i];
                 __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg);
-                console.log('update fragments');
             }
         }
 

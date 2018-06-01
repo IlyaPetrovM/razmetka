@@ -61,8 +61,7 @@ export default class VizInterview extends Subscriber{
         }.bind(this);
         __interview.trackTextCreated = function(track){
                 new VizTrackText(__panelText,track,__trackControlPanel);
-        }.bind(this);   
-        console.log('0....load Interview');
+        }.bind(this);
         
         ButtonAddTrackMedia();
         ButtonAddTrackText();
@@ -102,7 +101,6 @@ export default class VizInterview extends Subscriber{
                 document.dispatchEvent(stopPlayAndMarkEvent);
             }
             else{
-                console.log(timeline);
                 if(cp.time_s < timeline.len_s - 0.05){
                 __buttonPlay.innerText='||';
                 __buttonPlayAndMark.innerText = 'M||';
@@ -154,12 +152,13 @@ export default class VizInterview extends Subscriber{
                         case 'Media':
                             __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia);
                             track.addSubscriber(__vizTracks[track.getId()]);
-                            console.log(track);
+//                            console.log(track);
                             track.update(track);
                             break;
                         case 'Text':
                             __vizTracks[track.getId()] = new VizTrackText(__panelText,track,__trackControlPanelText);
                             track.addSubscriber(__vizTracks[track.getId()]);
+                            track.update(track);
                             break;
                         default:
                             console.error("Неизвестный тип трека",track.getType());
@@ -213,11 +212,9 @@ export default class VizInterview extends Subscriber{
         }
         let s = window.location.search;
         let q = parseSearch(s);
-        console.info('Interview id:'+q['id']);
         if(q['id']){
             document.title='Интервью '+q['id'];
         }
-console.log('load interview');
 var tmpInterview = new Interview(q['id'],'Деревенское интервью',"2018-05-12");
 var vi = new VizInterview(document.body,tmpInterview);
 tmpInterview.addSubscriber(vi);

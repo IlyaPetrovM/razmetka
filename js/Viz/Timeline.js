@@ -54,8 +54,6 @@ export default class Timeline {
     set len_s(val_s){
         this.__len_s = val_s; 
         this.div.style.width = (this.__len_s * this.zoom.value)+'px';
-        console.log(this.div.style.width);
-        console.log(this.__len_s);
     }
     get len_s(){
         return this.__len_s;   

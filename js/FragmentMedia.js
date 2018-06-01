@@ -11,7 +11,6 @@ export default class FragmentMedia extends Fragment{
         this.audio = new Audio(path);
         this.audio.onload = function(){
         }
-            console.log(this);
 //        this.audio.load();
         this.textFragments = new Array();
     }

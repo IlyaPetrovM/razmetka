@@ -43,14 +43,14 @@ export default class Interview extends Publisher{
                           title:'Петров И.М.'}; //TODO removeit
             this.meLoaded(tmp); //TODO ws.send
         }
-        
+        var __this = this;
         function addTrackByType(track) {
             switch(track._type){
                 case 'Media':
-                    __tracks[track.id] = new TrackMedia(track.title,track.id, track.int_id, __wsClient);
+                    __tracks[track.id] = new TrackMedia(track.title,track.id, __this, __wsClient);
                     break;
                 case 'Text':
-                    __tracks[track.id] = new TrackText(track.title,track.id, track.int_id, __wsClient);
+                    __tracks[track.id] = new TrackText(track.title,track.id, __this, __wsClient);
                     break;
                 default:
                     console.error("Неизвестный тип трека:",track._type);
@@ -133,8 +133,7 @@ export default class Interview extends Publisher{
 //        super.create({title:this.title, _date:this._date },this.table);
 //        console.log('Interview create');
 //    }
-    
-    
+
     update(_data){
         super.update(_data,this.table);
     }

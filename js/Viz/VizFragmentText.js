@@ -7,8 +7,9 @@ export default class VizFragmentText extends VizFragment {
     
     constructor(parent, data, media){
         super(parent, data);
-        this.media = media;
-        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
+        console.log(data!==undefined,'fragment text is undef');
+        this.media = data.getMedia();
+//        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
         
         this.timeFieldStart = document.createElement('time');
         this.timeFieldEnd = document.createElement('time');
@@ -16,6 +17,7 @@ export default class VizFragmentText extends VizFragment {
         this.textDescr = document.createElement('div');
         this.textDescr.setAttribute('contenteditable',true); 
         this.textDescr.className = 'textDescr';
+        this.textDescr.innerHTML = data.getDescr();
         
         this.textDescr.focus();
         console.log('focus');
@@ -32,11 +34,13 @@ export default class VizFragmentText extends VizFragment {
         descr.appendChild(this.ivlDescr);
         
         this.update();
-      
+
         this.viz.addEventListener('mouseover',this.scrollTo.bind(this.ivlDescr));   
         this.viz.addEventListener('mouseleave',this.scrollTo.bind(this.ivlDescr));
         this.ivlDescr.addEventListener('mouseover',this.scrollTo.bind(this.viz));
         this.ivlDescr.addEventListener('mouseleave',this.scrollTo.bind(this.viz));
+
+//        this.onUpdate()
     }
 //    
 //    move(e) {
