@@ -5,7 +5,7 @@ import FragmentMedia from '../FragmentMedia.js';
  VizTrackMedia
 **************************************/
 export default class VizTrackMedia extends VizTrack{
-    constructor(parent, track, parentPanel){
+    constructor(parent, track, parentPanel,timeline){
         super(parent, track,parentPanel);
         
         var __track = track;
@@ -15,15 +15,19 @@ export default class VizTrackMedia extends VizTrack{
         var __vizFragments = {};
         this.radio.name = 'trackChooserMedia';
         this.panel.classList.add('trackCPanelMedia');
-        document.addEventListener('getMediaFragmentEvent',this.getMediaFragment.bind(this));
+//        document.addEventListener('getMediaFragmentEvent',this.getMediaFragment.bind(this));
         
         this.onUpdate = function(track){
             let frg;
             for(let i in track.getFragments()){
                 frg = track.getFragments()[i];
                 __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg);
+                frg.addSubscriber(__vizFragments[frg.getId()]);
+                frg.addSubscriber(timeline);
+                frg.update(frg);
             }
         }
+        __track.loadFragments();
 
         this.createFragment = function(path, audio, clickEvent) { // event appends to the enduuu
             __track.addFragment(path,

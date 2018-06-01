@@ -6,9 +6,20 @@ export default class VizFragmentMedia extends VizFragment {
     constructor(parent,data){
         super(parent,data);
         
-        document.addEventListener('moveFragmentMediaEvent',this.move.bind(this));
-        document.addEventListener('cursorChangePos', this.reactOnCursor.bind(this)); 
-        document.addEventListener('motionApprovedMedia',this.move.bind(this));
+//        document.addEventListener('moveFragmentMediaEvent',this.move.bind(this));
+//        document.addEventListener('cursorChangePos', this.reactOnCursor.bind(this));
+//        document.addEventListener('motionApprovedMedia',this.move.bind(this));
+
+        this.onUpdate = function(frg){
+            var W_px = parseFloat(this.viz.parentElement.clientWidth);
+            var zoom_px = parseFloat(document.getElementById('zoom').value);
+            this.viz.style.left = frg.start_s * zoom_px * 100.0 / W_px + '%';
+            this.viz.style.width = frg.duration_s() * zoom_px * 100.0 / W_px + '%';
+            console.timeEnd('VizFragmentMedia'+data.getId());
+        }
+        console.time('VizFragmentMedia'+data.getId());
+        this.onUpdate(data);
+
     }
     
     reactOnCursor(cursorChangePosEvent) {

@@ -1,4 +1,4 @@
-
+//import Subscriber
 export default class CursorPlay{
     constructor(timeline){
         this.prec = 5;

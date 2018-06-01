@@ -5,7 +5,7 @@ import FragmentText from '../FragmentText.js';
 VizTrackText
 **************************************/
 export default class VizTrackText extends VizTrack{
-    constructor(parent,track,parentPanel){
+    constructor(parent,track,parentPanel,timeline){
         super(parent,track,parentPanel);
         this.div.className = "TrackText";
         var __div = this.div;
@@ -24,7 +24,9 @@ export default class VizTrackText extends VizTrack{
                     frg = track.getFragments()[i];
 //                if(track.getFragments()[i]===undefined){
                     __vizFragments[frg.getId()] = new VizFragmentText(__div,frg);
-//                }
+                    frg.addSubscriber(timeline);
+                    frg.addSubscriber(__vizFragments[frg.getId()]);
+
             }
         }
         this.ivl = null;

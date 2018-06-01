@@ -13,24 +13,24 @@ export default class TrackMedia extends Track{
 //        var __title = title;
         this.getType = function(){return 'Media';}
         
-        document.addEventListener('checkIntersect',
-        function(e){
-                console.log('checkIntersect',e);
-            var ivl = thistrack.fragments.filter(function(fragment){
-                return fragment.index == e.index;
-            })[0];
-            if(ivl!=undefined){
-            if(!thistrack.intersectAny(e.start_s,e.end_s,e.index)){
-                var motionApprovedMediaEvent = new CustomEvent('motionApprovedMedia');
-                motionApprovedMediaEvent.start_s = e.start_s;
-                motionApprovedMediaEvent.end_s = e.end_s;
-                motionApprovedMediaEvent.index = e.index;
-                motionApprovedMediaEvent.step_s = e.step_s;
-                document.dispatchEvent(motionApprovedMediaEvent);
-            }else{
-                alert("Элементы не должны пересекаться");
-            }}
-        });
+//        document.addEventListener('checkIntersect',
+//        function(e){
+//                console.log('checkIntersect',e);
+//            var ivl = thistrack.fragments.filter(function(fragment){
+//                return fragment.index == e.index;
+//            })[0];
+//            if(ivl!=undefined){
+//            if(!thistrack.intersectAny(e.start_s,e.end_s,e.index)){
+//                var motionApprovedMediaEvent = new CustomEvent('motionApprovedMedia');
+//                motionApprovedMediaEvent.start_s = e.start_s;
+//                motionApprovedMediaEvent.end_s = e.end_s;
+//                motionApprovedMediaEvent.index = e.index;
+//                motionApprovedMediaEvent.step_s = e.step_s;
+//                document.dispatchEvent(motionApprovedMediaEvent);
+//            }else{
+//                alert("Элементы не должны пересекаться");
+//            }}
+//        });
         
         
         this.fragmentAdded = function(frg){
@@ -70,7 +70,7 @@ export default class TrackMedia extends Track{
         }
         this.loadFragments = function(){
             //TODO send.
-            let trs = parseInt(Math.random()*1000);
+            let trs = 150;
             let tmp = [
             {
              id:111,
@@ -79,7 +79,8 @@ export default class TrackMedia extends Track{
              end_s:10,
              int_id:this.getInterviewId(), 
              path:'audio/1.mp3'
-         },
+         }
+                ,
             {
              id:222,
              track_id:this.getId(),

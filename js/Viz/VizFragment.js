@@ -18,14 +18,13 @@ export default class VizFragment extends Subscriber{
         this.plays = false;
         var played = false;
         this.viz.choosen = false;
-        this.update();
+//        this.update();
         var __menu;
         
         this.viz.onclick = function(e){
             if(!__menu){
                 this.viz.classList.toggle('choosen');
                 __menu = new MenuFragmentControls(parentNode, this.viz, __fragment);
-//                __menu.showMotionControl(true);
             }else{
                 this.viz.classList.toggle('choosen');
                 __menu.removeMe();
@@ -33,26 +32,15 @@ export default class VizFragment extends Subscriber{
             }
             console.log('press fragment',fragment.getId());
         }.bind(this);
-//        document.body.addEventListener('click',function(e){
-//            console.log(e.target);
-//            if(e.target===this.viz ){
-//                e.stopImmediatePropagation();
-//            }else{
-//                if(__menu){
-//                    if(e.target === __menu.iControl){
-//                        e.stopImmediatePropagation();
-//                    }else{
-//                        __menu.removeMe();
-//                        __menu = null;
-//                    }
-//                }
-//            }
-//        }.bind(this));
-        document.addEventListener('fragmentUpdated',this.update.bind(this));
+        this.onUpdate = function(frg){
+            throw Error('abstract method called');
+        }
+
+//        document.addEventListener('fragmentUpdated',this.update.bind(this));
         document.addEventListener('cursorPlays',this.highlight.bind(this));
         document.addEventListener('stopPlaying',this.unHighlight.bind(this));
         document.addEventListener('moveFragment',this.checkIntersect.bind(this));
-        document.addEventListener('timelineUpdated',this.update.bind(this));
+//        document.addEventListener('timelineUpdated',this.update.bind(this));
     }
     
     highlight(cursorPlaysEvent){
@@ -96,11 +84,5 @@ export default class VizFragment extends Subscriber{
             this.update();
         }
     }
-    update(){
-        
-            var W_px = parseFloat(this.viz.parentElement.clientWidth);
-            var zoom_px = parseFloat(document.getElementById('zoom').value);
-            this.viz.style.left = this.viz.fragment.start_s * zoom_px * 100.0 / W_px + '%';
-            this.viz.style.width = this.viz.fragment.duration_s() * zoom_px * 100.0 / W_px + '%';
-    }
+
 }

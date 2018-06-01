@@ -150,13 +150,13 @@ export default class VizInterview extends Subscriber{
                 if( __vizTracks[track.getId()] === undefined){
                     switch(track.getType()){
                         case 'Media':
-                            __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia);
+                            __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia,timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
 //                            console.log(track);
                             track.update(track);
                             break;
                         case 'Text':
-                            __vizTracks[track.getId()] = new VizTrackText(__panelText,track,__trackControlPanelText);
+                            __vizTracks[track.getId()] = new VizTrackText(__panelText,track,__trackControlPanelText,timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
                             track.update(track);
                             break;

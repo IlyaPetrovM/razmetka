@@ -2,6 +2,7 @@
 export default class MenuFragmentControls{
 
     constructor(parentNode, target, fragment){
+        var __fragment = fragment;
         this.iControl = document.createElement('div');
         this.iControl.id = 'iControl';
         this.iControl.style.display='block';
@@ -29,8 +30,20 @@ export default class MenuFragmentControls{
         parentNode.appendChild(this.iControl);
         
         
-        bMoveLeft.onclick = this.sendStepToMove.bind( this,  false);
-        bMoveRight.onclick = this.sendStepToMove.bind( this, true );
+        bMoveLeft.onclick = function(e){
+            console.log('<');
+            let step_s = -parseFloat(inputMoveStep.value);
+            let start_s = __fragment.getStartS()+step_s,
+                end_s = __fragment.getEndS()+step_s;
+            __fragment.editFragment(start_s,end_s);
+        };
+        bMoveRight.onclick = function(e){
+            console.log('>');
+            let step_s = parseFloat(inputMoveStep.value);
+            let start_s = __fragment.getStartS()+step_s,
+                end_s = __fragment.getEndS()+step_s;
+            __fragment.editFragment(start_s,end_s);
+        };
         document.addEventListener( 'fragmentChoosen', this.showMotionControl.bind(this,true) );
         document.addEventListener( 'fragmentUnchoosen', this.showMotionControl.bind(this,false) );
         

@@ -48,10 +48,10 @@ export default class Track extends Publisher {
 //        }
         
         this.fragmentsLoaded = function(fragments){
-            console.warn('abstract method used');
+            throw Error('abstract method used');
         }
         this.loadFragments = function(){
-            console.warn('abstract method used');
+            throw Error('abstract method used');
         }
         
         this.trackEdited = function(track){

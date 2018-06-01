@@ -13,7 +13,7 @@ export default class Fragment extends Publisher {
             __track_id = track_id;
         const __id = id,
               __interview_id = interview_id;
-        
+
         this.getStartS = function(){
             return __start_s;
         }
@@ -53,6 +53,9 @@ export default class Fragment extends Publisher {
         this.start_s = start_s;
         this.end_s = end_s;
         this.index=__id;
+        this.duration_s = function(){
+        return __end_s - __start_s;
+        }
 //        console.log('Создан интервал ',Fragment.cnt);
     }
     move(step_s){
@@ -106,28 +109,26 @@ export default class Fragment extends Publisher {
             return false;
         }
     }
-    set start_s(val){
-        this.__start_s = val;
-        var fragmentUpdatedEvent = new CustomEvent('fragmentUpdated');
-        fragmentUpdatedEvent.fragment = this;
-        document.dispatchEvent(fragmentUpdatedEvent);
-    }
-    get start_s(){
-        return this.__start_s;
-    }
-    set end_s(val){
-        this.__end_s=val;
-        var fragmentUpdatedEvent = new CustomEvent('fragmentUpdated');
-        fragmentUpdatedEvent.fragment = this;
-        document.dispatchEvent(fragmentUpdatedEvent);
-    }
-    get end_s(){
-        return this.__end_s;
-    }
+//    set start_s(val){
+//        this.__start_s = val;
+//        var fragmentUpdatedEvent = new CustomEvent('fragmentUpdated');
+//        fragmentUpdatedEvent.fragment = this;
+//        document.dispatchEvent(fragmentUpdatedEvent);
+//    }
+//    get start_s(){
+//        return this.__start_s;
+//    }
+//    set end_s(val){
+//        this.__end_s=val;
+//        var fragmentUpdatedEvent = new CustomEvent('fragmentUpdated');
+//        fragmentUpdatedEvent.fragment = this;
+//        document.dispatchEvent(fragmentUpdatedEvent);
+//    }
+//    get end_s(){
+//        return this.__end_s;
+//    }
     render(){
         
     }
-    duration_s(){
-        return this.end_s - this.start_s;
-    }
+
 }

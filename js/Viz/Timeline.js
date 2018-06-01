@@ -1,6 +1,7 @@
-
-export default class Timeline {
-    constructor(parentNode,controlNode){
+import Subscriber from '../Subscriber.js';
+export default class Timeline extends Subscriber{
+    constructor(parentNode,controlNode,cursor){
+        super();
         this.div = document.createElement('div');
         this.div.className = 'timeline';
         this.div.id = 'timeline';
@@ -18,18 +19,17 @@ export default class Timeline {
             e.target.title = '1 секунда =' + e.target.value+' пикселей';
         };  
 
-        document.addEventListener('fragmentUpdated',function(e){
-            var addition = 1;
-            if(e.fragment.type == 'media'){
-                addition = 3;
-            }
-            let end_s = parseInt(e.fragment.end_s) + addition; // 3 is for safety
+        this.onUpdate = function(frg){
+            var addition = 3;
+            let end_s = parseInt(frg.getEndS()) + addition; // 3 is for safety
             if(end_s > thisTimeline.len_s){
                 let diff_s = end_s - thisTimeline.len_s;
                 thisTimeline.len_s = end_s;
-                document.dispatchEvent(new CustomEvent('timelineUpdated'));
+//                document.dispatchEvent(new CustomEvent('timelineUpdated'));
+                console.log(1);
+                cursor.update();
             }
-        },false);
+        };
         
         this.div.onclick = function(e){
                 let x_px = e.clientX;            

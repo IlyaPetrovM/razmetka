@@ -7,7 +7,7 @@ export default class VizFragmentText extends VizFragment {
     
     constructor(parent, data, media){
         super(parent, data);
-        console.log(data!==undefined,'fragment text is undef');
+        var __fragment = data;
         this.media = data.getMedia();
 //        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
         
@@ -18,29 +18,38 @@ export default class VizFragmentText extends VizFragment {
         this.textDescr.setAttribute('contenteditable',true); 
         this.textDescr.className = 'textDescr';
         this.textDescr.innerHTML = data.getDescr();
-        
-        this.textDescr.focus();
-        console.log('focus');
-        
+
         this.timeFieldStart.className = 'timeField';      
         this.timeFieldEnd.className = 'timeField';  
         
         
         this.ivlDescr = document.createElement('div');
         this.ivlDescr.className = 'ivlDescr';
-        this.ivlDescr.appendChild(this.timeFieldStart);
-        this.ivlDescr.appendChild(this.timeFieldEnd);
-        this.ivlDescr.appendChild(this.textDescr);
-        descr.appendChild(this.ivlDescr);
         
-        this.update();
 
         this.viz.addEventListener('mouseover',this.scrollTo.bind(this.ivlDescr));   
         this.viz.addEventListener('mouseleave',this.scrollTo.bind(this.ivlDescr));
         this.ivlDescr.addEventListener('mouseover',this.scrollTo.bind(this.viz));
         this.ivlDescr.addEventListener('mouseleave',this.scrollTo.bind(this.viz));
 
-//        this.onUpdate()
+        this.onUpdate = function(frg){
+            console.log(this);
+            var W_px = parseFloat(this.viz.parentElement.clientWidth);
+            var zoom_px = parseFloat(document.getElementById('zoom').value);
+            this.viz.style.left = frg.start_s * zoom_px * 100.0 / W_px + '%';
+            this.viz.style.width = frg.duration_s() * zoom_px * 100.0 / W_px + '%';
+            if(this.timeFieldStart){
+                this.timeFieldStart.innerText= TimeDisplay.sec2str(frg.start_s);
+                this.timeFieldEnd.innerText= TimeDisplay.sec2str(frg.end_s);
+            }
+//            console.timeEnd('FragmentText'+__fragment.getId());
+        }
+        this.ivlDescr.appendChild(this.timeFieldStart);
+        this.ivlDescr.appendChild(this.timeFieldEnd);
+        this.ivlDescr.appendChild(this.textDescr);
+        descr.appendChild(this.ivlDescr);
+//        console.time('FragmentText'+__fragment.getId());
+//        this.onUpdate(__fragment);
     }
 //    
 //    move(e) {
@@ -64,7 +73,7 @@ export default class VizFragmentText extends VizFragment {
 
     
     update(){
-        super.update();
+//        super.update();
         if(this.timeFieldStart){
             this.timeFieldStart.innerText= TimeDisplay.sec2str(this.viz.fragment.start_s);
             this.timeFieldEnd.innerText= TimeDisplay.sec2str(this.viz.fragment.end_s);
