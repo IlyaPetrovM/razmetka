@@ -118,7 +118,7 @@ export default class Interview extends Publisher{
             this.interviewEdited(iw);
         }
 
-        this.loadTracks();
+//        this.loadTracks();
         
     }
     get table(){
@@ -233,4 +233,4 @@ export default class Interview extends Publisher{
             this.createTrackSwitch(data);
         }
     }
-}  
+}

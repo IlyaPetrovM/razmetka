@@ -22,6 +22,7 @@ export default class VizInterview extends Subscriber{
         var __vizTracks = {};
         var __interview = interview;
         var __parentNode = parentNode;
+        __interview.loadTracks();
         
         var __parentDiv = document.createElement('div');
         __parentNode.appendChild(__parentDiv);
