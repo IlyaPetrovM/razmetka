@@ -3,6 +3,8 @@ import Publisher from './Publisher.js';
 export default class Expedition extends Publisher {
     constructor(title,dbClient){
         super();
+        if(title===undefined) throw TypeError('title is undefined');
+//        if(dbClient===undefined) throw TypeError('dbClient is undefined');
         var __title;       
         var __interviews = {};
         var __dbClient = dbClient;
