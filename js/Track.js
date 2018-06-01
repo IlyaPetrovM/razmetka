@@ -31,11 +31,10 @@ export default class Track extends Publisher {
         }
         
         this.fragmentAdded = function(ivl){
-            console.warn('abstract method used');
-            
+            throw Error('abstract method used');
         }
         this.addFragment = function(ivl){
-            console.warn('abstract method used');
+            throw Error('abstract method used');
             // TODO хитрая проверка на пересечение
         }
         

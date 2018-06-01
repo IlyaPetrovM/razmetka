@@ -2,10 +2,10 @@ import Subscriber from '../Subscriber.js'
 export default class InterviewLink extends Subscriber{
     constructor(inte, parentNode){
         super();
+        if(inte===undefined) throw TypeError('interview is undefined');
         var __a = document.createElement('a');
         __a.className = 'interviewLink';
         __a.href = '#';
-        console.log(inte);
         var __interview = inte;
         var __parentNode = parentNode;
         
