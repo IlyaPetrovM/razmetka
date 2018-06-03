@@ -38,10 +38,10 @@ export default class MenuFragmentControls{
             __fragment.editFragment(start_s,end_s);
         };
         bMoveRight.onclick = function(e){
-            console.log('>');
             let step_s = parseFloat(inputMoveStep.value);
             let start_s = __fragment.getStartS()+step_s,
                 end_s = __fragment.getEndS()+step_s;
+            console.log('>',step_s);
             __fragment.editFragment(start_s,end_s);
         };
         document.addEventListener( 'fragmentChoosen', this.showMotionControl.bind(this,true) );

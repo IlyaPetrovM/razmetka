@@ -48,7 +48,8 @@
 }
 .interv.hover,.interv:hover{
     opacity: 0.5;
-    cursor: pointer;
+    cursor: move;
+    z-index: 10;
 }
 .wrapper{
     overflow:auto;
@@ -113,6 +114,7 @@
     height: 100%;
     width:1px;
     position: absolute;
+/*    z-index: 1;*/
 /*    top:50%;*/
 }
 #cursorPlay{

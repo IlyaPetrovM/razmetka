@@ -57,10 +57,18 @@ export default class Fragment extends Publisher {
         }
 
         this.fragmentEdited = function(edit){
-            throw Error('deprecated method');
+            console.log(edit);
+            __start_s = edit.start_s;
+            __end_s = edit.end_s;
+            this.update(this);
         }
-        this.editFragment = function(start_s, end_s){
-            throw Error('deprecated method');
+        this.editFragment = function(st_s, en_s){
+            let edit = {
+                start_s:st_s,
+                end_s:en_s
+            };
+            console.log(this);
+            this.fragmentEdited(edit);
         }
         if(start_s > end_s){
             end_s = start_s + 1;
