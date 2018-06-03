@@ -7,7 +7,7 @@ export default class VizTrack extends Subscriber{
         super();
         var __track = track;
 //        __track.loadFragments();
-        
+        console.log('viz track construct');
         this.div = document.createElement('div');
         this.div.className = "Track";
         this.div.track = track; 

@@ -50,7 +50,7 @@ export default class TrackMedia extends Track{
                 track_id:this.getId(),
                 int_id:  this.getInterviewId() 
             };
-            tmp[id] = parseInt(Math.random()*100);
+            tmp[id] = parseInt((new Date()).getTime());
             this.fragmentAdded(tmp);
         }
         

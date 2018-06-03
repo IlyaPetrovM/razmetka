@@ -57,10 +57,12 @@ export default class VizInterview extends Subscriber{
         __panelText.className='panelText';
         
         __interview.trackMediaCreated = function(track){
-                new VizTrackMedia(__panelMedia,track,__trackControlPanel);
+            throw Error('Deprecated method');
+//                new VizTrackMedia(__panelMedia,track,__trackControlPanel);
         }.bind(this);
         __interview.trackTextCreated = function(track){
-                new VizTrackText(__panelText,track,__trackControlPanel);
+            throw Error('Deprecated method');
+//                new VizTrackText(__panelText,track,__trackControlPanel);
         }.bind(this);
         
         ButtonAddTrackMedia();
@@ -125,8 +127,14 @@ export default class VizInterview extends Subscriber{
         
         __controls.appendChild(__buttonPlay);
         __controls.appendChild(__buttonPlayAndMark);
+
+        ///     TODO разобраться с этими ребятами
+        ///                                  ||||
+        ///                                  VVVV
         var timeline = new Timeline(__seq,__controls);
         var cp = new CursorPlay(timeline);
+
+
         var __bigwrapper = document.createElement('div');
         __bigwrapper.id = 'bigwrapper';
         __seq.appendChild(__panelMedia);
@@ -143,16 +151,13 @@ export default class VizInterview extends Subscriber{
         
         this.onUpdate = function(itw){
             document.title = itw.getId()+' '+itw.getTitle();
-            
             for(let id in itw.getTracks()){
                 let track = itw.getTracks()[id];
-                console.assert(id == track.getId(),'ids are different!',typeof id,typeof track.getId());
                 if( __vizTracks[track.getId()] === undefined){
                     switch(track.getType()){
                         case 'Media':
                             __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia,timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
-//                            console.log(track);
                             track.update(track);
                             break;
                         case 'Text':
@@ -163,6 +168,7 @@ export default class VizInterview extends Subscriber{
                         default:
                             console.error("Неизвестный тип трека",track.getType());
                     }
+
                 }
             }
         }

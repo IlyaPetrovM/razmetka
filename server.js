@@ -59,7 +59,7 @@ class Server{
         console.log('database connected');
     }
     prosessConnection(wsocket){
-        var id = parseInt(Math.random()*10000);
+        var id = parseInt((new Date()).getTime()));
         this.clients[id] = wsocket;
         console.log('Соединение ' + id + ' открыто');
         wsocket.on('message',this.processMessage.bind(this,id));

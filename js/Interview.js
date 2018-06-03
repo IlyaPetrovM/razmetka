@@ -45,12 +45,15 @@ export default class Interview extends Publisher{
         }
         var __this = this;
         function addTrackByType(track) {
+            console.log('addTrackByType');
             switch(track._type){
                 case 'Media':
                     __tracks[track.id] = new TrackMedia(track.title,track.id, __this, __wsClient);
+                    console.log('constructTrackEnd',track.id);
                     break;
                 case 'Text':
                     __tracks[track.id] = new TrackText(track.title,track.id, __this, __wsClient);
+                    console.log('constructTrackEnd',track.id);
                     break;
                 default:
                     console.error("Неизвестный тип трека:",track._type);
@@ -66,7 +69,7 @@ export default class Interview extends Publisher{
                 title: _title,
                 _type:'Media'
             };
-            trackM['id'] = parseInt(Math.random()*100); // TODO removeIt
+            trackM['id'] = (new Date()).getTime();
             this.trackAdded(trackM); //TODO replace by ws.send
         }
         this.addTrackText = function(_title){
@@ -74,7 +77,7 @@ export default class Interview extends Publisher{
                 title: _title,
                 _type:'Text'
             };
-            trackT['id'] = parseInt(Math.random()*100); // TODO removeIt
+            trackT['id'] = (new Date()).getTime();
             this.trackAdded(trackT); //TODO replace by ws.send
         }
         
@@ -96,9 +99,9 @@ export default class Interview extends Publisher{
         
         this.loadTracks = function(){
             let tmpTracks = [
-                {id:parseInt(Math.random()*100), title:'AudioTrack',_type:'Media',int_id:__id},
-                {id:parseInt(Math.random()*100), title:'Text Track',_type:'Text',int_id:__id},
-                {id:parseInt(Math.random()*100), title:'Text 2 Track',_type:'Text',int_id:__id}
+                {id:123, title:'AudioTrack',_type:'Media',int_id:__id},
+                {id:321, title:'Text Track',_type:'Text',int_id:__id},
+                {id:534, title:'Text 2 Track',_type:'Text',int_id:__id}
             ]; //TODO remove it
             this.tracksLoaded(tmpTracks); //TODO replace by ws.send
         }

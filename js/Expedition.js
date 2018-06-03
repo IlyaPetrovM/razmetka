@@ -22,7 +22,7 @@ export default class Expedition extends Publisher {
                 title:title,
                 _date:date
             };
-            tmp['id'] = Math.random()*100; // TODO remove it
+            tmp['id'] = (new Date().getTime()); // TODO remove it
             this.interviewAdded(tmp); //TODO addInterview replace by ws.send
         }
         

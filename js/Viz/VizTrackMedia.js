@@ -27,7 +27,7 @@ export default class VizTrackMedia extends VizTrack{
                 frg.update(frg);
             }
         }
-        __track.loadFragments();
+//        __track.loadFragments();
 
         this.createFragment = function(path, audio, clickEvent) { // event appends to the enduuu
             __track.addFragment(path,
