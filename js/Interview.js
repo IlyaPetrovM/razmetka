@@ -45,15 +45,12 @@ export default class Interview extends Publisher{
         }
         var __this = this;
         function addTrackByType(track) {
-            console.log('addTrackByType');
             switch(track._type){
                 case 'Media':
                     __tracks[track.id] = new TrackMedia(track.title,track.id, __this, __wsClient);
-                    console.log('constructTrackEnd',track.id);
                     break;
                 case 'Text':
                     __tracks[track.id] = new TrackText(track.title,track.id, __this, __wsClient);
-                    console.log('constructTrackEnd',track.id);
                     break;
                 default:
                     console.error("Неизвестный тип трека:",track._type);

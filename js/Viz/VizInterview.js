@@ -103,7 +103,7 @@ export default class VizInterview extends Subscriber{
                 document.dispatchEvent(stopPlayAndMarkEvent);
             }
             else{
-                if(cp.time_s < timeline.len_s - 0.05){
+                if(cp.time_s < __timeline.len_s - 0.05){
                 __buttonPlay.innerText='||';
                 __buttonPlayAndMark.innerText = 'M||';
                     var startPlayAndMarkEvent = new CustomEvent('startPlayAndMark');
@@ -131,8 +131,8 @@ export default class VizInterview extends Subscriber{
         ///     TODO разобраться с этими ребятами
         ///                                  ||||
         ///                                  VVVV
-        var timeline = new Timeline(__seq,__controls);
-        var cp = new CursorPlay(timeline);
+        var __timeline = new Timeline(__seq,__controls);
+        var cp = new CursorPlay(__timeline);
 
 
         var __bigwrapper = document.createElement('div');
@@ -156,14 +156,20 @@ export default class VizInterview extends Subscriber{
                 if( __vizTracks[track.getId()] === undefined){
                     switch(track.getType()){
                         case 'Media':
-                            __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,track,__trackControlPanelMedia,timeline);
+                            __vizTracks[track.getId()] = new VizTrackMedia(__panelMedia,
+                                                                           track,
+                                                                           __trackControlPanelMedia,
+                                                                           __timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
-                            track.update(track);
+                            track.loadFragments();
                             break;
                         case 'Text':
-                            __vizTracks[track.getId()] = new VizTrackText(__panelText,track,__trackControlPanelText,timeline);
+                            __vizTracks[track.getId()] = new VizTrackText(__panelText,
+                                                                          track,
+                                                                          __trackControlPanelText,
+                                                                          __timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
-                            track.update(track);
+                            track.loadFragments();
                             break;
                         default:
                             console.error("Неизвестный тип трека",track.getType());

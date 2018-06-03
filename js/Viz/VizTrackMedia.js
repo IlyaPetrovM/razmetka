@@ -21,19 +21,16 @@ export default class VizTrackMedia extends VizTrack{
             let frg;
             for(let i in track.getFragments()){
                 frg = track.getFragments()[i];
-                __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg);
+                __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg,timeline);
                 frg.addSubscriber(__vizFragments[frg.getId()]);
-                frg.addSubscriber(timeline);
                 frg.update(frg);
             }
         }
-//        __track.loadFragments();
 
         this.createFragment = function(path, audio, clickEvent) { // event appends to the enduuu
             __track.addFragment(path,
                                 VizTrack.pix2sec(clickEvent.offsetX),
                                 VizTrack.pix2sec(clickEvent.offsetX) + audio.duration);
-            console.log(__track);
         }
     }
     

@@ -5,9 +5,11 @@ import TimeDisplay from './TimeDisplay.js';
 **************************************/
 export default class VizFragmentText extends VizFragment {
     
-    constructor(parent, data, media){
-        super(parent, data);
+    constructor(parent, data, media, timeline){
+        super(parent, data, timeline);
+
         var __fragment = data;
+        var __timeline = timeline;
         this.media = data.getMedia();
 //        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
         
@@ -32,25 +34,41 @@ export default class VizFragmentText extends VizFragment {
         this.ivlDescr.addEventListener('mouseover',this.scrollTo.bind(this.viz));
         this.ivlDescr.addEventListener('mouseleave',this.scrollTo.bind(this.viz));
 
-        this.onUpdate = function(frg){
-            console.log(this);
-            var W_px = parseFloat(this.viz.parentElement.clientWidth);
-            var zoom_px = parseFloat(document.getElementById('zoom').value);
-            this.viz.style.left = frg.start_s * zoom_px * 100.0 / W_px + '%';
-            this.viz.style.width = frg.duration_s() * zoom_px * 100.0 / W_px + '%';
-            if(this.timeFieldStart){
-                this.timeFieldStart.innerText= TimeDisplay.sec2str(frg.start_s);
-                this.timeFieldEnd.innerText= TimeDisplay.sec2str(frg.end_s);
-            }
-//            console.timeEnd('FragmentText'+__fragment.getId());
-        }
         this.ivlDescr.appendChild(this.timeFieldStart);
         this.ivlDescr.appendChild(this.timeFieldEnd);
         this.ivlDescr.appendChild(this.textDescr);
         descr.appendChild(this.ivlDescr);
-//        console.time('FragmentText'+__fragment.getId());
+
+
+        var redraw = function(frg) {
+            var zoom_px = parseFloat(document.getElementById('zoom').value);
+            this.viz.style.left = frg.start_s * zoom_px/* * 100.0 / W_px + */+'px';
+            this.viz.style.width = frg.duration_s() * zoom_px/* * 100.0 / W_px */+ 'px';
+        }
+
+        this.timelineUpdated = function(frg){
+            redraw.call(this,frg);
+        }
+        this.onUpdate = function(frg){
+            if(this.timeFieldStart){
+                this.timeFieldStart.innerText= TimeDisplay.sec2str(frg.start_s);
+                this.timeFieldEnd.innerText= TimeDisplay.sec2str(frg.end_s);
+            }
+            redraw.call(this,frg);
+            __timeline.update(frg,this);
+        }
+
+        //        console.time('FragmentText'+__fragment.getId());
 //        this.onUpdate(__fragment);
     }
+//    onUpdate (frg){
+////            __proto__.onUpdate(frg);
+//            console.log(1);
+//            if(this.timeFieldStart){
+//                this.timeFieldStart.innerText= TimeDisplay.sec2str(frg.start_s);
+//                this.timeFieldEnd.innerText= TimeDisplay.sec2str(frg.end_s);
+//            }
+//        }
 //    
 //    move(e) {
 //        if(this.media.index == e.index){    

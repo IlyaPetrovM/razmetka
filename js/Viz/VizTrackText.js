@@ -19,14 +19,11 @@ export default class VizTrackText extends VizTrack{
 
         this.onUpdate = function(track){
             let frg;
-//            console.log('onUp');
             for(let i in track.getFragments()){
                     frg = track.getFragments()[i];
-//                if(track.getFragments()[i]===undefined){
-                    __vizFragments[frg.getId()] = new VizFragmentText(__div,frg);
-                    frg.addSubscriber(timeline);
+                    __vizFragments[frg.getId()] = new VizFragmentText(__div, frg,undefined, timeline);
                     frg.addSubscriber(__vizFragments[frg.getId()]);
-
+                    frg.update(frg);
             }
         }
         this.ivl = null;

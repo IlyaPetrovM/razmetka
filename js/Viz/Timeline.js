@@ -1,6 +1,6 @@
 import Subscriber from '../Subscriber.js';
 export default class Timeline extends Subscriber{
-    constructor(parentNode,controlNode,cursor){
+    constructor(parentNode,controlNode){
         super();
         this.div = document.createElement('div');
         this.div.className = 'timeline';
@@ -19,15 +19,14 @@ export default class Timeline extends Subscriber{
             e.target.title = '1 секунда =' + e.target.value+' пикселей';
         };  
 
-        this.onUpdate = function(frg){
+        this.update = function(frg,vizFrg){
             var addition = 3;
             let end_s = parseInt(frg.getEndS()) + addition; // 3 is for safety
             if(end_s > thisTimeline.len_s){
                 let diff_s = end_s - thisTimeline.len_s;
                 thisTimeline.len_s = end_s;
+                vizFrg.timelineUpdated(frg);
 //                document.dispatchEvent(new CustomEvent('timelineUpdated'));
-                console.log(1);
-                cursor.update();
             }
         };
         

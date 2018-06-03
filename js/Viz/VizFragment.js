@@ -4,10 +4,13 @@ import MenuFragmentControls from './MenuFragmentControls.js';
  Viz Fragment
 **************************************/
 export default class VizFragment extends Subscriber{
-    constructor(parentNode, fragment){
+    constructor(parentNode, fragment, timeline){
         super();
+        var __timeline = timeline;
+
         var __fragment = fragment;
         
+
         this.viz = document.createElement('div');
         this.viz.className = 'interv';
         this.viz.fragment = fragment;
@@ -32,10 +35,20 @@ export default class VizFragment extends Subscriber{
             }
             console.log('press fragment',fragment.getId());
         }.bind(this);
-        this.onUpdate = function(frg){
-            throw Error('abstract method called');
+
+        var redraw = function(frg) {
+            var zoom_px = parseFloat(document.getElementById('zoom').value);
+            this.viz.style.left = frg.start_s * zoom_px/* * 100.0 / W_px + */+'px';
+            this.viz.style.width = frg.duration_s() * zoom_px/* * 100.0 / W_px */+ 'px';
         }
 
+        this.timelineUpdated = function(frg){
+            redraw.call(this,frg);
+        }
+        this.onUpdate = function(frg){
+            redraw.call(this,frg);
+            __timeline.update(frg,this);
+        }
 //        document.addEventListener('fragmentUpdated',this.update.bind(this));
         document.addEventListener('cursorPlays',this.highlight.bind(this));
         document.addEventListener('stopPlaying',this.unHighlight.bind(this));
