@@ -1,3 +1,4 @@
+import TimeString from '../TimeString.js';
 export default class TimeDisplay{
     constructor(cursorParent,timeParent){
         
@@ -19,25 +20,14 @@ export default class TimeDisplay{
             let offset_px = cursor.parentElement.offsetLeft;
             cursor.style.left = (x_px - offset_px - 1) + 'px';
             let s = (x_px + scroll_px - offset_px - 1)/parseFloat(zoom.value);
-            mouseCursorTimeDisplay.innerText = TimeDisplay.sec2str(s);
+            mouseCursorTimeDisplay.innerText = TimeString.sec2str(s);
         },false);
         document.addEventListener('cursorChangePos',function(e){
-                playCursorDisplay.innerText = TimeDisplay.sec2str(e.time_s);
+                playCursorDisplay.innerText = TimeString.sec2str(e.time_s);
         });
         timeParent.appendChild(mouseCursorTimeDisplay);
         timeParent.appendChild(playCursorDisplay);
         cursorParent.appendChild(cursor);
     }
-    static sec2str(val_s){
-        let str;
-        let s = 0;
-        if(val_s > 0) s = val_s;
-//        let fmt = ;
-        let se = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s % 60));
-            let ms = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:3}).format(parseInt((s%60)*1000)%1000);
-            let mi = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 60) % 60);
-            let ho = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(parseInt(s / 360) % 24);
-            str = ho+':'+mi+':'+se+'.'+ms;
-        return str;
-    }
+
 }

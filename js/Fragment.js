@@ -17,25 +17,36 @@ export default class Fragment extends Publisher {
         this.getStartS = function(){
             return __start_s;
         }
-        this.setStartS = function(sec){
+        this.startSet = function(sec){
             __start_s = sec;
             this.update(this);
+        }
+        this.setStartS = function(sec){
+            //TODO
+            this.startSet(sec);
         }
         
         this.getEndS = function(){
             return __end_s;
         }
-        this.setEndS = function(sec){
+        this.endSet = function(sec){
             __end_s = sec;
             this.update(this);
+        }
+        this.setEndS = function(sec){
+            this.endSet(sec);
         }
         
         this.getTrackId = function(){
             return __track_id;
         }
-        this.setTrackId = function(id){
+        this.trackIdSet = function(id){
             __track_id = id;
             this.update(this);
+        }
+        this.setTrackId = function(id){
+            //TODO
+            this.trackIdSet(id);
         }
         
         this.getId = function(){
@@ -44,17 +55,23 @@ export default class Fragment extends Publisher {
         this.getInterviewId = function(){
             return __interview_id;
         }
-        
+
+        this.fragmentEdited = function(edit){
+            throw Error('deprecated method');
+        }
+        this.editFragment = function(start_s, end_s){
+            throw Error('deprecated method');
+        }
         if(start_s > end_s){
             end_s = start_s + 1;
         }
         this.leftFragment = undefined;
         this.rightFragment = undefined;
-        this.start_s = start_s;
-        this.end_s = end_s;
+//        this.start_s = start_s;
+//        this.end_s = end_s;
         this.index=__id;
         this.duration_s = function(){
-        return __end_s - __start_s;
+            return __end_s - __start_s;
         }
 //        console.log('Создан интервал ',Fragment.cnt);
     }

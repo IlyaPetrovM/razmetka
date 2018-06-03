@@ -1,5 +1,6 @@
 import VizFragment from './VizFragment.js';
-import TimeDisplay from './TimeDisplay.js';
+import TimeString from '../TimeString.js';
+import TimeField from './TimeField.js';
 /**************************************
  Viz Fragment Text
 **************************************/
@@ -12,64 +13,34 @@ export default class VizFragmentText extends VizFragment {
         var __timeline = timeline;
         this.media = data.getMedia();
 //        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
-        
-        this.timeFieldStart = document.createElement('time');
-        this.timeFieldEnd = document.createElement('time');
-        
+
         this.textDescr = document.createElement('div');
         this.textDescr.setAttribute('contenteditable',true); 
         this.textDescr.className = 'textDescr';
         this.textDescr.innerHTML = data.getDescr();
 
-        this.timeFieldStart.className = 'timeField';      
-        this.timeFieldEnd.className = 'timeField';  
-        
-        
         this.ivlDescr = document.createElement('div');
         this.ivlDescr.className = 'ivlDescr';
-        
 
         this.viz.addEventListener('mouseover',this.scrollTo.bind(this.ivlDescr));   
         this.viz.addEventListener('mouseleave',this.scrollTo.bind(this.ivlDescr));
         this.ivlDescr.addEventListener('mouseover',this.scrollTo.bind(this.viz));
         this.ivlDescr.addEventListener('mouseleave',this.scrollTo.bind(this.viz));
 
-        this.ivlDescr.appendChild(this.timeFieldStart);
-        this.ivlDescr.appendChild(this.timeFieldEnd);
+        var __start = new TimeField(this.ivlDescr,__fragment,__fragment.getStartS),
+            __end = new TimeField(this.ivlDescr,__fragment,__fragment.getEndS);
+        __fragment.addSubscriber(__start);
+        __fragment.addSubscriber(__end);
+        __start.onChange = function(time_s){
+            __fragment.setStartS(time_s);
+        }
+        __end.onChange = function(time_s){
+            __fragment.setEndS(time_s);
+        }
+
         this.ivlDescr.appendChild(this.textDescr);
         descr.appendChild(this.ivlDescr);
-
-
-        var redraw = function(frg) {
-            var zoom_px = parseFloat(document.getElementById('zoom').value);
-            this.viz.style.left = frg.start_s * zoom_px/* * 100.0 / W_px + */+'px';
-            this.viz.style.width = frg.duration_s() * zoom_px/* * 100.0 / W_px */+ 'px';
-        }
-
-        this.timelineUpdated = function(frg){
-            redraw.call(this,frg);
-        }
-        this.onUpdate = function(frg){
-            if(this.timeFieldStart){
-                this.timeFieldStart.innerText= TimeDisplay.sec2str(frg.start_s);
-                this.timeFieldEnd.innerText= TimeDisplay.sec2str(frg.end_s);
-            }
-            redraw.call(this,frg);
-            __timeline.update(frg,this);
-        }
-
-        //        console.time('FragmentText'+__fragment.getId());
-//        this.onUpdate(__fragment);
     }
-//    onUpdate (frg){
-////            __proto__.onUpdate(frg);
-//            console.log(1);
-//            if(this.timeFieldStart){
-//                this.timeFieldStart.innerText= TimeDisplay.sec2str(frg.start_s);
-//                this.timeFieldEnd.innerText= TimeDisplay.sec2str(frg.end_s);
-//            }
-//        }
-//    
 //    move(e) {
 //        if(this.media.index == e.index){    
 //            let moveFragmentTextEvent =new CustomEvent('moveFragment');

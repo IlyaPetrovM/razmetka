@@ -156,7 +156,7 @@ html{
 
 .timeField{
     font-family: monospace;   
-    width: 70px;
+    width: 100px;
     display: table-cell;
     border: 1px solid #ccc;
     text-align: center;

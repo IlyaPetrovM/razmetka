@@ -38,7 +38,7 @@ export default class VizFragment extends Subscriber{
 
         var redraw = function(frg) {
             var zoom_px = parseFloat(document.getElementById('zoom').value);
-            this.viz.style.left = frg.start_s * zoom_px/* * 100.0 / W_px + */+'px';
+            this.viz.style.left = frg.getStartS() * zoom_px/* * 100.0 / W_px + */+'px';
             this.viz.style.width = frg.duration_s() * zoom_px/* * 100.0 / W_px */+ 'px';
         }
 

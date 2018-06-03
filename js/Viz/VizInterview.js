@@ -128,9 +128,7 @@ export default class VizInterview extends Subscriber{
         __controls.appendChild(__buttonPlay);
         __controls.appendChild(__buttonPlayAndMark);
 
-        ///     TODO разобраться с этими ребятами
-        ///                                  ||||
-        ///                                  VVVV
+
         var __timeline = new Timeline(__seq,__controls);
         var cp = new CursorPlay(__timeline);
 
