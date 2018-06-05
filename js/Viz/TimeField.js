@@ -6,6 +6,7 @@ export default class TimeField extends Subscriber{
         var __fragment = fragment;
         this.onChange = function(time_s){
             __input.value = TimeString.sec2str(time_s);
+alarm('Не удалось отправить данные');
         };
         var __input = document.createElement('input');
             __input.className = 'timeField';
@@ -14,6 +15,7 @@ export default class TimeField extends Subscriber{
             let ms = TimeString.parseMs(str);
             if(ms===undefined){
                 console.error('ms is undefined');
+__input.value = TimeString.sec2str(getData.call(this));
             }
             this.onChange(ms*0.001);
             __input.blur();
