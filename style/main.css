@@ -26,7 +26,22 @@
     width: 50px;
 }
 
-
+#resetform{
+    position: absolute;
+    width: 99%;
+    height: 99%;
+    border: green 2px solid;
+    background: rgba(255,255,255,0.9);
+    display: block;
+    top: 0px;
+    left:0px;
+}
+#fileInput{
+    position: relative;
+    margin: 25% auto;
+    font-size: 20px;
+    display: block;
+}
 
 #buttonPlayAndMark, #buttonPlay{
     width: 40px;

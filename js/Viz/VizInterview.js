@@ -22,7 +22,6 @@ export default class VizInterview extends Subscriber{
         var __vizTracks = {};
         var __interview = interview;
         var __parentNode = parentNode;
-        __interview.loadTracks();
         
         var __parentDiv = document.createElement('div');
         __parentNode.appendChild(__parentDiv);
@@ -159,7 +158,11 @@ export default class VizInterview extends Subscriber{
                                                                            __trackControlPanelMedia,
                                                                            __timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
-                            track.loadFragments();
+                            if(q['new']!='1'){
+                                track.loadFragments();
+                            }else{
+                                 __vizTracks[track.getId()].addFragmentMedia(0);
+                            }
                             break;
                         case 'Text':
                             __vizTracks[track.getId()] = new VizTrackText(__panelText,
@@ -167,7 +170,8 @@ export default class VizInterview extends Subscriber{
                                                                           __trackControlPanelText,
                                                                           __timeline);
                             track.addSubscriber(__vizTracks[track.getId()]);
-                            track.loadFragments();
+                            if(q['new']!='1'){
+                            track.loadFragments();}
                             break;
                         default:
                             console.error("Неизвестный тип трека",track.getType());
@@ -221,7 +225,7 @@ export default class VizInterview extends Subscriber{
             return query;
         }
         let s = window.location.search;
-        let q = parseSearch(s);
+        var q = parseSearch(s);
         if(q['id']){
             document.title='Интервью '+q['id'];
         }
@@ -229,3 +233,11 @@ var tmpInterview = new Interview(q['id'],'Деревенское интервь�
 var vi = new VizInterview(document.body,tmpInterview);
 tmpInterview.addSubscriber(vi);
 tmpInterview.loadMe(q['id']);
+if(q['new']=='1'){
+    console.log('Создание нового интервью');
+    tmpInterview.addTrackMedia('Медиа трек');
+    tmpInterview.addTrackText('Аудио трек');
+}else{
+    console.log('Загрузка');
+    tmpInterview.loadTracks();
+}

@@ -27,10 +27,10 @@ export default class VizTrackMedia extends VizTrack{
             }
         }
 
-        this.createFragment = function(path, audio, clickEvent) { // event appends to the enduuu
+        this.createFragment = function(path, audio, offsetX) { // event appends to the enduuu
             __track.addFragment(path,
-                                VizTrack.pix2sec(clickEvent.offsetX),
-                                VizTrack.pix2sec(clickEvent.offsetX) + audio.duration);
+                                VizTrack.pix2sec(offsetX),
+                                VizTrack.pix2sec(offsetX) + audio.duration);
         }
     }
     
@@ -48,19 +48,34 @@ export default class VizTrackMedia extends VizTrack{
     }
 
 
+    addFragmentMedia(offsetX) {
+        
+        console.log('fi');
+        var fi = document.createElement('input');
+        fi.id = 'fileInput';
+        fi.type = 'file';
+        var form = document.createElement('form');
+        form.id = 'resetform';
+        fi.onchange = function(e){
+            window.URL = window.URL || window.webkitURL;
+            var path = window.URL.createObjectURL(e.target.files[0]);
+            var audio = new Audio(path);
+            audio.parentEvent = e;
+            audio.ondurationchange = 
+                this.createFragment.bind(this, path, audio, offsetX); // and Event in the end
+            resetform.reset();
+            document.body.removeChild(form);
+        }.bind(this);
+        form.appendChild(fi);
+        document.body.appendChild(form);
+//        $("#fileInput").trigger("click");
+//        <form id=resetform>
+//        <input type="file" id=fileInput style="" /></form>
+    }
+
     processClick(clickEvent){
             if(clickEvent.target.track != null){
-                fileInput.viztrack = clickEvent.target;
-                fileInput.onchange = function(e){
-                    window.URL = window.URL || window.webkitURL;
-                    var path = window.URL.createObjectURL(e.target.files[0]);
-                    var audio = new Audio(path);
-                    audio.parentEvent = e;
-                    audio.ondurationchange = 
-                        this.createFragment.bind(this, path, audio, clickEvent); // and Event in the end
-                    resetform.reset();
-                }.bind(this);
-                $("#fileInput").trigger("click");
+                this.addFragmentMedia(clickEvent.offsetX);
             }else if(clickEvent.target.fragment != null){
 //                if(clickEvent.target.choosen){
 //                    document.dispatchEvent(new CustomEvent('fragmentUnchoosen', clickEvent.target));

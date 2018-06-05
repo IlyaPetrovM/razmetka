@@ -57,7 +57,7 @@ export default class Fragment extends Publisher {
         }
 
         this.fragmentEdited = function(edit){
-            console.log(edit);
+//            console.log(edit);
             __start_s = edit.start_s;
             __end_s = edit.end_s;
             this.update(this);
@@ -67,7 +67,7 @@ export default class Fragment extends Publisher {
                 start_s:st_s,
                 end_s:en_s
             };
-            console.log(this);
+//            console.log(this);
             this.fragmentEdited(edit);
         }
         if(start_s > end_s){

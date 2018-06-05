@@ -9,6 +9,7 @@ import Subscriber from '../Subscriber.js';
 export default class InterviewChooser extends Subscriber{
     constructor(wsocket,parentNode,expedition){
         super();
+        var iAmCreator = false;
         var __expedition = expedition;
         this.onUpdate = function(ex){
             document.title = ex.getTitle();
@@ -18,6 +19,10 @@ export default class InterviewChooser extends Subscriber{
                     let itwLink = new InterviewLink(ex.getInterviews()[i],this);
                     ex.getInterviews()[i].addSubscriber(itwLink);
                     this.interviewItems[ex.getInterviews()[i].getId()] = itwLink;
+                }
+                if(iAmCreator){
+                    iAmCreator = false;
+                    window.open("interview.html?id="+ex.getInterviews()[i].getId()+'&new=1',"_self");
                 }
             }
 //            for(let i in this.interviewItems){
@@ -43,6 +48,7 @@ export default class InterviewChooser extends Subscriber{
             }
             if(send){
                  //TODO 09.04.2018 
+                iAmCreator = true;
                 __expedition.addInterview(title_,date_);
     //            super.create({title: title_,_date:date_}, 'Interview');
             }

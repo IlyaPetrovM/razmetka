@@ -39,7 +39,7 @@ export default class VizFragment extends Subscriber{
         };
 
         this.viz.onmousedown = function(e){
-            console.log(e.clientX);
+//            console.log(e.clientX);
             offset_px = parseInt(this.viz.style.left)-e.clientX;
             moving = true;
         }.bind(this);
@@ -66,7 +66,7 @@ export default class VizFragment extends Subscriber{
 //        }.bind(this);
 
         var redraw = function(frg) {
-            console.log('after motion');
+//            console.log('after motion');
             var zoom_px = parseFloat(document.getElementById('zoom').value);
             this.viz.style.left = frg.getStartS() * zoom_px/* * 100.0 / W_px + */+'px';
             this.viz.style.width = frg.duration_s() * zoom_px/* * 100.0 / W_px */+ 'px';
