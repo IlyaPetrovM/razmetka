@@ -1,8 +1,9 @@
 //import Subscriber
 export default class CursorPlay{
-    constructor(timeline){
+    constructor(timeline, timeDisplay){
         this.prec = 5;
         this.timeline = timeline;
+        var __timeDisplay = timeDisplay; 
         this.zoom = timeline.zoom;
         this.div = document.createElement('div');
         this.div.className='cursor';
@@ -21,7 +22,7 @@ export default class CursorPlay{
         
         document.addEventListener('startPlay',function(){
                     const   prec=25;    
-            timerId = setFragment(function() { 
+            timerId = setInterval(function() { 
                     thisCursor.div.scrollIntoView(false);
 
                     var cursorPlaysEvent = new CustomEvent('cursorPlays');
@@ -56,10 +57,10 @@ export default class CursorPlay{
         });
         
         document.addEventListener('stopPlaying',function(e){
-            clearFragment(timerId);
+            clearInterval(timerId);
         });
         document.addEventListener('cantPlay',function(e){
-            clearFragment(timerId);
+            clearInterval(timerId);
         });
     }
     set time_s(val_s){

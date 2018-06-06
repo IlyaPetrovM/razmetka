@@ -6,7 +6,7 @@ import TimeField from './TimeField.js';
 **************************************/
 export default class VizFragmentText extends VizFragment {
     
-    constructor(parent, data, media, timeline){
+    constructor(parent, data, media, timeline,parentDescr){
         super(parent, data, timeline);
 
         var __fragment = data;
@@ -39,7 +39,7 @@ export default class VizFragmentText extends VizFragment {
         }
 
         this.ivlDescr.appendChild(this.textDescr);
-        descr.appendChild(this.ivlDescr);
+        parentDescr.appendChild(this.ivlDescr);
     }
 //    move(e) {
 //        if(this.media.index == e.index){    

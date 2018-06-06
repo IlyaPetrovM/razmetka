@@ -168,7 +168,7 @@ export default class VizInterview extends Subscriber{
                             __vizTracks[track.getId()] = new VizTrackText(__panelText,
                                                                           track,
                                                                           __trackControlPanelText,
-                                                                          __timeline);
+                                                                          __timeline, __descr);
                             track.addSubscriber(__vizTracks[track.getId()]);
                             if(q['new']!='1'){
                             track.loadFragments();}

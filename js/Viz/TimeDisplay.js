@@ -25,6 +25,9 @@ export default class TimeDisplay{
         document.addEventListener('cursorChangePos',function(e){
                 playCursorDisplay.innerText = TimeString.sec2str(e.time_s);
         });
+        document.addEventListener('cursorPlays',function(e){
+                playCursorDisplay.innerText = TimeString.sec2str(e.cursorPos_s);
+        });
         timeParent.appendChild(mouseCursorTimeDisplay);
         timeParent.appendChild(playCursorDisplay);
         cursorParent.appendChild(cursor);

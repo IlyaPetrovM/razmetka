@@ -762,7 +762,7 @@ function Sizzle( selector, context, results, seed ) {
 		if ( documentIsHTML ) {
 
 			// If the selector is sufficiently simple, try using a "get*By*" DOM method
-			// (excepting DocumentFragment context, where the methods don't exist)
+			// (excepting DocumentInterval context, where the methods don't exist)
 			if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
 
 				// ID selector
@@ -1129,7 +1129,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
 
-			// DocumentFragment nodes don't have gEBTN
+			// DocumentInterval nodes don't have gEBTN
 			} else if ( support.qsa ) {
 				return context.querySelectorAll( tag );
 			}
@@ -1139,7 +1139,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			var elem,
 				tmp = [],
 				i = 0,
-				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
+				// By happy coincidence, a (broken) gEBTN appears on DocumentInterval nodes too
 				results = context.getElementsByTagName( tag );
 
 			// Filter out possible comments
@@ -1425,7 +1425,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 			// IE 9's matchesSelector returns false on disconnected nodes
 			if ( ret || support.disconnectedMatch ||
 					// As well, disconnected nodes are said to be in a document
-					// fragment in IE 9
+					// Interval in IE 9
 					elem.document && elem.document.nodeType !== 11 ) {
 				return ret;
 			}
@@ -2982,7 +2982,7 @@ jQuery.fn.extend( {
 		for ( ; i < l; i++ ) {
 			for ( cur = this[ i ]; cur && cur !== context; cur = cur.parentNode ) {
 
-				// Always skip document fragments
+				// Always skip document Intervals
 				if ( cur.nodeType < 11 && ( pos ?
 					pos.index( cur ) > -1 :
 
@@ -4306,9 +4306,9 @@ function setGlobalEval( elems, refElements ) {
 
 var rhtml = /<|&#?\w+;/;
 
-function buildFragment( elems, context, scripts, selection, ignored ) {
+function buildInterval( elems, context, scripts, selection, ignored ) {
 	var elem, tmp, tag, wrap, contains, j,
-		fragment = context.createDocumentFragment(),
+		Interval = context.createDocumentInterval(),
 		nodes = [],
 		i = 0,
 		l = elems.length;
@@ -4331,7 +4331,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 
 			// Convert html into DOM nodes
 			} else {
-				tmp = tmp || fragment.appendChild( context.createElement( "div" ) );
+				tmp = tmp || Interval.appendChild( context.createElement( "div" ) );
 
 				// Deserialize a standard representation
 				tag = ( rtagName.exec( elem ) || [ "", "" ] )[ 1 ].toLowerCase();
@@ -4349,7 +4349,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 				jQuery.merge( nodes, tmp.childNodes );
 
 				// Remember the top-level container
-				tmp = fragment.firstChild;
+				tmp = Interval.firstChild;
 
 				// Ensure the created nodes are orphaned (#12392)
 				tmp.textContent = "";
@@ -4357,8 +4357,8 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 		}
 	}
 
-	// Remove wrapper from fragment
-	fragment.textContent = "";
+	// Remove wrapper from Interval
+	Interval.textContent = "";
 
 	i = 0;
 	while ( ( elem = nodes[ i++ ] ) ) {
@@ -4373,8 +4373,8 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 
 		contains = jQuery.contains( elem.ownerDocument, elem );
 
-		// Append to fragment
-		tmp = getAll( fragment.appendChild( elem ), "script" );
+		// Append to Interval
+		tmp = getAll( Interval.appendChild( elem ), "script" );
 
 		// Preserve script evaluation history
 		if ( contains ) {
@@ -4392,13 +4392,13 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 		}
 	}
 
-	return fragment;
+	return Interval;
 }
 
 
 ( function() {
-	var fragment = document.createDocumentFragment(),
-		div = fragment.appendChild( document.createElement( "div" ) ),
+	var Interval = document.createDocumentInterval(),
+		div = Interval.appendChild( document.createElement( "div" ) ),
 		input = document.createElement( "input" );
 
 	// Support: Android 4.0-4.3, Safari<=5.1
@@ -4412,7 +4412,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 	div.appendChild( input );
 
 	// Support: Safari<=5.1, Android<4.2
-	// Older WebKit doesn't clone checked state correctly in fragments
+	// Older WebKit doesn't clone checked state correctly in Intervals
 	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
 
 	// Support: IE<=11+
@@ -5214,14 +5214,14 @@ function domManip( collection, args, callback, ignored ) {
 	// Flatten any nested arrays
 	args = concat.apply( [], args );
 
-	var fragment, first, scripts, hasScripts, node, doc,
+	var Interval, first, scripts, hasScripts, node, doc,
 		i = 0,
 		l = collection.length,
 		iNoClone = l - 1,
 		value = args[ 0 ],
 		isFunction = jQuery.isFunction( value );
 
-	// We can't cloneNode fragments that contain checked, in WebKit
+	// We can't cloneNode Intervals that contain checked, in WebKit
 	if ( isFunction ||
 			( l > 1 && typeof value === "string" &&
 				!support.checkClone && rchecked.test( value ) ) ) {
@@ -5235,23 +5235,23 @@ function domManip( collection, args, callback, ignored ) {
 	}
 
 	if ( l ) {
-		fragment = buildFragment( args, collection[ 0 ].ownerDocument, false, collection, ignored );
-		first = fragment.firstChild;
+		Interval = buildInterval( args, collection[ 0 ].ownerDocument, false, collection, ignored );
+		first = Interval.firstChild;
 
-		if ( fragment.childNodes.length === 1 ) {
-			fragment = first;
+		if ( Interval.childNodes.length === 1 ) {
+			Interval = first;
 		}
 
 		// Require either new content or an interest in ignored elements to invoke the callback
 		if ( first || ignored ) {
-			scripts = jQuery.map( getAll( fragment, "script" ), disableScript );
+			scripts = jQuery.map( getAll( Interval, "script" ), disableScript );
 			hasScripts = scripts.length;
 
-			// Use the original fragment for the last item
+			// Use the original Interval for the last item
 			// instead of the first because it can end up
 			// being emptied incorrectly in certain situations (#8070).
 			for ( ; i < l; i++ ) {
-				node = fragment;
+				node = Interval;
 
 				if ( i !== iNoClone ) {
 					node = jQuery.clone( node, true, true );
@@ -5801,7 +5801,7 @@ function curCSS( elem, name, computed ) {
 
 	// Support: Opera 12.1x only
 	// Fall back to style even without computed
-	// computed is undefined for elems on document fragments
+	// computed is undefined for elems on document Intervals
 	if ( ( ret === "" || ret === undefined ) && !jQuery.contains( elem.ownerDocument, elem ) ) {
 		ret = jQuery.style( elem, name );
 	}
@@ -7042,15 +7042,15 @@ jQuery.fx.timer = function( timer ) {
 	}
 };
 
-jQuery.fx.fragment = 13;
+jQuery.fx.Interval = 13;
 jQuery.fx.start = function() {
 	if ( !timerId ) {
-		timerId = window.setFragment( jQuery.fx.tick, jQuery.fx.fragment );
+		timerId = window.setInterval( jQuery.fx.tick, jQuery.fx.Interval );
 	}
 };
 
 jQuery.fx.stop = function() {
-	window.clearFragment( timerId );
+	window.clearInterval( timerId );
 
 	timerId = null;
 };
@@ -9354,7 +9354,7 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 
 
 // Argument "data" should be string of html
-// context (optional): If specified, the fragment will be created in this context,
+// context (optional): If specified, the Interval will be created in this context,
 // defaults to document
 // keepScripts (optional): If true, will include scripts passed in the html string
 jQuery.parseHTML = function( data, context, keepScripts ) {
@@ -9375,7 +9375,7 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 		return [ context.createElement( parsed[ 1 ] ) ];
 	}
 
-	parsed = buildFragment( [ data ], context, scripts );
+	parsed = buildInterval( [ data ], context, scripts );
 
 	if ( scripts && scripts.length ) {
 		jQuery( scripts ).remove();

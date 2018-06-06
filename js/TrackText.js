@@ -31,8 +31,15 @@ export default class TrackText extends Track{
             this.update(this);
         }
 
-        this.addFragment = function(frg){
-            this.fragmentAdded(frg);
+        this.addFragment = function(start_s, end_s, descr, media_id){
+            let tmp = {         id:(new Date).getTime(),
+                                start_s:start_s,
+                                end_s:end_s,
+                                descr:descr,
+                                track_id:this.getId(),
+                                int_id:interview.getId(),
+                                media_id:media_id};
+            this.fragmentAdded(tmp);
         }
 
         this.fragmentsLoaded = function(data){
