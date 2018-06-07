@@ -13,6 +13,9 @@ export default class CursorPlay{
         this.time_s = 0;
         this.div.this = this;
         this.timeline.div.appendChild(this.div);
+        this.getPosS = function(){
+            return this.time_s;
+        }
         
         var timerId;        
         document.addEventListener('startPlayAndMark',function(){

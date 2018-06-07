@@ -1,32 +1,48 @@
 import VizTrack from './VizTrack.js';
 import VizFragmentText from './VizFragmentText.js';
 import FragmentText from '../FragmentText.js';
+import CursorPlay from './CursorPlay.js';
 /**************************************
 VizTrackText
 **************************************/
 export default class VizTrackText extends VizTrack{
-    constructor(parent,track,parentPanel,timeline,parentDescr){
+    constructor(parent,track,parentPanel,timeline,parentDescr, cursorPlay){
+        if(!(cursorPlay instanceof CursorPlay)) throw TypeError('CursorPlay is undefined');
         super(parent,track,parentPanel);
         this.div.className = "TrackText";
         var __div = this.div;
+        var __cursorPlay = cursorPlay;
         var __trackDiscr = document.createElement('div');
+        var __wrapper = document.createElement('div');
+        
         __trackDiscr.className = 'trackDiscr';
-        parentDescr.appendChild(__trackDiscr);
+        
         var dragStart_pc = 0;
         var dragEnd_pc = dragStart_pc;
         var __vizFragments = {};
         var selection = document.createElement('div');
-
+        var __lastAddedFragment;
         var addFragmentTextButton = document.createElement('button');
         addFragmentTextButton.id = 'addFragmentTextButton';
         addFragmentTextButton.innerText = '+';
+        var bAddFragment = false;
         addFragmentTextButton.onclick = function(e){
             //TODO 2018-06-06
-           track.addFragment(15,40,'Это новый фрагмент',222);
+            let start_s = __cursorPlay.getPosS();
+            let end_s = start_s + 2;
+            if(bAddFragment) {__lastAddedFragment.setEndS(start_s-0.1);}
+           track.addFragment(start_s,end_s,'',222);
+            bAddFragment = true;
         }.bind(this);
-        __trackDiscr.appendChild(addFragmentTextButton);
-        
-        
+        document.addEventListener('stopPlaying',function(){
+            if(bAddFragment){
+                __lastAddedFragment.setEndS(__cursorPlay.getPosS());
+                bAddFragment = false;
+            }
+        }.bind(this),false)
+        __wrapper.appendChild(__trackDiscr);
+        __wrapper.appendChild(addFragmentTextButton);
+        parentDescr.appendChild(__wrapper);
         this.radio.name = 'trackChooserText';
         this.panel.classList.add('trackCPanelText');
 
@@ -39,6 +55,7 @@ export default class VizTrackText extends VizTrack{
                     __vizFragments[frg.getId()] = new VizFragmentText(__div, frg,undefined, timeline,__trackDiscr);
                     frg.addSubscriber(__vizFragments[frg.getId()]);
                     frg.update(frg);
+                    __lastAddedFragment = frg;
                 }
             }
         }

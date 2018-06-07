@@ -16,9 +16,12 @@ export default class VizFragmentText extends VizFragment {
 
         this.textDescr = document.createElement('div');
         this.textDescr.setAttribute('contenteditable',true); 
+        this.textDescr.setAttribute('tabindex','-1'); 
+
+        this.textDescr.id = ('textDiscr');
         this.textDescr.className = 'textDescr';
         this.textDescr.innerHTML = data.getDescr();
-
+        
         this.ivlDescr = document.createElement('div');
         this.ivlDescr.className = 'ivlDescr';
 
@@ -40,6 +43,10 @@ export default class VizFragmentText extends VizFragment {
 
         this.ivlDescr.appendChild(this.textDescr);
         parentDescr.appendChild(this.ivlDescr);
+         this.textDescr.focus();
+        this.focus = function(){
+            this.textDescr.focus();
+        }
     }
 //    move(e) {
 //        if(this.media.index == e.index){    

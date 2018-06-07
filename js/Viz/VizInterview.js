@@ -102,7 +102,7 @@ export default class VizInterview extends Subscriber{
                 document.dispatchEvent(stopPlayAndMarkEvent);
             }
             else{
-                if(cp.time_s < __timeline.len_s - 0.05){
+                if(__cursorPlay.time_s < __timeline.len_s - 0.05){
                 __buttonPlay.innerText='||';
                 __buttonPlayAndMark.innerText = 'M||';
                     var startPlayAndMarkEvent = new CustomEvent('startPlayAndMark');
@@ -129,7 +129,7 @@ export default class VizInterview extends Subscriber{
 
 
         var __timeline = new Timeline(__seq,__controls);
-        var cp = new CursorPlay(__timeline);
+        var __cursorPlay = new CursorPlay(__timeline);
 
 
         var __bigwrapper = document.createElement('div');
@@ -168,7 +168,7 @@ export default class VizInterview extends Subscriber{
                             __vizTracks[track.getId()] = new VizTrackText(__panelText,
                                                                           track,
                                                                           __trackControlPanelText,
-                                                                          __timeline, __descr);
+                                                                          __timeline, __descr, __cursorPlay);
                             track.addSubscriber(__vizTracks[track.getId()]);
                             if(q['new']!='1'){
                             track.loadFragments();}
