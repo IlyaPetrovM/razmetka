@@ -79,29 +79,42 @@ export default class VizFragment extends Subscriber{
             redraw.call(this,frg);
             __timeline.update(frg,this);
         }
+        this.startPlay = function(){
+            this.viz.classList.add('playing');
+        }
+        this.stopPlay = function(){
+            this.viz.classList.remove('playing');
+        }
+        this.highlight = function(cursorPlaysEvent){
+            var cursPos_s = cursorPlaysEvent.cursorPos_s;
+            var fragmentLeft_s = __fragment.getStartS(); // FIXME
+            var fragmentRight_s = __fragment.getEndS(); // FIXME
+            if(!this.plays){
+                if(cursPos_s >= fragmentLeft_s && cursPos_s <= fragmentRight_s){
+                    this.plays = true;
+                    this.startPlay();
+                }
+            }else{
+                if(cursPos_s >=fragmentRight_s){
+                    this.plays = false;
+                    this.stopPlay();
+                }
+            }
+        }
+
+        this.unHighlight = function(){
+            this.plays=false;
+            this.stopPlay();
+        }
 //        document.addEventListener('fragmentUpdated',this.update.bind(this));
         document.addEventListener('cursorPlays',this.highlight.bind(this));
         document.addEventListener('stopPlaying',this.unHighlight.bind(this));
         document.addEventListener('moveFragment',this.checkIntersect.bind(this));
+
+
 //        document.addEventListener('timelineUpdated',this.update.bind(this));
     }
-    
-    highlight(cursorPlaysEvent){
-        var cursPos_s = cursorPlaysEvent.cursorPos_s; 
-        var fragmentLeft_s = this.viz.fragment.start_s;
-        var fragmentRight_s = this.viz.fragment.end_s;
-        if(!this.plays){
-            if(cursPos_s >= fragmentLeft_s && cursPos_s <= fragmentRight_s){
-                this.plays = true;
-                this.startPlay();
-            }
-        }else{
-            if(cursPos_s >=fragmentRight_s){
-                this.plays = false;
-                this.stopPlay();
-            }
-        }
-    }
+
 
     checkIntersect(e) {
         if(this.viz.choosen){
@@ -112,16 +125,7 @@ export default class VizFragment extends Subscriber{
         }
     }
 
-    unHighlight() {
-        this.plays=false;
-        this.stopPlay();
-    }
-    startPlay(){
-        this.viz.classList.add('playing');
-    }
-    stopPlay(){
-        this.viz.classList.remove('playing');
-    }
+
     updateEvt(e){
         if(e.fragment === this.viz.fragment){
             this.update();

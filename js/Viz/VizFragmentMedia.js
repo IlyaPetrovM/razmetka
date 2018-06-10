@@ -7,15 +7,26 @@ export default class VizFragmentMedia extends VizFragment {
         super(parent,data,timeline);
         
 //        document.addEventListener('moveFragmentMediaEvent',this.move.bind(this));
-//        document.addEventListener('cursorChangePos', this.reactOnCursor.bind(this));
+        document.addEventListener('cursorChangePos', this.reactOnCursor.bind(this));
 //        document.addEventListener('motionApprovedMedia',this.move.bind(this));
 
 
+        this.startPlay = function(){
+            this.viz.classList.add('playing');
+            console.log(this.constructor.name+'::startPlay()');
+            this.viz.fragment.cursorOn = true;
+            this.viz.fragment.audio.play();
+        }
+
+        this.stopPlay = function(){
+            this.viz.classList.remove('playing');
+            this.viz.fragment.audio.pause();
+        }
     }
     
     reactOnCursor(cursorChangePosEvent) {
         let abs_s = cursorChangePosEvent.time_s;
-        let rel_s = abs_s - this.viz.fragment.start_s;
+        let rel_s = abs_s - this.viz.fragment.getStartS();
         if(rel_s > 0 && rel_s < this.viz.fragment.audio.duration){
             this.viz.fragment.cursorOn = true;
             this.viz.fragment.audio.currentTime = rel_s;
@@ -38,15 +49,6 @@ export default class VizFragmentMedia extends VizFragment {
             this.viz.fragment.textFragments[i].viz.fragment.move(step_s);
         }
     }
-    
-    startPlay(){
-        super.startPlay();
-        this.viz.fragment.cursorOn = true;
-        this.viz.fragment.audio.play();
-    }
-    
-    stopPlay(){
-        super.stopPlay();
-        this.viz.fragment.audio.pause();
-    }
+
+
 }

@@ -93,7 +93,8 @@
     background: #ccc;
 }
 .playing{
-    background: red;
+    background: #0f0 !important;
+    border-color: #000 !important;
 }
 .sequence{
     width:fit-content;
