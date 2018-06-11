@@ -28,13 +28,13 @@ export default class VizFragment extends Subscriber{
         
         var endTrack = function(e){
             if(moving){
-            moving = false;
-            var zoom_px = parseFloat(document.getElementById('zoom').value);
-            let x_px = parseFloat(this.viz.style.left);
-            let width_px = parseFloat(this.viz.style.width);
-            let start_s = x_px/zoom_px;
-            let end_s = (x_px+width_px)/zoom_px;
-            __fragment.editFragment(start_s,end_s);
+                moving = false;
+                var zoom_px = parseFloat(document.getElementById('zoom').value);
+                let x_px = parseFloat(this.viz.style.left);
+                let width_px = parseFloat(this.viz.style.width);
+                let start_s = x_px/zoom_px;
+                let end_s = (x_px+width_px)/zoom_px;
+                __fragment.editFragment(start_s,end_s);
             }
         };
 

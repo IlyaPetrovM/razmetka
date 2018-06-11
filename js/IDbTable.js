@@ -2,8 +2,54 @@
 const Act = new exports.Act();
 export default class IDbTable {
     constructor(wsClient){
-        this.wsClient = wsClient;
-        this.wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+//        var __wsClient = wsClient;
+//        this.processMessageFromServer = function(inMsg){
+//            let msg = JSON.parse(inMsg.data);
+//            if(msg.sender === this.sender){
+//                switch(msg.action){
+//                    case Act.LOAD:
+//                        this.processLoad(msg);
+//                        break;
+//                    case Act.CREATE:
+//                       this.processCreate(msg);
+//                        break;
+//                    case Act.UPDATE:
+//                        this.processUpdate(msg);
+//                        break;
+//                    case Act.DELETE:
+//                        this.processDelete(msg);
+//                        break;
+//                    case Act.ERROR:
+//                        this.processError(msg);
+//                        break;
+//                    default:
+//                        console.log('Неизвестная команда:',msg.action);
+//                }
+//            }
+//        }
+//        __wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
+
+        var __callbacks = {};
+        this.addSubscriber(callback_id,callback){
+            __callbacks[callback_id] = callback;
+        }
+        var onmessage = function(inMsg){
+            console.log(inMsg);
+            let msg = JSON.parse(inMsg.data);
+            __callbacks[msg.callback_id].call(msg.data);
+        }
+        this.send = function(callback_id,data){
+            if(__callbacks[callback_id]===undefined) throw Error('callback of this msg is undefined');
+            let outMsg = {
+                callback_id:callback_id,
+                data:data
+            };
+
+            onmessage.call(JSON.stringify(outMsg));
+        }
+//        this.query = function(callback_id, action, ){
+
+//        }
     }
     get table(){
         throw Error('неизвесная реализация');
@@ -58,29 +104,7 @@ export default class IDbTable {
            this.wsClient.send(outMsg);
     }
     processMessageFromServer(inMsg){
-       let msg = JSON.parse(inMsg.data);
-        if(msg.sender === this.sender){
-        console.log(msg);
-            switch(msg.action){
-                case Act.LOAD:
-                    this.processLoad(msg);
-                    break;
-                case Act.CREATE:
-                   this.processCreate(msg);
-                    break;
-                case Act.UPDATE:
-                    this.processUpdate(msg);
-                    break;
-                case Act.DELETE:
-                    this.processDelete(msg);
-                    break;
-                case Act.ERROR:
-                    this.processError(msg);
-                    break;
-                default:
-                    console.log('Неизвестная команда:',msg.action);   
-        } 
-        }
+
     }
     processLoad(msg){
         console.log('LOAD');
