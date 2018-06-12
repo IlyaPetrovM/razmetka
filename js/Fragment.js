@@ -6,11 +6,12 @@ import Publisher from './Publisher.js';
     Fragment
 *************************************/
 export default class Fragment extends Publisher {
-    constructor(id, start_s, end_s, track_id,interview_id){
+    constructor(id, start_s, end_s, track_id,interview_id,dbClient){
         super();
         var __start_s = start_s,
             __end_s = end_s,
-            __track_id = track_id;
+            __track_id = track_id,
+            __dbClient = dbClient;
         const __id = id,
               __interview_id = interview_id;
 
@@ -23,8 +24,10 @@ export default class Fragment extends Publisher {
         }
         this.setStartS = function(sec){
             //TODO
-            this.startSet(sec);
+//            this.startSet(sec);
+            __dbClient.send(__id+'setStart',sec);
         }
+        __dbClient.addSubscriber(__id+'setStart',this.startSet.bind(this));
         
         this.getEndS = function(){
             return __end_s;
@@ -34,20 +37,24 @@ export default class Fragment extends Publisher {
             this.update(this);
         }
         this.setEndS = function(sec){
-            this.endSet(sec);
+//            this.endSet(sec);
+            __dbClient.send(__id+'setEnd',sec);
         }
+        __dbClient.addSubscriber(__id+'setEnd',this.endSet.bind(this));
+        
+        
         
         this.getTrackId = function(){
             return __track_id;
         }
-        this.trackIdSet = function(id){
-            __track_id = id;
-            this.update(this);
-        }
-        this.setTrackId = function(id){
-            //TODO
-            this.trackIdSet(id);
-        }
+//        this.trackIdSet = function(id){
+//            __track_id = id;
+//            this.update(this);
+//        }
+//        this.setTrackId = function(id){
+//            //TODO
+//            this.trackIdSet(id);
+//        }
         
         this.getId = function(){
             return __id;
@@ -67,9 +74,11 @@ export default class Fragment extends Publisher {
                 start_s:st_s,
                 end_s:en_s
             };
+             __dbClient.send(__id+'editFragment',edit);
 //            console.log(this);
-            this.fragmentEdited(edit);
+//            this.fragmentEdited(edit);
         }
+        __dbClient.addSubscriber(__id+'editFragment',this.fragmentEdited.bind(this));
         if(start_s > end_s){
             end_s = start_s + 1;
         }

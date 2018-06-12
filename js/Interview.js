@@ -12,7 +12,7 @@ export default class Interview extends Publisher{
         var __date = _date;
         var __title = _title;
         var __tracks = {};
-        var __wsClient = wsClient;
+        var __dbClient = wsClient;
 
 //        this.onidupdated = function(newid){};
 //        this.onupdate = function(){};
@@ -41,16 +41,18 @@ export default class Interview extends Publisher{
             let tmp = {id:id_,
                           date:'2018-05-27',
                           title:'Петров И.М.'}; //TODO removeit
-            this.meLoaded(tmp); //TODO ws.send
+            __dbClient.send(__id+'loadMe',tmp);
         }
+        __dbClient.addSubscriber(__id+'loadMe',this.meLoaded.bind(this));
+      
         var __this = this;
         function addTrackByType(track) {
             switch(track._type){
                 case 'Media':
-                    __tracks[track.id] = new TrackMedia(track.title,track.id, __this, __wsClient);
+                    __tracks[track.id] = new TrackMedia(track.title,track.id, __this, __dbClient);
                     break;
                 case 'Text':
-                    __tracks[track.id] = new TrackText(track.title,track.id, __this, __wsClient);
+                    __tracks[track.id] = new TrackText(track.title,track.id, __this, __dbClient);
                     break;
                 default:
                     console.error("Неизвестный тип трека:",track._type);
@@ -67,16 +69,19 @@ export default class Interview extends Publisher{
                 _type:'Media'
             };
             trackM['id'] = (new Date()).getTime();
-            this.trackAdded(trackM); //TODO replace by ws.send
+            __dbClient.send(__id+'addTM',trackM);
         }
+        __dbClient.addSubscriber(__id+'addTM',this.trackAdded.bind(this));
+        
         this.addTrackText = function(_title){
             let trackT = {
                 title: _title,
                 _type:'Text'
             };
             trackT['id'] = (new Date()).getTime();
-            this.trackAdded(trackT); //TODO replace by ws.send
+            __dbClient.send(__id+'addTT',trackT);
         }
+        __dbClient.addSubscriber(__id+'addTT',this.trackAdded.bind(this));
         
         this.trackRemoved = function(id){
             delete __tracks[id];            
@@ -84,10 +89,17 @@ export default class Interview extends Publisher{
         }
         this.removeTrack = function(id){
             //TODO
-            this.trackRemoved(id);
+            __dbClient.send(__id+'Interview_removeTrack',id);
         }
+        __dbClient.addSubscriber(__id+'Interview_removeTrack',this.trackRemoved.bind(this));
         
         this.tracksLoaded = function(tracks){
+            tracks = [
+                {id:123, title:'AudioTrack',_type:'Media',int_id:__id},
+                {id:321, title:'Text Track',_type:'Text',int_id:__id},
+                {id:534, title:'Text 2 Track',_type:'Text',int_id:__id}
+            ];
+            // TODO remove it /\
             for(let t in tracks){
                 addTrackByType(tracks[t]);
             }
@@ -95,13 +107,11 @@ export default class Interview extends Publisher{
         }
         
         this.loadTracks = function(){
-            let tmpTracks = [
-                {id:123, title:'AudioTrack',_type:'Media',int_id:__id},
-                {id:321, title:'Text Track',_type:'Text',int_id:__id},
-                {id:534, title:'Text 2 Track',_type:'Text',int_id:__id}
-            ]; //TODO remove it
-            this.tracksLoaded(tmpTracks); //TODO replace by ws.send
+            
+             //TODO remove it
+            __dbClient.send(__id+'loadTracks',__id);
         }
+        __dbClient.addSubscriber(__id+'loadTracks',this.tracksLoaded.bind(this));
         
         this.interviewEdited = function(iw){
             //TODO
@@ -115,10 +125,10 @@ export default class Interview extends Publisher{
         }
         this.editInterview = function(iw){
             //TODO
-            this.interviewEdited(iw);
+            __dbClient.send(__id+'editInterview',iw);
         }
+        __dbClient.addSubscriber(__id+'editInterview',this.interviewEdited.bind(this));
 
-//        this.loadTracks();
         
     }
     get table(){

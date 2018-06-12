@@ -39,10 +39,42 @@ export default class TrackText extends Track{
                                 track_id:this.getId(),
                                 int_id:interview.getId(),
                                 media_id:media_id};
-            this.fragmentAdded(tmp);
+//            this.fragmentAdded(tmp);
+            __dbClient.send(this.getId()+'addTextFragment',tmp);
         }
+        __dbClient.addSubscriber(this.getId()+'addTextFragment',this.fragmentAdded.bind(this));
+        
 
         this.fragmentsLoaded = function(data){
+            data = [
+                {
+                    id:1+this.getId(),
+                    start_s:2,
+                    end_s:4,
+                    descr:"Подробная опись фрагмента",
+                    media_id:111,
+                    track_id:this.getId(),
+                    int_id:this.getInterviewId()
+                },
+                {
+                    id:2+this.getId(),
+                    start_s:5,
+                    end_s:6,
+                    descr:"Всё очень<br>интересно",
+                    media_id:111,
+                    track_id:this.getId(),
+                    int_id:this.getInterviewId()
+                },
+                {
+                    id:3+this.getId(),
+                    start_s:7,
+                    end_s:10,
+                    descr:"Просто захватывающе!",
+                    media_id:111,
+                    track_id:this.getId(),
+                    int_id:this.getInterviewId()
+                }
+            ];/// TODO remove it
             data.forEach(function(f){
                 __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
@@ -56,36 +88,9 @@ export default class TrackText extends Track{
             this.update(this);
         }
         this.loadFragments = function(){
-            let tmp = [
-                {
-                    id:1,
-                    start_s:2,
-                    end_s:4,
-                    descr:"Подробная опись фрагмента",
-                    media_id:111,
-                    track_id:this.getId(),
-                    int_id:this.getInterviewId()
-                },
-                {
-                    id:2,
-                    start_s:5,
-                    end_s:6,
-                    descr:"Всё очень<br>интересно",
-                    media_id:111,
-                    track_id:this.getId(),
-                    int_id:this.getInterviewId()
-                },
-                {
-                    id:3,
-                    start_s:7,
-                    end_s:10,
-                    descr:"Просто захватывающе!",
-                    media_id:111,
-                    track_id:this.getId(),
-                    int_id:this.getInterviewId()
-                }
-            ];
-            this.fragmentsLoaded(tmp);
+            __dbClient.send(this.getId()+'loadTextFragments',{action:'LOAD'});
+//            this.fragmentsLoaded(tmp);
         }
+        __dbClient.addSubscriber(this.getId()+'loadTextFragments',this.fragmentsLoaded.bind(this));
     }
 }

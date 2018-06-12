@@ -7,12 +7,14 @@
 "use strict";
 import Expedition from './Expedition.js';
 import InterviewChooser from './Viz/InterviewChooser.js';
-var wsClient = new WebSocket('ws://localhost:8081');
-wsClient.onerror = function(err){
-    alert('Ошибка подключения, попробуйте перезагрузить страницу');
-}
+import IDbTable from './IDbTable.js';
 
-var ex = new Expedition('Экспедиция в деревню');
+var wsClient = new WebSocket('ws://localhost:8081');
+//wsClient.onerror = function(err){
+//    alert('Ошибка подключения, попробуйте перезагрузить страницу');
+//}
+var dbClient = new IDbTable(wsClient);
+var ex = new Expedition('Экспедиция в деревню',dbClient);
 
 var ic = new InterviewChooser(wsClient,document.body,ex);
 ex.addSubscriber(ic);

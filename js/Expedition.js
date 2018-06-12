@@ -1,19 +1,21 @@
 import Interview from './Interview.js';
 import Publisher from './Publisher.js';
+//import IDbTble from 
 export default class Expedition extends Publisher {
     constructor(title,dbClient){
         super();
         if(title===undefined) throw TypeError('title is undefined');
-//        if(dbClient===undefined) throw TypeError('dbClient is undefined');
-        var __title;       
+        if(dbClient===undefined) throw TypeError('dbClient is undefined');
+        var __title=title;       
         var __interviews = {};
         var __dbClient = dbClient;
+        
         
         this.setTitle= function(t){ __title = t;this.update(this);}
         this.getTitle = function(){return __title;}
 
         this.interviewAdded = function(data){
-            __interviews[data.id] = new Interview(data.id, data.title, data._date);
+            __interviews[data.id] = new Interview(data.id, data.title, data._date, __dbClient);
             this.update(this);
         }
         
@@ -23,22 +25,15 @@ export default class Expedition extends Publisher {
                 _date:date
             };
             tmp['id'] = (new Date().getTime()); // TODO remove it
-            this.interviewAdded(tmp); //TODO addInterview replace by ws.send
+//            this.interviewAdded(tmp); //TODO addInterview replace by ws.send
+            __dbClient.send(__title+'addInterview',tmp);
         }
-        
-        this.interviewRemoved = function(id){
-            delete __interviews[id];
-        }
-        
-        this.removeInterview = function(id){
-            //TODO removeInterview
-            this.interviewRemoved(id);
-        }
+        __dbClient.addSubscriber(__title+'addInterview',this.interviewAdded.bind(this));
 
         this.interviewsLoaded = function(iws){
             for(let i in iws){
                 let data = iws[i];
-                __interviews[data.id] = new Interview(data.id, data.title, data._date);
+                __interviews[data.id] = new Interview(data.id, data.title, data._date, __dbClient);
             }
             this.update(this);
         }
@@ -51,8 +46,10 @@ export default class Expedition extends Publisher {
                         {id:2,
                         title:'Интервью '+2,
                         _date:'2016-05-12'}];
-            this.interviewsLoaded(iws);
+            __dbClient.send(__title+'loadInterviews',iws);
         }
+        __dbClient.addSubscriber(__title+'loadInterviews',this.interviewsLoaded.bind(this));
+
         
         this.getInterviews = function(){
             return __interviews;
@@ -60,6 +57,5 @@ export default class Expedition extends Publisher {
         
         this.setTitle(title);
         
-        this.loadInterviews();
     }
 }

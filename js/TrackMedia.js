@@ -4,10 +4,11 @@ import FragmentMedia from './FragmentMedia.js';
 TrackMedia
 **************************************/
 export default class TrackMedia extends Track{
-    constructor(title, id, int_id, wsClient){
-        super(title, id, int_id, wsClient);
+    constructor(title, id, int_id, dbClient){
+        super(title, id, int_id, dbClient);
         var thistrack=this;
         var __fragments = {};
+        var __dbClient = dbClient;
         this.getFragments = function(){return __fragments;}
 //        const __id = id;
 //        var __title = title;
@@ -39,7 +40,8 @@ export default class TrackMedia extends Track{
                                                     frg.start_s,
                                                     frg.end_s, 
                                                     frg.track_id, 
-                                                    frg.int_id);
+                                                    frg.int_id,
+                                                    __dbClient);
             this.update(this);
         }
         this.addFragment = function(path, start_s, end_s){
@@ -51,27 +53,15 @@ export default class TrackMedia extends Track{
                 int_id:  this.getInterviewId() 
             };
             tmp[id] = parseInt((new Date()).getTime());
-            this.fragmentAdded(tmp);
+//            this.fragmentAdded(tmp);
+            __dbClient.send(this.getId()+'addMediaFragment',tmp);
         }
-        
+        __dbClient.addSubscriber(this.getId()+'addMediaFragment',this.fragmentAdded.bind(this));
         //TODO 28.05.2018 2:32 Доделать обновление фрагментов
         this.fragmentsLoaded = function(fragments){
             //TODO
-            for(let i in fragments){
-                let frg = fragments[i];
-                __fragments[frg.id] = new FragmentMedia(frg.id,
-                                                        frg.path,
-                                                        frg.start_s,
-                                                        frg.end_s, 
-                                                        frg.track_id, 
-                                                        frg.int_id);
-            }
-            this.update(this);
-        }
-        this.loadFragments = function(){
-            //TODO send.
-            let trs = 150;
-            let tmp = [
+              let trs = 150;
+            fragments = [
             {
              id:111,
              track_id:this.getId(),
@@ -98,7 +88,24 @@ export default class TrackMedia extends Track{
              path:'audio/3.mp3'
          }
             ];
-            this.fragmentsLoaded(tmp);
+            for(let i in fragments){
+                let frg = fragments[i];
+                __fragments[frg.id] = new FragmentMedia(frg.id,
+                                                        frg.path,
+                                                        frg.start_s,
+                                                        frg.end_s, 
+                                                        frg.track_id, 
+                                                        frg.int_id,
+                                                       __dbClient);
+            }
+            this.update(this);
         }
+        this.loadFragments = function(){
+            //TODO send sql command
+          
+//            this.fragmentsLoaded(tmp);
+            __dbClient.send(this.getId()+'loadMediaFragments',{id:this.getId(), action:'LOAD'});
+        }
+        __dbClient.addSubscriber(this.getId()+'loadMediaFragments',this.fragmentsLoaded.bind(this));
     }
 }

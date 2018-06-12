@@ -16,6 +16,7 @@ export default class VizFragmentText extends VizFragment {
 
         this.textDescr = document.createElement('div');
         this.textDescr.setAttribute('contenteditable',true); 
+        /// TODO !!!!! Нужно каким-то образом вызывать метод изменения описания фрагмента!!!!!! 2018.06.13 2:22
         this.textDescr.setAttribute('tabindex','-1'); 
 
         this.textDescr.id = ('textDiscr');
@@ -43,7 +44,7 @@ export default class VizFragmentText extends VizFragment {
 
         this.ivlDescr.appendChild(this.textDescr);
         parentDescr.appendChild(this.ivlDescr);
-         this.textDescr.focus();
+//        this.textDescr.focus();
         this.focus = function(){
             this.textDescr.focus();
         }
@@ -58,7 +59,8 @@ export default class VizFragmentText extends VizFragment {
 
     scrollTo() {
         this.classList.toggle('hover');
-        this.scrollIntoView(false);
+        /// FIXME фокус работает слишком как-то странно иногда
+        this.scrollIntoView(true);
     }
 
     moveReally(e) {

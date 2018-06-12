@@ -30,22 +30,24 @@ export default class IDbTable {
 //        __wsClient.addEventListener('message',this.processMessageFromServer.bind(this));
 
         var __callbacks = {};
-        this.addSubscriber(callback_id,callback){
+        this.addSubscriber = function(callback_id,callback){
+            if(callback_id===undefined) throw TypeError('callback Id is undefined');
+            else if(callback===undefined) throw TypeError('callback function is undefined');
+            else if(__callbacks[callback_id]!==undefined) throw Error('Unable to rewrite existed callback:'+callback_id);
             __callbacks[callback_id] = callback;
         }
         var onmessage = function(inMsg){
-            console.log(inMsg);
-            let msg = JSON.parse(inMsg.data);
-            __callbacks[msg.callback_id].call(msg.data);
+            let msg = JSON.parse(inMsg);
+            __callbacks[msg.callback_id](msg.data);
         }
-        this.send = function(callback_id,data){
-            if(__callbacks[callback_id]===undefined) throw Error('callback of this msg is undefined');
+        this.send = function(callback_id,data) {
+            if(data===undefined) throw TypeError('data field is undefined');
+            if(__callbacks[callback_id]===undefined) throw RangeError('unable to send message to callback with unexisted id');
             let outMsg = {
                 callback_id:callback_id,
                 data:data
             };
-
-            onmessage.call(JSON.stringify(outMsg));
+            onmessage(JSON.stringify(outMsg));
         }
 //        this.query = function(callback_id, action, ){
 
