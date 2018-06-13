@@ -21,6 +21,7 @@ export default class FragmentText extends Fragment{
             this.update(this);
         }
         this.setDescr = function(txt){
+            console.log(txt);
             __dbClient.send(id+'setDescr',txt);
         }
         __dbClient.addSubscriber(id+'setDescr',this.descrSet.bind(this));

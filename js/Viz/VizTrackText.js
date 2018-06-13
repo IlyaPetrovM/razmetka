@@ -53,6 +53,7 @@ export default class VizTrackText extends VizTrack{
                 frg = track.getFragments()[i];
                 if( __vizFragments[frg.getId()] === undefined){
                     __vizFragments[frg.getId()] = new VizFragmentText(__div, frg,undefined, timeline,__trackDiscr);
+                    __vizFragments[frg.getId()] = new VizFragmentTextDescr(__div, frg,undefined, timeline,__trackDiscr);
                     frg.addSubscriber(__vizFragments[frg.getId()]);
                     frg.update(frg);
                     __lastAddedFragment = frg;

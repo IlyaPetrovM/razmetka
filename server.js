@@ -43,15 +43,15 @@ class Server{
         this.clients = {};
         console.log('Server running on port '+_port);
         
-        this.mysql = require('mysql');
-        this.sqlClient = this.mysql.createConnection({
-            host:'127.0.0.1',
-            port:3333,
-            user:'admin',
-            password:'IL15OHM.m',
-            database:'razmetka'
-        });
-        this.sqlClient.connect(this.processDbConnection.bind(this));
+//        this.mysql = require('mysql');
+//        this.sqlClient = this.mysql.createConnection({
+//            host:'127.0.0.1',
+//            port:3333,
+//            user:'admin',
+//            password:'IL15OHM.m',
+//            database:'razmetka'
+//        });
+//        this.sqlClient.connect(this.processDbConnection.bind(this));
         
     }
     processDbConnection(err){
@@ -59,7 +59,7 @@ class Server{
         console.log('database connected');
     }
     prosessConnection(wsocket){
-        var id = parseInt((new Date()).getTime()));
+        var id = parseInt((new Date()).getTime());
         this.clients[id] = wsocket;
         console.log('Соединение ' + id + ' открыто');
         wsocket.on('message',this.processMessage.bind(this,id));
@@ -68,29 +68,31 @@ class Server{
 
     processMessage(id,inMsg){
         console.log('\n',id,inMsg);
-        var msg = JSON.parse(inMsg);
-        
-        
-        switch(msg.action){
-            case Act.CREATE:
-                var ret = this.insert(msg);
-                msg = ret.msg;
-                break;
-            case Act.LOAD:
-                this.select(msg, id);
-                console.log('LOAD');
-                break;
-            case Act.UPDATE:
-                this.update(msg);
-                console.log('UPDATE');
-                break;
-            case Act.DELETE:
-                this.remove(msg);
-                console.log('DELETE');
-                break;
-            default:
-                console.log("Неизвестная команда: ",msg.action);
+//        var msg = JSON.parse(inMsg);
+        var outMsg = inMsg;
+        for(let key in this.clients){
+                this.clients[key].send(outMsg);
         }
+//        switch(msg.action){
+//            case Act.CREATE:
+//                var ret = this.insert(msg);
+//                msg = ret.msg;
+//                break;
+//            case Act.LOAD:
+//                this.select(msg, id);
+//                console.log('LOAD');
+//                break;
+//            case Act.UPDATE:
+//                this.update(msg);
+//                console.log('UPDATE');
+//                break;
+//            case Act.DELETE:
+//                this.remove(msg);
+//                console.log('DELETE');
+//                break;
+//            default:
+//                console.log("Неизвестная команда: ",msg.action);
+//        }
     }
     update(msg){
         let equations = [];
