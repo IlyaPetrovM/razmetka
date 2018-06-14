@@ -5,6 +5,7 @@
 import Publisher from './Publisher.js';
 import TrackMedia from './TrackMedia.js';
 import TrackText from './TrackText.js';
+const Act = new exports.Act();
 export default class Interview extends Publisher{
     constructor(id,_title, _date, wsClient){
         super();
@@ -26,8 +27,8 @@ export default class Interview extends Publisher{
         this.getTitle = function(){return __title;}
         this.getTracks = function(){return __tracks;}
         
-        this.meLoaded = function(me){
-            __id = me.id;
+        this.meLoaded = function(msg){
+            let me = msg.data[0];
             __date = me._date;
             __title = me.title;
             this.update(this);
@@ -38,10 +39,12 @@ export default class Interview extends Publisher{
                 console.error('id is',id_);
                 return;
             }
-            let tmp = {id:id_,
-                          date:'2018-05-27',
-                          title:'Петров И.М.'}; //TODO removeit
-            __dbClient.send(__id+'loadMe',tmp);
+            let sql = {
+                action:Act.LOAD,
+                table:'Interview',
+                where:'id='+__id
+            }
+            __dbClient.send(__id+'loadMe',sql);
         }
         __dbClient.addSubscriber(__id+'loadMe',this.meLoaded.bind(this));
       
@@ -59,57 +62,70 @@ export default class Interview extends Publisher{
             }
         }
 
-        this.trackAdded = function(track){
-            addTrackByType(track);
+        this.trackAdded = function(msg){
+            console.log(msg.data);
+            addTrackByType(msg.data);
             this.update(this);
         }
         this.addTrackMedia = function(_title){
             let trackM = {
                 title: _title,
-                _type:'Media'
+                _type:'Media',
+                int_id:__id
             };
-            trackM['id'] = (new Date()).getTime();
-            __dbClient.send(__id+'addTM',trackM);
+            let sql = {
+                action: Act.CREATE,
+                data:trackM,
+                table:'Track'
+            }
+            __dbClient.send(__id+'addTM',sql);
         }
         __dbClient.addSubscriber(__id+'addTM',this.trackAdded.bind(this));
         
         this.addTrackText = function(_title){
             let trackT = {
                 title: _title,
-                _type:'Text'
+                _type:'Text',
+                int_id:__id
             };
-            trackT['id'] = (new Date()).getTime();
-            __dbClient.send(__id+'addTT',trackT);
+            let sql = {
+                action: Act.CREATE,
+                data:trackT,
+                table:'Track'
+            }
+            __dbClient.send(__id+'addTT',sql);
         }
         __dbClient.addSubscriber(__id+'addTT',this.trackAdded.bind(this));
         
-        this.trackRemoved = function(id){
-            delete __tracks[id];            
+        this.trackRemoved = function(msg){
+            delete __tracks[msg.id];
             this.update(this);
         }
         this.removeTrack = function(id){
-            //TODO
-            __dbClient.send(__id+'Interview_removeTrack',id);
+            let sql = {
+                action: Act.DELETE,
+                id:id,
+                table:'Track'
+            }
+            __dbClient.send(__id+'Interview_removeTrack',sql);
         }
         __dbClient.addSubscriber(__id+'Interview_removeTrack',this.trackRemoved.bind(this));
         
-        this.tracksLoaded = function(tracks){
-            tracks = [
-                {id:123, title:'AudioTrack',_type:'Media',int_id:__id},
-                {id:321, title:'Text Track',_type:'Text',int_id:__id},
-                {id:534, title:'Text 2 Track',_type:'Text',int_id:__id}
-            ];
-            // TODO remove it /\
-            for(let t in tracks){
-                addTrackByType(tracks[t]);
+        this.tracksLoaded = function(msg){
+            console.log(msg.data);
+            for(let t in msg.data){
+                addTrackByType(msg.data[t]);
             }
             this.update(this);
         }
         
         this.loadTracks = function(){
-            
-             //TODO remove it
-            __dbClient.send(__id+'loadTracks',__id);
+            let sql = {
+                action: Act.LOAD,
+                table:'Track',
+                where: 'int_id='+__id
+            }
+            __dbClient.send(__id+'loadTracks',sql);
         }
         __dbClient.addSubscriber(__id+'loadTracks',this.tracksLoaded.bind(this));
         

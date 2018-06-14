@@ -3,6 +3,8 @@
 **************************************/
 import Subscriber from '../Subscriber.js';
 
+import IDbTable from '../IDbTable.js';
+
 import Interview from '../Interview.js';
 import TrackMedia from '../TrackMedia.js';
 import TrackText from '../TrackText.js';
@@ -224,24 +226,27 @@ export default class VizInterview extends Subscriber{
             });
             return query;
         }
-        let s = window.location.search;
-        var q = parseSearch(s);
-        if(q['id']){
-            document.title='Интервью '+q['id'];
-        }
-import IDbTable from '../IDbTable.js';
+let s = window.location.search;
 
-var ws = new WebSocket('ws://localhost:8081');
-var dbClient = new IDbTable(ws);
-var tmpInterview = new Interview(q['id'],'Деревенское интервью',"2018-05-12",dbClient);
-var vi = new VizInterview(document.body,tmpInterview);
-tmpInterview.addSubscriber(vi);
-tmpInterview.loadMe(q['id']);
-if(q['new']=='1'){
-    console.log('Создание нового интервью');
-    tmpInterview.addTrackMedia('Медиа трек');
-    tmpInterview.addTrackText('Аудио трек');
+var q = parseSearch(s);
+if(q['id']){
+    document.title='Интервью '+q['id'];
+    var ws = new WebSocket('ws://localhost:8081');
+    var dbClient = new IDbTable(ws);
+    var tmpInterview = new Interview(q['id'],'Деревенское интервью',"2018-05-12",dbClient);
+    var vi = new VizInterview(document.body,tmpInterview);
+    tmpInterview.addSubscriber(vi);
+    tmpInterview.loadMe(q['id']);
+    if(q['new']=='1'){
+        console.log('Создание нового интервью');
+        tmpInterview.addTrackMedia('Медиа трек');
+        tmpInterview.addTrackText('Аудио трек');
+    }else{
+        console.log('Загрузка');
+        tmpInterview.loadTracks();
+    }
+
 }else{
-    console.log('Загрузка');
-    tmpInterview.loadTracks();
+    window.location = '/';
 }
+

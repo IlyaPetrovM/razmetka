@@ -1,13 +1,15 @@
 import IDbTable from './IDbTable.js';
 import Publisher from './Publisher.js';
+const Act = new exports.Act();
 /**************************************
 Track
 **************************************/
 export default class Track extends Publisher {
-    constructor(title_, id, interview, wsClient){
+    constructor(title_, id, interview, dbClient){
         super(); /// TODO
         this.id = id;
         this.title = title_;
+        var __dbClient = dbClient;
         
         const __id = id,
               __interview_id = interview.getId();
@@ -29,8 +31,14 @@ export default class Track extends Publisher {
             this.remove();
         }
         this.removeTrack = function(){
-            this.trackRemoved();//TODO send 
+            let sql = {
+                action:Act.DELETE,
+                table:'Track',
+                id:__id
+            }
+            __dbClient.send(__id+'removeTrack',sql);
         }
+        __dbClient.addSubscriber(__id+'removeTrack',this.trackRemoved.bind(this));
         
         this.fragmentAdded = function(ivl){
             throw Error('abstract method used');

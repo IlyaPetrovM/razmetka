@@ -1,5 +1,6 @@
 import Interview from './Interview.js';
 import Publisher from './Publisher.js';
+const Act = new exports.Act();
 //import IDbTble from 
 export default class Expedition extends Publisher {
     constructor(title,dbClient){
@@ -14,23 +15,29 @@ export default class Expedition extends Publisher {
         this.setTitle= function(t){ __title = t;this.update(this);}
         this.getTitle = function(){return __title;}
 
-        this.interviewAdded = function(data){
+        this.interviewAdded = function(msg){
+            let data = msg.data;
             __interviews[data.id] = new Interview(data.id, data.title, data._date, __dbClient);
             this.update(this);
         }
         
         this.addInterview = function(title,date){
-            let tmp = {
+            let data = {
                 title:title,
                 _date:date
             };
-            tmp['id'] = (new Date().getTime()); // TODO remove it
-//            this.interviewAdded(tmp); //TODO addInterview replace by ws.send
-            __dbClient.send(__title+'addInterview',tmp);
+            let sql = {
+                action: Act.CREATE,
+                table: 'Interview',
+                data:data
+            }
+            __dbClient.send(__title+'addInterview',sql);
         }
         __dbClient.addSubscriber(__title+'addInterview',this.interviewAdded.bind(this));
 
-        this.interviewsLoaded = function(iws){
+        this.interviewsLoaded = function(msg){
+            console.log(msg);
+            let iws = msg.data;
             for(let i in iws){
                 let data = iws[i];
                 __interviews[data.id] = new Interview(data.id, data.title, data._date, __dbClient);
@@ -39,14 +46,11 @@ export default class Expedition extends Publisher {
         }
 
         this.loadInterviews = function(){
-            // TODO loadInterviews
-            var iws = [{id:15,
-                        title: 'интервью '+15,
-                        _date: '2018-05-12'},
-                        {id:2,
-                        title:'Интервью '+2,
-                        _date:'2016-05-12'}];
-            __dbClient.send(__title+'loadInterviews',iws);
+            let sql = {
+                action:Act.LOAD,
+                table:'Interview'
+            };
+            __dbClient.send(__title+'loadInterviews',sql);
         }
         __dbClient.addSubscriber(__title+'loadInterviews',this.interviewsLoaded.bind(this));
 

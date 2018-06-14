@@ -49,28 +49,43 @@ export default class VizTrackMedia extends VizTrack{
 
 
     addFragmentMedia(offsetX) {
+        console.log('hello form!');
+        var fileInput = document.createElement('input');
+        var __form = document.createElement('form');
+        var progressBar = document.createElement('progress');
+        progressBar.max = '100';
+        progressBar.value = '0';
+        fileInput.id = 'fileInput';
+        fileInput.name = 'audioFile';
+        fileInput.type = 'file';
+        __form.id = 'resetform';
+        __form.action = 'fileupload';
+        __form.appendChild(fileInput);
+        __form.appendChild(progressBar);
+        document.body.appendChild(__form);
         
-        console.log('fi');
-        var fi = document.createElement('input');
-        fi.id = 'fileInput';
-        fi.type = 'file';
-        var form = document.createElement('form');
-        form.id = 'resetform';
-        fi.onchange = function(e){
-            window.URL = window.URL || window.webkitURL;
-            var path = window.URL.createObjectURL(e.target.files[0]);
-            var audio = new Audio(path);
-            audio.parentEvent = e;
-            audio.ondurationchange = 
-                this.createFragment.bind(this, path, audio, offsetX); // and Event in the end
-            resetform.reset();
-            document.body.removeChild(form);
-        }.bind(this);
-        form.appendChild(fi);
-        document.body.appendChild(form);
-//        $("#fileInput").trigger("click");
-//        <form id=resetform>
-//        <input type="file" id=fileInput style="" /></form>
+        var sendForm = function(form, callback){
+            if(!window.FormData){
+                alert('Ваш браузер не поддерживает FormData - воспользуйтесь последней версией Google Chrome или Firefox');
+                return;
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST',form.action);
+            xhr.onload = callback;
+            xhr.upload.onprogress = function(event){
+                progressBar.value = (event.loaded / event.total) * 100;
+            }
+            let formData = new FormData(form);
+            xhr.send(formData);
+        }
+        fileInput.onchange = sendForm.bind(this,__form,function(e){
+                var path = e.currentTarget.responseText;
+                var audio = new Audio(path);
+                audio.parentEvent = e;
+                audio.ondurationchange =
+                    this.createFragment.bind(this, path, audio, offsetX); // and Event in the end
+                document.body.removeChild(__form);
+            }.bind(this));
     }
 
     processClick(clickEvent){

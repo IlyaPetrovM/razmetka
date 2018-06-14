@@ -1,5 +1,6 @@
 import Track from './Track.js';
 import FragmentText from './FragmentText.js';
+const Act = new exports.Act();
 export default class TrackText extends Track{
         constructor(title, id, interview, wsClient){
         super(title, id, interview, wsClient);
@@ -19,7 +20,8 @@ export default class TrackText extends Track{
             return 1;
         }
 
-        this.fragmentAdded = function(f){
+        this.fragmentAdded = function(msg){
+            let f = msg.data;
             __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
                                                     f.end_s,
@@ -32,49 +34,26 @@ export default class TrackText extends Track{
         }
 
         this.addFragment = function(start_s, end_s, descr, media_id){
-            let tmp = {         id:(new Date).getTime(),
-                                start_s:start_s,
-                                end_s:end_s,
-                                descr:descr,
-                                track_id:this.getId(),
-                                int_id:interview.getId(),
-                                media_id:media_id};
-//            this.fragmentAdded(tmp);
-            __dbClient.send(this.getId()+'addTextFragment',tmp);
+            let data = {
+                start_s:start_s,
+                end_s:end_s,
+                descr:descr,
+                track_id:this.getId(),
+                int_id:interview.getId(),
+                media_id:media_id /// TODO
+            };
+            let sql = {
+                action:Act.CREATE,
+                table:'IntervalText',
+                data:data
+            }
+            __dbClient.send(this.getId()+'addTextFragment',sql);
         }
         __dbClient.addSubscriber(this.getId()+'addTextFragment',this.fragmentAdded.bind(this));
         
 
-        this.fragmentsLoaded = function(data){
-            data = [
-                {
-                    id:1+this.getId(),
-                    start_s:2,
-                    end_s:4,
-                    descr:"Подробная опись фрагмента",
-                    media_id:111,
-                    track_id:this.getId(),
-                    int_id:this.getInterviewId()
-                },
-                {
-                    id:2+this.getId(),
-                    start_s:5,
-                    end_s:6,
-                    descr:"Всё очень<br>интересно",
-                    media_id:111,
-                    track_id:this.getId(),
-                    int_id:this.getInterviewId()
-                },
-                {
-                    id:3+this.getId(),
-                    start_s:7,
-                    end_s:10,
-                    descr:"Просто захватывающе!",
-                    media_id:111,
-                    track_id:this.getId(),
-                    int_id:this.getInterviewId()
-                }
-            ];/// TODO remove it
+        this.fragmentsLoaded = function(msg){
+            let data = msg.data;
             data.forEach(function(f){
                 __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
@@ -88,7 +67,12 @@ export default class TrackText extends Track{
             this.update(this);
         }
         this.loadFragments = function(){
-            __dbClient.send(this.getId()+'loadTextFragments',{action:'LOAD'});
+            let sql = {
+                action:Act.LOAD,
+                table:'IntervalText',
+                where:'track_id='+this.getId()
+            }
+            __dbClient.send(this.getId()+'loadTextFragments',sql);
 //            this.fragmentsLoaded(tmp);
         }
         __dbClient.addSubscriber(this.getId()+'loadTextFragments',this.fragmentsLoaded.bind(this));

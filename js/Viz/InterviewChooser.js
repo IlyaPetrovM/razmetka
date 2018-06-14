@@ -14,7 +14,7 @@ export default class InterviewChooser extends Subscriber{
         this.onUpdate = function(ex){
             document.title = ex.getTitle();
             for(let i in ex.getInterviews()){
-//                console.log(ex.getInterviews()[i]);
+                console.log(ex.getInterviews()[i]);
                 if(this.interviewItems[ex.getInterviews()[i].getId()] === undefined){
                     let itwLink = new InterviewLink(ex.getInterviews()[i],this);
                     ex.getInterviews()[i].addSubscriber(itwLink);
