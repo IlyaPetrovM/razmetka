@@ -2,26 +2,7 @@
 var act = new require('./js/act.js').Act;
 const Act = new act();
 
-var sys = require ('util'),
-url = require('url'),
-http = require('http'),
-qs = require('querystring');
-var formidable = require('formidable');
-//var static = require('node-static');
-//var file = new static.Server('.');
-var fs = require('fs');
-
-//http.createServer(function (req, res) {
-//    if(req.url == '/fileupload'){
-//        var incomingForm = new formidable.IncomingForm();
-//        form.parse(req,function(err, fields, files){
-//            console.log(err);
-//            res.write('File uploaded');
-//            res.end();
-//        });
-//    }
-//}).listen(8080);
-//console.log('Server running on port 8080');
+var uploader = new require('./uploader.js');
 
 class Server{
     constructor(_port){
