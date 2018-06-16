@@ -36,7 +36,7 @@
     top: 0px;
     left:0px;
 }
-#fileInput{
+#fileInput, #progressBar{
     position: relative;
     margin: 25% auto;
     font-size: 20px;

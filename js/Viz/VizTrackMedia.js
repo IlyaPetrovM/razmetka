@@ -55,6 +55,8 @@ export default class VizTrackMedia extends VizTrack{
         var progressBar = document.createElement('progress');
         progressBar.max = '100';
         progressBar.value = '0';
+        progressBar.id = 'progressBar';
+        progressBar.style.display = 'none';
         fileInput.id = 'fileInput';
         fileInput.name = 'audioFile';
         fileInput.type = 'file';
@@ -69,6 +71,14 @@ export default class VizTrackMedia extends VizTrack{
                 alert('Ваш браузер не поддерживает FormData - воспользуйтесь последней версией Google Chrome или Firefox');
                 return;
             }
+            if(fileInput.files[0].type != 'audio/mp3'){
+                fileInput.value = '';
+                alert('Принимаются только mp3 файлы!');
+                return false;
+            }
+            fileInput.style.display = 'none';
+            progressBar.style.display = 'block';
+//            console.dir(fileInput);
             var xhr = new XMLHttpRequest();
             xhr.open('POST',form.action);
             xhr.onload = callback;
