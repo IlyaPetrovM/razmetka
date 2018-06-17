@@ -1,4 +1,5 @@
 import Fragment from "./Fragment.js";
+const Act = new exports.Act();
 
 /**************************************
     Fragment Media
@@ -15,6 +16,9 @@ export default class FragmentMedia extends Fragment{
         var __start_s = start_s,
             __end_s = end_s;
 
+        this.getTableName = function(){
+            return 'IntervalMedia';
+        }
 //        this.audio.load();
         this.textFragments = new Array();
     }

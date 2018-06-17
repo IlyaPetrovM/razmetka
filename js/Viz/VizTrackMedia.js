@@ -5,7 +5,7 @@ import FragmentMedia from '../FragmentMedia.js';
  VizTrackMedia
 **************************************/
 export default class VizTrackMedia extends VizTrack{
-    constructor(parent, track, parentPanel,timeline){
+    constructor(parent, track, parentPanel,timeline, cursorPlay){
         super(parent, track,parentPanel);
         
         var __track = track;
@@ -21,7 +21,7 @@ export default class VizTrackMedia extends VizTrack{
             let frg;
             for(let i in track.getFragments()){
                 frg = track.getFragments()[i];
-                __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg,timeline);
+                __vizFragments[frg.getId()] = new VizFragmentMedia(__div, frg,timeline, cursorPlay);
                 frg.addSubscriber(__vizFragments[frg.getId()]);
                 frg.update(frg);
             }

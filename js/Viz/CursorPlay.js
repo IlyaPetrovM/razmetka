@@ -16,7 +16,26 @@ export default class CursorPlay{
         this.getPosS = function(){
             return this.time_s;
         }
-        
+        var __playingFragments = {};
+        this.pushPlayingFragment = function(frg){
+            __playingFragments[frg.getId()] = frg;
+            console.log(__playingFragments);
+        }
+        this.removePlayingFragment = function(frg){
+             delete __playingFragments[frg.getId()];
+            console.log(__playingFragments);
+        }
+        this.getPlyingFragment = function(){
+            let frg, maxEndFrg = undefined;
+            for(let i in __playingFragments){
+                if(maxEndFrg === undefined) maxEndFrg = i;
+                if( __playingFragments[i].getEndS() > __playingFragments[maxEndFrg].getEndS() ){
+                    maxEndFrg = i;
+                }
+            }
+            console.log(__playingFragments[maxEndFrg]);
+            return __playingFragments[maxEndFrg];
+        }
         var timerId;        
         document.addEventListener('startPlayAndMark',function(){
             var startPlayEvent = new CustomEvent('startPlay');
@@ -65,6 +84,7 @@ export default class CursorPlay{
         document.addEventListener('cantPlay',function(e){
             clearInterval(timerId);
         });
+
     }
     set time_s(val_s){
         if(val_s <= this.timeline.len_s){

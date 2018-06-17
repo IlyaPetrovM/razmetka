@@ -2,6 +2,7 @@ import VizTrack from './VizTrack.js';
 import VizFragmentText from './VizFragmentText.js';
 import FragmentText from '../FragmentText.js';
 import CursorPlay from './CursorPlay.js';
+import DescriptionBar from './DescriptionBar.js';
 /**************************************
 VizTrackText
 **************************************/
@@ -20,18 +21,25 @@ export default class VizTrackText extends VizTrack{
         var dragStart_pc = 0;
         var dragEnd_pc = dragStart_pc;
         var __vizFragments = {};
+        var __descriptionBars = {};
         var selection = document.createElement('div');
         var __lastAddedFragment;
         var addFragmentTextButton = document.createElement('button');
         addFragmentTextButton.id = 'addFragmentTextButton';
         addFragmentTextButton.innerText = '+';
         var bAddFragment = false;
+
         addFragmentTextButton.onclick = function(e){
-            //TODO 2018-06-06
             let start_s = __cursorPlay.getPosS();
             let end_s = start_s + 2;
             if(bAddFragment) {__lastAddedFragment.setEndS(start_s-0.1);}
-           track.addFragment(start_s,end_s,'',222);
+            let media = __cursorPlay.getPlyingFragment(); //FIXME media определяется почему-то неправильно
+            if(media === undefined){
+                alert('Невозможно добавить описание, так как не ясно, что вы описываете. Переместите Красный курсор на какую-нибудь аудиозапись');
+                console.warn('nothing to describe');
+                return;
+            }
+            track.addFragment(start_s,end_s,'',media.getId() );
             bAddFragment = true;
         }.bind(this);
         document.addEventListener('stopPlaying',function(){
@@ -51,10 +59,19 @@ export default class VizTrackText extends VizTrack{
             for(let i in track.getFragments()){
                 
                 frg = track.getFragments()[i];
-                if( __vizFragments[frg.getId()] === undefined){
-                    __vizFragments[frg.getId()] = new VizFragmentText(__div, frg,undefined, timeline,__trackDiscr);
-                    __vizFragments[frg.getId()] = new VizFragmentTextDescr(__div, frg,undefined, timeline,__trackDiscr);
-                    frg.addSubscriber(__vizFragments[frg.getId()]);
+                let id = frg.getId();
+                if( __vizFragments[id] === undefined){
+                    __vizFragments[id] = new VizFragmentText(__div,
+                                                                      frg,
+                                                                      undefined,
+                                                                      timeline,
+                                                                      __trackDiscr);
+                    __descriptionBars[id] = new DescriptionBar(__trackDiscr,
+                                                                     frg,
+                                                                     __vizFragments[id]);
+                    __vizFragments[id].setDescriptionBar(__descriptionBars[id]);
+                    frg.addSubscriber(__vizFragments[id]);
+                    frg.addSubscriber(__descriptionBars[id]);
                     frg.update(frg);
                     __lastAddedFragment = frg;
                 }

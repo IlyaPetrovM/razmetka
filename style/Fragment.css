@@ -4,7 +4,7 @@
 /*    display: inline-block;*/
     float: left;
     
-    background-color: black;
+    background-color: #00f;
     height: 100%;
     border-left-width: 2px;
     border-right-width: 2px;
@@ -18,4 +18,18 @@
     opacity: 0.5;
     cursor: move;
     z-index: 10;
+}
+.cursorOn{
+    background: #f00 !important;
+    border-color: #000 !important;
+}
+.playing{
+    background: #0f0 !important;
+    border-color: #000 !important;
+}
+.updatedRow{
+    background: green !important;
+}
+.editButNotSentRow{
+    background: orange;
 }

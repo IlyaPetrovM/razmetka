@@ -2,6 +2,7 @@
 "use strict";
 //import IDbTable from "./IDbTable.js";
 import Publisher from './Publisher.js';
+const Act = new exports.Act();
 /**************************************
     Fragment
 *************************************/
@@ -18,13 +19,20 @@ export default class Fragment extends Publisher {
         this.getStartS = function(){
             return __start_s;
         }
-        this.startSet = function(sec){
-            __start_s = sec;
+        this.startSet = function(msg){
+            __start_s = parseFloat(msg.data.start_s);
             this.update(this);
         }
+        this.getTableName = function(){
+            throw Error('abstract method used');
+        }
         this.setStartS = function(sec){
-            //TODO
-//            this.startSet(sec);
+            let sql = {
+                action: Act.UPDATE,
+                table: this.getTableName(), //TODO getTableName
+                id: __id,
+                data: {start_s: sec}
+            };
             __dbClient.send(__id+'setStart',sec);
         }
         __dbClient.addSubscriber(__id+'setStart',this.startSet.bind(this));
@@ -32,12 +40,18 @@ export default class Fragment extends Publisher {
         this.getEndS = function(){
             return __end_s;
         }
-        this.endSet = function(sec){
-            __end_s = sec;
+        this.endSet = function(msg){
+            __end_s = parseFloat(msg.data.end_s);
             this.update(this);
         }
         this.setEndS = function(sec){
-//            this.endSet(sec);
+            if(sec<0) sec = 0.0;
+            let sql = {
+                action: Act.UPDATE,
+                table: this.getTableName(),
+                id: __id,
+                data: {end_s: sec}
+            };
             __dbClient.send(__id+'setEnd',sec);
         }
         __dbClient.addSubscriber(__id+'setEnd',this.endSet.bind(this));
@@ -47,14 +61,6 @@ export default class Fragment extends Publisher {
         this.getTrackId = function(){
             return __track_id;
         }
-//        this.trackIdSet = function(id){
-//            __track_id = id;
-//            this.update(this);
-//        }
-//        this.setTrackId = function(id){
-//            //TODO
-//            this.trackIdSet(id);
-//        }
         
         this.getId = function(){
             return __id;
@@ -64,19 +70,23 @@ export default class Fragment extends Publisher {
         }
 
         this.fragmentEdited = function(edit){
-//            console.log(edit);
-            __start_s = edit.start_s;
-            __end_s = edit.end_s;
+            __start_s = edit.data.start_s;
+            __end_s = edit.data.end_s;
             this.update(this);
         }
         this.editFragment = function(st_s, en_s){
+            if(st_s<0) en_s -= st_s, st_s = 0.0; // Запретить перемещать в сторону нуля
             let edit = {
                 start_s:st_s,
                 end_s:en_s
             };
-             __dbClient.send(__id+'editFragment',edit);
-//            console.log(this);
-//            this.fragmentEdited(edit);
+            let sql = {
+                action: Act.UPDATE,
+                table: this.getTableName(),
+                id: __id,
+                data:edit
+            };
+             __dbClient.send(__id+'editFragment',sql);
         }
         __dbClient.addSubscriber(__id+'editFragment',this.fragmentEdited.bind(this));
         if(start_s > end_s){
@@ -84,8 +94,7 @@ export default class Fragment extends Publisher {
         }
         this.leftFragment = undefined;
         this.rightFragment = undefined;
-//        this.start_s = start_s;
-//        this.end_s = end_s;
+
         this.index=__id;
         this.duration_s = function(){
             return __end_s - __start_s;

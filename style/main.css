@@ -92,10 +92,7 @@
 .milestone2{
     background: #ccc;
 }
-.playing{
-    background: #0f0 !important;
-    border-color: #000 !important;
-}
+
 .sequence{
     width:fit-content;
     position: relative;

@@ -23,6 +23,7 @@ export default class InterviewChooser extends Subscriber{
                 if(iAmCreator){
                     iAmCreator = false;
                     window.open("interview.html?id="+ex.getInterviews()[i].getId()+'&new=1',"_self");
+                    //FIXME id интервью используется неправильный
                 }
             }
 //            for(let i in this.interviewItems){
@@ -47,10 +48,8 @@ export default class InterviewChooser extends Subscriber{
                 }
             }
             if(send){
-                 //TODO 09.04.2018 
                 iAmCreator = true;
                 __expedition.addInterview(title_,date_);
-    //            super.create({title: title_,_date:date_}, 'Interview');
             }
         }
         this.buttonAdd.onclick = this.create.bind(this);

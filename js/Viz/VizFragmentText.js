@@ -11,45 +11,18 @@ export default class VizFragmentText extends VizFragment {
 
         var __fragment = data;
         var __timeline = timeline;
-//        this.media = __fragment.getMedia();
-//        this.media.textFragments.push(this); // Удобно потом двигать текстовый интервал из медиа
+        var __bar;
+        this.setDescriptionBar = function(bar){
+            __bar = bar;
+            this.viz.addEventListener('mouseover',__bar.scrollIntoView);
+            this.viz.addEventListener('mouseleave',__bar.scrollIntoView);
+        }
+        var __viz = this.viz;
+        this.scrollIntoView = function(){
+            __viz.scrollIntoView(false);
+            __viz.classList.toggle('hover');
+        }
 
-//        this.textDescr = document.createElement('div');
-//        this.textDescr.setAttribute('contenteditable',true); 
-//        /// TODO !!!!! Нужно каким-то образом вызывать метод изменения описания фрагмента!!!!!! 2018.06.13 2:22
-//        this.textDescr.setAttribute('tabindex','-1'); 
-//
-//        this.textDescr.id = ('textDiscr');
-//        this.textDescr.className = 'textDescr';
-//        this.textDescr.innerHTML = data.getDescr();
-//        this.textDescr.addEventListener('keyup', function(e){
-////            console.log(e);
-//            __fragment.setDescr(this.textDescr.innerHTML);
-//            this.textDescr.innerHTML='';
-//        }.bind(this));
-//        
-//        this.ivlDescr = document.createElement('div');
-//        this.ivlDescr.className = 'ivlDescr';        
-//        this.ivlDescr.addEventListener('mouseover',this.scrollTo.bind(this.viz));
-//        this.ivlDescr.addEventListener('mouseleave',this.scrollTo.bind(this.viz));
-
-        this.viz.addEventListener('mouseover',this.scrollTo.bind(descriptionBar));   
-        this.viz.addEventListener('mouseleave',this.scrollTo.bind(descriptionBar));
-
-        //        this.textDescr.focus();
-    }
-//    move(e) {
-//        if(this.media.index == e.index){    
-//            let moveFragmentTextEvent =new CustomEvent('moveFragment');
-//            moveFragmentTextEvent.step_s = e.step_s;
-//            document.dispatchEvent(moveFragmentTextEvent);        
-//        }
-//    }
-
-    scrollTo() {
-        this.classList.toggle('hover');
-        /// FIXME фокус работает слишком как-то странно иногда
-        this.scrollIntoView(true);
     }
 
     moveReally(e) {

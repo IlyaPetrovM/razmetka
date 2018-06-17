@@ -25,7 +25,7 @@ export default class VizFragment extends Subscriber{
         var __menu;
         var offset_px, zero_px;
         var moving = false;
-        
+        var __old_start_px;
         var endTrack = function(e){
             if(moving){
                 moving = false;
@@ -34,22 +34,24 @@ export default class VizFragment extends Subscriber{
                 let width_px = parseFloat(this.viz.style.width);
                 let start_s = x_px/zoom_px;
                 let end_s = (x_px+width_px)/zoom_px;
-                __fragment.editFragment(start_s,end_s);
+                console.log('stop move');
+                __fragment.editFragment(start_s,end_s);//FIXME
             }
         };
 
         this.viz.onmousedown = function(e){
 //            console.log(e.clientX);
+            __old_start_px = this.viz.style.left;
             offset_px = parseInt(this.viz.style.left)-e.clientX;
             moving = true;
         }.bind(this);
 
-        window.addEventListener('mouseup',endTrack.bind(this));
         this.viz.onmousemove = function(e){
             if(moving){
                 this.viz.style.left = (offset_px + e.clientX )+'px';
             }
         }.bind(this);
+        window.addEventListener('mouseup',endTrack.bind(this));
         this.viz.onmouseout = endTrack.bind(this);
 
 
@@ -70,6 +72,7 @@ export default class VizFragment extends Subscriber{
             var zoom_px = parseFloat(document.getElementById('zoom').value);
             this.viz.style.left = frg.getStartS() * zoom_px/* * 100.0 / W_px + */+'px';
             this.viz.style.width = frg.duration_s() * zoom_px/* * 100.0 / W_px */+ 'px';
+            console.log(this.viz.style.left);
         }
 
         this.timelineUpdated = function(frg){

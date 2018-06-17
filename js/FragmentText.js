@@ -1,4 +1,5 @@
 import Fragment from './Fragment.js';
+const Act = new exports.Act();
 
 /**************************************
     Fragment Text
@@ -9,20 +10,29 @@ export default class FragmentText extends Fragment{
         var __descr = descr,
             __media = media,
             __dbClient = dbClient;
-        
+        this.getTableName = function(){
+            return 'IntervalText';
+        }
         this.getMedia = function(){
             return __media;
         }
         this.getDescr = function(){
             return __descr;
         }
-        this.descrSet = function(txt){
-            __descr = txt;
+        this.descrSet = function(msg){
+            __descr = msg.data.descr;
             this.update(this);
         }
         this.setDescr = function(txt){
-            console.log(txt);
-            __dbClient.send(id+'setDescr',txt);
+            if(txt.length > 2048) alert('Текст не может быть длиннее 2048 символов');
+            //TODO setDescr
+            let sql = {
+                action: Act.UPDATE,
+                id: this.getId(),
+                table: this.getTableName(),
+                data: {descr: txt}
+            }
+            __dbClient.send(id+'setDescr',sql);
         }
         __dbClient.addSubscriber(id+'setDescr',this.descrSet.bind(this));
 //        this.type = 'text';

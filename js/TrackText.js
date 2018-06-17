@@ -47,6 +47,7 @@ export default class TrackText extends Track{
                 table:'IntervalText',
                 data:data
             }
+//            this.fragmentAdded(sql);
             __dbClient.send(this.getId()+'addTextFragment',sql);
         }
         __dbClient.addSubscriber(this.getId()+'addTextFragment',this.fragmentAdded.bind(this));
