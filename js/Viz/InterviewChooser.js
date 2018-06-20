@@ -7,22 +7,23 @@ import IDbTable from '../IDbTable.js';
 import Subscriber from '../Subscriber.js';
 
 export default class InterviewChooser extends Subscriber{
-    constructor(wsocket,parentNode,expedition){
+    constructor(wsocket, parentNode, expedition){
         super();
+        var __div = document.createElement('div');
         var iAmCreator = false;
         var __expedition = expedition;
         this.onUpdate = function(ex){
             document.title = ex.getTitle();
             for(let i in ex.getInterviews()){
-                console.log(ex.getInterviews()[i]);
-                if(this.interviewItems[ex.getInterviews()[i].getId()] === undefined){
-                    let itwLink = new InterviewLink(ex.getInterviews()[i],this);
-                    ex.getInterviews()[i].addSubscriber(itwLink);
-                    this.interviewItems[ex.getInterviews()[i].getId()] = itwLink;
+                let itw = ex.getInterviews()[i];
+                if(this.interviewItems[itw.getId()] === undefined){
+                    let itwLink = new InterviewLink(itw, __div);
+                    itw.addSubscriber(itwLink);
+                    this.interviewItems[itw.getId()] = itwLink;
                 }
                 if(iAmCreator){
                     iAmCreator = false;
-                    window.open("interview.html?id="+ex.getInterviews()[i].getId()+'&new=1',"_self");
+                    window.open("interview.html?id=" + itw.getId() + '&new=1',"_self");
                     //FIXME id интервью используется неправильный
                 }
             }
@@ -32,8 +33,8 @@ export default class InterviewChooser extends Subscriber{
 //                }
 //            }
         }
-        this.div = document.createElement('div');
-        this.div.id = 'interviewChooser';
+
+        __div.id = 'interviewChooser';
         this.buttonAdd = document.createElement('button');
         this.buttonAdd.innerHTML = 'Добавить интервью';
         this.buttonAdd.id = 'createInterviewButton';
@@ -53,41 +54,14 @@ export default class InterviewChooser extends Subscriber{
             }
         }
         this.buttonAdd.onclick = this.create.bind(this);
-        this.div.appendChild(this.buttonAdd);
-        
+        ///FIXME
         
         this.interviewItems = {};
         
-        this.editGroupButtons = document.createElement('div');
-        this.editGroupButtons.id = 'editGroupButtons';
-        this.targetItem = undefined;
-        this.buttonEdit = document.createElement('button');
-        this.buttonDel = document.createElement('button');
-        this.buttonEdit.title = "Редактировать";
-        this.buttonDel.title = "Удалить";
-        this.buttonEdit.innerHTML = "&#9998;";
-        this.buttonDel.innerHTML = "&#10006;";
-        this.buttonEdit.className = "buttonEdit";
-        this.buttonDel.className = 'buttonDel';
-        this.update = function(id,data,onClickEvent){
-            this.interviewItems[this.targetItem._id].editInterview();
-        }
-        this.buttonEdit.onclick = this.update.bind(this);
-        this.remove = function(_id,onClickEvent){
-        //TODO 09.04.2018
-        console.log(_id);
-        let id = this.targetItem._id;
-        let res = confirm('Вы уверены, что хотите удалить интервью?');
-        if(res){
-           __expedition.removeInterview(id);
-        }
-    }
-        this.buttonDel.onclick = this.remove.bind(this); // Чтобы передавать как параметр только один выбранный элемент
+
         
-        this.editGroupButtons.appendChild(this.buttonEdit);
-        this.editGroupButtons.appendChild(this.buttonDel);
-        this.div.appendChild(this.editGroupButtons);
-        parentNode.appendChild(this.div);
+        parentNode.appendChild(this.buttonAdd);
+        parentNode.appendChild(__div);
         this.parentNode = parentNode;
         
 //        this.wsClient.onopen = this.load.bind(this);  
@@ -146,10 +120,6 @@ export default class InterviewChooser extends Subscriber{
             this.activeInterview.hide();
 //        }
     }
-    drawControl(targetItem,e){
-        let rect = targetItem.getBoundingClientRect();
-        this.editGroupButtons.style.top = rect.y + 'px';
-        this.targetItem = targetItem;
-    }
+
 
 }

@@ -41,9 +41,9 @@ CREATE TABLE `Track` (
     PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `IntervalText` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
-ALTER TABLE `IntervalText` ADD FOREIGN KEY (`media_id`) REFERENCES `Track`(`id`);
-ALTER TABLE `IntervalText` ADD FOREIGN KEY (`track_id`) REFERENCES `Track`(`id`);
-ALTER TABLE `IntervalMedia` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
-ALTER TABLE `IntervalMedia` ADD FOREIGN KEY (`track_id`) REFERENCES `Track`(`id`);
-ALTER TABLE `Track` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`);
+ALTER TABLE `IntervalText` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`) ON DELETE CASCADE;
+ALTER TABLE `IntervalText` ADD FOREIGN KEY (`media_id`) REFERENCES `Track`(`id`) ON DELETE CASCADE;
+ALTER TABLE `IntervalText` ADD FOREIGN KEY (`track_id`) REFERENCES `Track`(`id`) ON DELETE CASCADE;
+ALTER TABLE `IntervalMedia` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`) ON DELETE CASCADE;
+ALTER TABLE `IntervalMedia` ADD FOREIGN KEY (`track_id`) REFERENCES `Track`(`id`) ON DELETE CASCADE;
+ALTER TABLE `Track` ADD FOREIGN KEY (`int_id`) REFERENCES `Interview`(`id`) ON DELETE CASCADE;

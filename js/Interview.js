@@ -111,6 +111,23 @@ export default class Interview extends Publisher{
         }
         __dbClient.addSubscriber(__id+'Interview_removeTrack',this.trackRemoved.bind(this));
         
+
+        this.interviewRemoved = function(){
+            this.remove();
+            console.log('interview Removed');
+        }
+        this.removeInterview = function(){
+            let sql = {
+                action: Act.DELETE,
+                id:__id,
+                table:'Interview'
+            }
+//            this.interviewRemoved();
+            __dbClient.send(__id+'removeInterview',sql);
+        }
+        __dbClient.addSubscriber(__id+'removeInterview',this.interviewRemoved.bind(this));
+
+
         this.tracksLoaded = function(msg){
             console.log(msg.data);
             for(let t in msg.data){

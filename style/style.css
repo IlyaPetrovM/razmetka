@@ -1,19 +1,26 @@
 /*Стили*/
-#editGroupButtons{
+/*
+.editGroupButtons{
     position:fixed;
+    display: inline-block;
     height: 1.5em;
     right: 5px;
 }
+*/
+/*
 #interviewChooser{
     margin: 0 auto;
     border: 2px solid gray;
     text-align: center;
 }
+*/
+/*
 .interviewLink{
     display: block;
     margin:0 auto;
     height: 1.5em;
 }
+*/
 
 
 
