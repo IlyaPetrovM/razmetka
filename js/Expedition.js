@@ -17,12 +17,15 @@ export default class Expedition extends Publisher {
 
         this.interviewAdded = function(msg){
             let data = msg.data;
-            __interviews[data.id] = new Interview(data.id, data.title, data._date, __dbClient);
+            __interviews[data.id] = new Interview(data.id, data.title, data._date, data.informants, data.reporters, data.exterier, __dbClient);
             this.update(this);
         }
         
-        this.addInterview = function(title,date){
+        this.addInterview = function(title, date, informants, reporters, exterier){
             let data = {
+                informants:informants,
+                reporters:reporters,
+                exterier:exterier,
                 title:title,
                 _date:date
             };
@@ -40,7 +43,7 @@ export default class Expedition extends Publisher {
             let iws = msg.data;
             for(let i in iws){
                 let data = iws[i];
-                __interviews[data.id] = new Interview(data.id, data.title, data._date, __dbClient);
+                __interviews[data.id] = new Interview(data.id, data.title, data._date, data.informants, data.reporters, data.exterier, __dbClient);
             }
             this.update(this);
         }

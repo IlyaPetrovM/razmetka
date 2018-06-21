@@ -7,14 +7,14 @@ import TrackMedia from './TrackMedia.js';
 import TrackText from './TrackText.js';
 const Act = new exports.Act();
 export default class Interview extends Publisher{
-    constructor(id,_title, _date, wsClient){
+    constructor(id,_title, _date, informants, reporters, exterier, wsClient){
         super();
         var __id = id;
         var __date = _date;
         var __title = _title;
         var __tracks = {};
         var __dbClient = wsClient;
-        var __informants = '', __reporters = '', __exterier = '';
+        var __informants = informants, __reporters = reporters, __exterier = exterier;
 
         this.getInformants = function(){
             return __informants;
@@ -63,6 +63,9 @@ export default class Interview extends Publisher{
             let me = msg.data[0];
             __date = me._date;
             __title = me.title;
+            __reporters = me.reporters;
+            __informants = me.informants;
+            __exterier = me.exterier;
             this.update(this);
         }
         
@@ -177,24 +180,7 @@ export default class Interview extends Publisher{
             __dbClient.send(__id+'loadTracks',sql);
         }
         __dbClient.addSubscriber(__id+'loadTracks',this.tracksLoaded.bind(this));
-        
-        this.interviewEdited = function(iw){
-            //TODO
-            if(iw._date){
-                __date = iw._date;
-            }
-            if(iw.title){
-                __title = iw.title;
-            }
-            this.update(this);
-        }
-        this.editInterview = function(iw){
-            //TODO
-            __dbClient.send(__id+'editInterview',iw);
-        }
-        __dbClient.addSubscriber(__id+'editInterview',this.interviewEdited.bind(this));
 
-        
     }
     get table(){
         return 'Interview';

@@ -239,7 +239,7 @@ if(q['id']){
     document.title='Интервью '+q['id'];
     var ws = new WebSocket('ws://localhost:8081');
     var dbClient = new IDbTable(ws);
-    var tmpInterview = new Interview(q['id'],'Деревенское интервью',"2018-05-12",dbClient);
+    var tmpInterview = new Interview(q['id'],'Деревенское интервью',"2018-05-12",'','','',dbClient);
     var vi = new VizInterview(document.body,tmpInterview);
     tmpInterview.addSubscriber(vi);
     tmpInterview.loadMe(q['id']);

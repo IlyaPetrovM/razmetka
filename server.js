@@ -111,21 +111,21 @@ class Server{
     
     insert(msg,callback) {
         let sql;
-        if(msg.table === 'Interview'){
-            let d = new Date(msg.data._date).toISOString().slice(0,19).replace('T',' ');
-            sql = `INSERT INTO ${msg.table} (title, _date) VALUES ('${msg.data.title}', '${d}');`;
-        }else{
-            let valuesList='', keysList='';
-            for(let key in msg.data){
-                keysList += `${key},`;
+        let valuesList='', keysList='';
+        for(let key in msg.data){
+            if(key === '_date'){
+                let d = new Date(msg.data._date).toISOString().slice(0,19).replace('T',' ');
+                valuesList += `'${d}',`;
+            }else{
                 valuesList += `'${msg.data[key]}',`;
-                console.log('\n'+ key + ':' + msg.data[key]+'\n');
             }
-            keysList = keysList.slice(0,keysList.length-1);
-            valuesList = valuesList.slice(0,valuesList.length-1);
-            sql = `INSERT INTO ${msg.table} (${keysList}) VALUES (${valuesList});`;
-            console.log('\n'+sql+'\n');
+            keysList += `${key},`;
         }
+        keysList = keysList.slice(0,keysList.length-1);
+        valuesList = valuesList.slice(0,valuesList.length-1);
+        sql = `INSERT INTO ${msg.table} (${keysList}) VALUES (${valuesList});`;
+        console.log('\n'+sql+'\n');
+
         this.sqlClient.query(sql, callback);
         return {msg};
     }

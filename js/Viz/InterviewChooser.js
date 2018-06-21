@@ -20,11 +20,11 @@ export default class InterviewChooser extends Subscriber{
                     let itwLink = new InterviewLink(itw, __div);
                     itw.addSubscriber(itwLink);
                     this.interviewItems[itw.getId()] = itwLink;
-                }
-                if(iAmCreator){
-                    iAmCreator = false;
-                    window.open("interview.html?id=" + itw.getId() + '&new=1',"_self");
-                    //FIXME id интервью используется неправильный
+                    if(iAmCreator){
+                        iAmCreator = false;
+                        window.open("interview.html?id=" + itw.getId() + '&new=1',"_self");
+                        //FIXME id интервью используется неправильный
+                    }
                 }
             }
 //            for(let i in this.interviewItems){
@@ -39,19 +39,8 @@ export default class InterviewChooser extends Subscriber{
         this.buttonAdd.innerHTML = 'Добавить интервью';
         this.buttonAdd.id = 'createInterviewButton';
         this.create = function(){
-                    let title_ = '', date_ = new Date('1992-01-13');
-        let send = true;
-            while(title_ === null || title_ === ''){
-                title_ = prompt("Введите название интервью","Интервью 1");
-                if(title_ === null){
-                    send = false;
-                    break;
-                }
-            }
-            if(send){
-                iAmCreator = true;
-                __expedition.addInterview(title_,date_);
-            }
+            iAmCreator = true;
+            __expedition.addInterview('',new Date(), '','','');
         }
         this.buttonAdd.onclick = this.create.bind(this);
         ///FIXME

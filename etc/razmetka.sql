@@ -28,7 +28,10 @@ CREATE TABLE `IntervalMedia` (
 
 CREATE TABLE `Interview` (
     `id` INT AUTO_INCREMENT NOT NULL,
-    `title` VARCHAR(255) NOT NULL,
+    `title` VARCHAR(1024) NOT NULL,
+    `informants` VARCHAR(1024) NOT NULL,
+    `reporters` VARCHAR(1024) NOT NULL,
+    `exterier` VARCHAR(2048) NOT NULL,
     `_date` DATE NOT NULL,
     PRIMARY KEY (`id`)
 );

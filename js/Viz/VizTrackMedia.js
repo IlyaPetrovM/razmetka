@@ -60,6 +60,11 @@ export default class VizTrackMedia extends VizTrack{
         fileInput.id = 'fileInput';
         fileInput.name = 'audioFile';
         fileInput.type = 'file';
+
+        var closeButton = document.createElement('button');
+        closeButton.innerHTML = 'X';
+        closeButton.onclick = function(){document.body.removeChild(__form);}
+        __form.appendChild(closeButton);
         __form.id = 'resetform';
         __form.action = 'fileupload';
         __form.appendChild(fileInput);
