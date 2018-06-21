@@ -14,13 +14,45 @@ export default class Interview extends Publisher{
         var __title = _title;
         var __tracks = {};
         var __dbClient = wsClient;
+        var __informants = '', __reporters = '', __exterier = '';
 
-//        this.onidupdated = function(newid){};
-//        this.onupdate = function(){};
-//        this.ondelete = function(){};
-//        this.trackMediaCreated = function(){};
-//        this.trackTextCreated = function(){};
-//        this.tracks = {};
+        this.getInformants = function(){
+            return __informants;
+        }
+        this.getReporters = function(){
+            return __reporters;
+        }
+        this.getExterier = function(){
+            return __exterier;
+        }
+
+
+        this.informantsSet = function(msg){
+            //TODO
+        }
+        this.setInformants = function(inf){
+            //TODO
+            __informants = inf;
+            this.update(this);
+        }
+
+        this.reportersSet = function(msg){
+            //TODO
+        }
+        this.setReporters = function(rep){
+            ///TODO
+            __reporters = rep;
+            this.update(this);
+        }
+
+        this.exterierSet = function(msg){
+            //TODO
+        }
+        this.setExterier = function(ext){
+            //TODO
+            __exterier = ext;
+            this.update(this);
+        }
         
         this.getId = function(){return __id;}
         this.getDate = function(){return __date;}

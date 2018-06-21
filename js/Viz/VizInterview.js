@@ -18,6 +18,8 @@ import VizTrackMedia from './VizTrackMedia.js';
 import VizTrackText from './VizTrackText.js';
 import TimeDisplay from './TimeDisplay.js';
 
+import Passport from './Passport.js';
+
 export default class VizInterview extends Subscriber{
     constructor(parentNode,interview){
         super();
@@ -25,6 +27,10 @@ export default class VizInterview extends Subscriber{
         var __interview = interview;
         var __parentNode = parentNode;
         
+        var __passport = new Passport(parentNode, interview);
+        interview.addSubscriber(__passport);
+
+
         var __parentDiv = document.createElement('div');
         __parentNode.appendChild(__parentDiv);
         document.title = interview.getId()+' '+interview.getTitle();

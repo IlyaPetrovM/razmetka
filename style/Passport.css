@@ -1,0 +1,28 @@
+/*Passport*/
+
+.passportWrapper{
+    text-align: center;
+    width:100%;
+/*    position: absolute;*/
+/*    z-index: 10;*/
+/*    height:80%;*/
+/*    background: rgba(255,255,255,0.9);*/
+}
+#passport{
+    height:100%;
+    padding: 5px;
+    border: solid 2px green;
+}
+.editForm::before{
+    content: 'Редактирование';
+    color: gray;
+
+}
+.savedForm::before{
+    content: 'Сохранено!';
+    color: green;
+}
+#passport input, #passport textarea{
+    margin: 5px auto;
+    width: 98%;
+}
