@@ -33,9 +33,9 @@ export default class Fragment extends Publisher {
                 id: __id,
                 data: {start_s: sec}
             };
-            __dbClient.send(__id+'setStart',sec);
+            __dbClient.send(__id+(__track_id+'setStart'),sec);
         }
-        __dbClient.addSubscriber(__id+'setStart',this.startSet.bind(this));
+        __dbClient.addSubscriber(__id+(__track_id+'setStart'),this.startSet.bind(this));
         
         this.getEndS = function(){
             return __end_s;
@@ -52,9 +52,9 @@ export default class Fragment extends Publisher {
                 id: __id,
                 data: {end_s: sec}
             };
-            __dbClient.send(__id+'setEnd',sec);
+            __dbClient.send(__id+(__track_id+'setEnd'),sec);
         }
-        __dbClient.addSubscriber(__id+'setEnd',this.endSet.bind(this));
+        __dbClient.addSubscriber(__id+(__track_id+'setEnd'),this.endSet.bind(this));
         
         
         
@@ -86,9 +86,9 @@ export default class Fragment extends Publisher {
                 id: __id,
                 data:edit
             };
-             __dbClient.send(__id+'editFragment',sql);
+             __dbClient.send(__id+(__track_id+'editFragment'),sql);
         }
-        __dbClient.addSubscriber(__id+'editFragment',this.fragmentEdited.bind(this));
+        __dbClient.addSubscriber(__id+(__track_id+'editFragment'),this.fragmentEdited.bind(this));
         if(start_s > end_s){
             end_s = start_s + 1;
         }
