@@ -33,7 +33,7 @@ export default class Fragment extends Publisher {
                 id: __id,
                 data: {start_s: sec}
             };
-            __dbClient.send(__id+(__track_id+'setStart'),sec);
+            __dbClient.send(__id+(__track_id+'setStart'),sql);
         }
         __dbClient.addSubscriber(__id+(__track_id+'setStart'),this.startSet.bind(this));
         
@@ -52,9 +52,9 @@ export default class Fragment extends Publisher {
                 id: __id,
                 data: {end_s: sec}
             };
-            __dbClient.send(__id+(__track_id+'setEnd'),sec);
+            __dbClient.send(__id+'_'+(__track_id+'setEnd'),sql);
         }
-        __dbClient.addSubscriber(__id+(__track_id+'setEnd'),this.endSet.bind(this));
+        __dbClient.addSubscriber(__id+'_'+(__track_id+'setEnd'),this.endSet.bind(this));
         
         
         

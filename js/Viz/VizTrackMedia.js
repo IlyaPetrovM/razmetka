@@ -33,19 +33,6 @@ export default class VizTrackMedia extends VizTrack{
                                 VizTrack.pix2sec(offsetX) + audio.duration);
         }
     }
-    
-    getMediaFragment(getMediaFragmentEvent) {
-        if(this.radio.checked){
-            let fragments = this.div.track.fragments.filter( 
-                function(ivl){
-                    return ivl.cursorOn === true;
-                } 
-            );
-            if(fragments[0] != undefined){
-                getMediaFragmentEvent.trackText.connect(fragments[0]);
-            }
-        }
-    }
 
 
     addFragmentMedia(offsetX) {

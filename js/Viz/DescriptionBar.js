@@ -1,36 +1,40 @@
 import Subscriber from '../Subscriber.js';
 import TimeField from './TimeField.js';
+
 export default class DescriptionBar extends Subscriber{
     constructor(parentNode, fragment, blockText){
         super();
         var __fragment = fragment;
         var __blockText = blockText;
         var __row = document.createElement('div');
-        var __inputDescr = document.createElement('div');
-
+        var __inputDescr = document.createElement('textarea');
+        var cursorPos = '';
         __row.className = 'ivlDescr';
 
         __inputDescr.id = ('textDiscr');
         __inputDescr.className = 'textDescr';
         __inputDescr.innerHTML = __fragment.getDescr();
-        __inputDescr.setAttribute('contenteditable',true);
+//        __inputDescr.setAttribute('resizable',true);
+
         var delayIsActive = false;
 
 
 
         /// TODO !!!!! Нужно каким-то образом вызывать метод изменения описания фрагмента!!!!!! 2018.06.13 2:22
-        __inputDescr.addEventListener('keyup', function(e){
+        __inputDescr.addEventListener('keydown', function(e){
+//            cursorPos = window.getSelection().getRangeAt(0).startOffset;
+            autosize();
+            console.log(__inputDescr.rows);
             if(delayIsActive){
                return;
             }
             var t = setTimeout(function(){
-                    __fragment.setDescr(__inputDescr.innerHTML);
+                    __fragment.setDescr(__inputDescr.value);
                     console.log('send Text');
                     delayIsActive = false;
             },3000);
             delayIsActive = true;
             __row.classList.add('editButNotSentRow');
-//            __inputDescr.innerHTML='';
         }.bind(this));
 
 
@@ -60,7 +64,8 @@ export default class DescriptionBar extends Subscriber{
         }
 
         this.onUpdate = function(frg){
-            __inputDescr.innerHTML = frg.getDescr();
+//            if(cursorPos) __inputDescr.setSelectionRange(0,5);
+            __inputDescr.value = frg.getDescr();
             __row.classList.remove('editButNotSentRow');
 
             __row.classList.toggle('updatedRow');
@@ -68,8 +73,20 @@ export default class DescriptionBar extends Subscriber{
                 __row.classList.toggle('updatedRow');
             },500);
         }
-
         __row.appendChild(__inputDescr);
         parentNode.appendChild(__row);
+
+        function autosize(){
+          setTimeout(function(){
+            __inputDescr.style.cssText = 'height:auto; padding:0';
+            // for box-sizing other than "content-box" use:
+             __inputDescr.style.cssText = '-moz-box-sizing:content-box';
+            __inputDescr.style.cssText = 'height:' + __inputDescr.scrollHeight + 'px';
+          },0);
+        }
+        autosize();
+        this.focus = function(){
+            __inputDescr.focus();
+        }
     }
 }

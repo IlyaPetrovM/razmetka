@@ -28,6 +28,7 @@ export default class VizTrackText extends VizTrack{
         addFragmentTextButton.id = 'addFragmentTextButton';
         addFragmentTextButton.innerText = '+';
         var bAddFragment = false;
+        var imCreator = false;
 
         addFragmentTextButton.onclick = function(e){
             let start_s = __cursorPlay.getPosS();
@@ -41,6 +42,7 @@ export default class VizTrackText extends VizTrack{
             }
             track.addFragment(start_s,end_s,'',media.getId() );
             bAddFragment = true;
+            imCreator = true;
         }.bind(this);
         document.addEventListener('stopPlaying',function(){
             if(bAddFragment){
@@ -73,7 +75,11 @@ export default class VizTrackText extends VizTrack{
                     frg.addSubscriber(__vizFragments[id]);
                     frg.addSubscriber(__descriptionBars[id]);
                     frg.update(frg);
-                    __lastAddedFragment = frg;
+                    if(imCreator){
+                        __descriptionBars[id].focus();
+                        imCreator = false;
+                        __lastAddedFragment = frg;
+                    }
                 }
             }
         }
@@ -123,17 +129,7 @@ export default class VizTrackText extends VizTrack{
             }
         }.bind(this));
     }
-    
-    connect(fragmentMedia){
-//        var ivltext = new FragmentText(cursorPlay.this.time_s, // DEPRECATED
-//                                       cursorPlay.this.time_s+0.01);
-        if(this.div.track.addFragment(ivltext))
-        {
-            console.log(fragmentMedia);
-            this.ivl = new VizFragmentText(this.div, ivltext, fragmentMedia);
-            this.ivl.viz.choosen = true;                    
-        }
-    }
+
     addFragment(event){
         if(event.target.track!=null){
             console.log('Нажата дорожка');
