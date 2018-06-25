@@ -26,7 +26,7 @@ export default class VizTrackText extends VizTrack{
         var __lastAddedFragment;
         var addFragmentTextButton = document.createElement('button');
         addFragmentTextButton.id = 'addFragmentTextButton';
-        addFragmentTextButton.innerText = '+';
+        addFragmentTextButton.innerText = '+ Добавить описание на дорожку '+track.getId();
         var bAddFragment = false;
         var imCreator = false;
 

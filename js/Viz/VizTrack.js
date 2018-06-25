@@ -12,19 +12,19 @@ export default class VizTrack extends Subscriber{
         this.div.track = track; 
         this.div.title = track.getId() + " " +track.getTitle();
                 
-        this.radio = document.createElement('input');
-        this.radio.type = 'radio';
+        this.radio = document.createElement('p');
+        this.radio.innerHTML = __track.getId();
         this.radio.className = 'trackChooserRadio';
-        this.radio.realstate = false;
-        this.radio.onclick = function(e){
-            if(e.target.realstate){
-                e.target.realstate = false;
-                e.target.checked = false;
-            }else{
-                e.target.realstate = true;
-                
-            }
-        };
+//        this.radio.realstate = false;
+//        this.radio.onclick = function(e){
+//            if(e.target.realstate){
+//                e.target.realstate = false;
+//                e.target.checked = false;
+//            }else{
+//                e.target.realstate = true;
+//
+//            }
+//        };
         this.buttonDelete = document.createElement('button');
         this.buttonDelete.className = 'buttonDeleteTrack';
         this.buttonDelete.innerHTML = 'x';
@@ -44,6 +44,7 @@ export default class VizTrack extends Subscriber{
         this.panel.appendChild(this.buttonDelete);
         panelParent.appendChild(this.panel);
         parent.appendChild(this.div);
+
 //        
 //        this.onUpdate = function(track){
 //            console.log('update track');
