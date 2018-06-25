@@ -1,14 +1,18 @@
 import Subscriber from '../Subscriber.js';
+import TimeString from '../TimeString.js';
 export default class Passport extends Subscriber {
     constructor(parentNode, interview){
         super();
-//
-//        var sendStatus = document.createElement('i');
-//        sendStatus.innerHTML = 'Данные сохранены';
-//        sendStatus.className = 'sendStatus';
-
         var __form = document.createElement('form');
         __form.id = 'passport';
+        var __inputDate = document.createElement('input');
+        __inputDate.name = 'inputDate';
+        __inputDate.type = 'date';
+        __inputDate.onchange = function(e){
+            __form.classList.add('editForm');
+            interview.setDate(__inputDate.value);
+        }
+
 
         var __inputInformants = document.createElement('input');
         __inputInformants.name = 'inputInformants';
@@ -71,7 +75,7 @@ export default class Passport extends Subscriber {
             hidden = !hidden;
             __form.classList.toggle('hidden');
         }
-
+        __form.appendChild(__inputDate);
         __form.appendChild(__inputReporters);
         __form.appendChild(__inputInformants);
         __form.appendChild(__inputExterier);
@@ -82,6 +86,7 @@ export default class Passport extends Subscriber {
         parentNode.appendChild(__wrapper);
 
         this.onUpdate = function(itw){
+            __inputDate.value = TimeString.date2yyyy_mm_dd(itw.getDate());
             __inputInformants.value = itw.getInformants();
             __inputReporters.value = itw.getReporters();
             __inputExterier.value = itw.getExterier();

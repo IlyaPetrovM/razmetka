@@ -19,6 +19,12 @@ export default class TimeString{
         let res_ms = hh*60*60*1000 + mm*60*1000 + ss*1000 + ms;
         return res_ms;
     }
+    static date2yyyy_mm_dd(d){
+        if(!(d instanceof Date)) throw TypeError('Incorrect type of date:', d);
+        let month = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getMonth()+1);
+        let day = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getDate());
+        return `${d.getFullYear()}-${month}-${day}`;
+    }
     static sec2str(val_s){
         let str;
         let s = 0;

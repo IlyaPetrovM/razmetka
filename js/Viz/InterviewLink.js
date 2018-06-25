@@ -1,4 +1,5 @@
 import Subscriber from '../Subscriber.js';
+import TimeString from '../TimeString.js';
 
 export default class InterviewLink extends Subscriber{
     constructor(inte, parentNode){
@@ -38,10 +39,9 @@ export default class InterviewLink extends Subscriber{
         
         /* private methods */
         function updateLink () {
-            let d = new Date(__interview.getDate());
-            let month = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getMonth()+1);
-            let day = new Intl.NumberFormat('ru-RU',{minimumIntegerDigits:2}).format(d.getDate());
-            __a.innerHTML =`${__interview.getId()} ${d.getFullYear()}-${month}-${day} ${__interview.getTitle()}`;
+            let date = TimeString.date2yyyy_mm_dd(__interview.getDate());
+            __a.innerHTML =`${__interview.getId()} ${date} ${__interview.getTitle()} ${__interview.getInformants()}`;
+            __a.title = `Собиратели:\n${__interview.getReporters()}`;
         }
 
         var __editGroup = document.createElement('div');

@@ -8,6 +8,7 @@ import TrackText from './TrackText.js';
 const Act = new exports.Act();
 export default class Interview extends Publisher{
     constructor(id,_title, _date, informants, reporters, exterier, wsClient){
+        if(! (_date instanceof Date)) throw TypeError('Incorrect type of Date', _date);
         super();
         var __id = id;
         var __date = _date;
@@ -25,6 +26,23 @@ export default class Interview extends Publisher{
         this.getExterier = function(){
             return __exterier;
         }
+
+        this.dateSet = function(msg){
+            //TODO informantsSet
+            __date = new Date(msg.data._date);
+            this.update(this);
+        }
+        this.setDate = function(_date){
+            //TODO setInformants
+            let sql = {
+                action: Act.UPDATE,
+                table: 'Interview',
+                id: __id,
+                data: {_date: _date}
+            };
+            __dbClient.send(__id+'setDate', sql);
+        };
+        __dbClient.addSubscriber(__id + 'setDate', this.dateSet.bind(this));
 
 
         this.informantsSet = function(msg){
@@ -83,11 +101,12 @@ export default class Interview extends Publisher{
         
         this.meLoaded = function(msg){
             let me = msg.data[0];
-            __date = me._date;
+            __date = new Date(me._date);
             __title = me.title;
             __reporters = me.reporters;
             __informants = me.informants;
             __exterier = me.exterier;
+            console.log(__date);
             this.update(this);
         }
         
