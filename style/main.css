@@ -108,6 +108,11 @@
 .choosen{
     background: #090;
 }
+code{
+    background-color: bisque;
+    padding: 3px;
+    font-size: 14px;
+}
 #cursorPlay,.cursor{
     background: green;
     height: 100%;
@@ -125,6 +130,13 @@
 }
 html{
     overflow: hidden;
+}
+.resultList{
+    display: block;
+    overflow-y:scroll;
+    height: 640px;
+/*    height: 90%;*/
+/*    clear: both;*/
 }
 #descr{
     overflow-y:scroll;

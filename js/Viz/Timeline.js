@@ -15,8 +15,9 @@ export default class Timeline extends Subscriber{
         this.zoom.value = 10;
         var thisTimeline = this;
         this.zoom.onmousemove = this.zoom.onchange = function(e){
-            thisTimeline.zoom_px = parseInt(e.target.value);
-            e.target.title = '1 секунда =' + e.target.value+' пикселей';
+            //TODO zoom
+//            thisTimeline.zoom_px = parseInt(e.target.value);
+//            e.target.title = '1 секунда =' + e.target.value+' пикселей';
         };  
 
         this.update = function(frg,vizFrg){

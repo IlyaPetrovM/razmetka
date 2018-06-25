@@ -15,16 +15,7 @@ export default class VizTrack extends Subscriber{
         this.radio = document.createElement('p');
         this.radio.innerHTML = __track.getId();
         this.radio.className = 'trackChooserRadio';
-//        this.radio.realstate = false;
-//        this.radio.onclick = function(e){
-//            if(e.target.realstate){
-//                e.target.realstate = false;
-//                e.target.checked = false;
-//            }else{
-//                e.target.realstate = true;
-//
-//            }
-//        };
+
         this.buttonDelete = document.createElement('button');
         this.buttonDelete.className = 'buttonDeleteTrack';
         this.buttonDelete.innerHTML = 'x';

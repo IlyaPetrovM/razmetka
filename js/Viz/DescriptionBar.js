@@ -10,19 +10,19 @@ export default class DescriptionBar extends Subscriber{
         var __inputDescr = document.createElement('textarea');
         var cursorPos = '';
         __row.className = 'ivlDescr';
+        this.getRow = function(){
+            return __row;
+        }
 
         __inputDescr.id = ('textDiscr');
         __inputDescr.className = 'textDescr';
         __inputDescr.innerHTML = __fragment.getDescr();
-//        __inputDescr.setAttribute('resizable',true);
 
         var delayIsActive = false;
 
 
 
-        /// TODO !!!!! Нужно каким-то образом вызывать метод изменения описания фрагмента!!!!!! 2018.06.13 2:22
         __inputDescr.addEventListener('keydown', function(e){
-//            cursorPos = window.getSelection().getRangeAt(0).startOffset;
             autosize();
             console.log(__inputDescr.rows);
             if(delayIsActive){
@@ -64,7 +64,6 @@ export default class DescriptionBar extends Subscriber{
         }
 
         this.onUpdate = function(frg){
-//            if(cursorPos) __inputDescr.setSelectionRange(0,5);
             __inputDescr.value = frg.getDescr();
             __row.classList.remove('editButNotSentRow');
 
@@ -87,6 +86,9 @@ export default class DescriptionBar extends Subscriber{
         autosize();
         this.focus = function(){
             __inputDescr.focus();
+        }
+        this.onPublisherRemove = function(){
+            parentNode.removeChild(__row);
         }
     }
 }

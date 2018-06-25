@@ -3,32 +3,11 @@ const Act = new exports.Act();
 export default class IDbTable {
     constructor(wsClient){
         var __wsClient = wsClient;
-//        this.processMessageFromServer = function(inMsg){
-//            let msg = JSON.parse(inMsg.data);
-//            if(msg.sender === this.sender){
-//                switch(msg.action){
-//                    case Act.LOAD:
-//                        this.processLoad(msg);
-//                        break;
-//                    case Act.CREATE:
-//                       this.processCreate(msg);
-//                        break;
-//                    case Act.UPDATE:
-//                        this.processUpdate(msg);
-//                        break;
-//                    case Act.DELETE:
-//                        this.processDelete(msg);
-//                        break;
-//                    case Act.ERROR:
-//                        this.processError(msg);
-//                        break;
-//                    default:
-//                        console.log('Неизвестная команда:',msg.action);
-//                }
-//            }
-//        }
-
         var __callbacks = {};
+        this.removeSubscriber = function(callback_id){
+            __callbacks[callback_id] = undefined;
+            delete __callbacks[callback_id];
+        }
         this.addSubscriber = function(callback_id,callback){
             if(callback_id===undefined) throw TypeError('callback Id is undefined');
             else if(callback===undefined) throw TypeError('callback function is undefined');
