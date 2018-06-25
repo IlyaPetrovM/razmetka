@@ -28,31 +28,53 @@ export default class Interview extends Publisher{
 
 
         this.informantsSet = function(msg){
-            //TODO
+            //TODO informantsSet
+            __informants = msg.data.informants;
+            this.update(this);
         }
         this.setInformants = function(inf){
-            //TODO
-            __informants = inf;
-            this.update(this);
-        }
+            //TODO setInformants
+            let sql = {
+                action: Act.UPDATE,
+                table: 'Interview',
+                id: __id,
+                data: {informants: inf}
+            };
+            __dbClient.send(__id+'setInformants', sql);
+        };
+        __dbClient.addSubscriber(__id + 'setInformants', this.informantsSet.bind(this));
 
         this.reportersSet = function(msg){
-            //TODO
+            __reporters = msg.data.reporters;
+            this.update(this);
         }
         this.setReporters = function(rep){
-            ///TODO
-            __reporters = rep;
-            this.update(this);
+            let sql = {
+                action: Act.UPDATE,
+                table: 'Interview',
+                id: __id,
+                data: {reporters: rep}
+            };
+            __dbClient.send(__id+'setReporters', sql);
         }
+        __dbClient.addSubscriber(__id + 'setReporters', this.reportersSet.bind(this));
 
         this.exterierSet = function(msg){
-            //TODO
-        }
-        this.setExterier = function(ext){
-            //TODO
-            __exterier = ext;
+            //TODO exterierSet
+            __exterier = msg.data.exterier;
             this.update(this);
         }
+        this.setExterier = function(ext){
+            let sql = {
+                action: Act.UPDATE,
+                table: 'Interview',
+                id: __id,
+                data: {exterier: ext}
+            };
+            __dbClient.send(__id+'setExterier', sql);
+        }
+        __dbClient.addSubscriber(__id+'setExterier', this.exterierSet.bind(this));
+
         
         this.getId = function(){return __id;}
         this.getDate = function(){return __date;}
@@ -78,7 +100,7 @@ export default class Interview extends Publisher{
                 action:Act.LOAD,
                 table:'Interview',
                 where:'id='+__id
-            }
+            };
             __dbClient.send(__id+'loadMe',sql);
         }
         __dbClient.addSubscriber(__id+'loadMe',this.meLoaded.bind(this));
@@ -164,7 +186,6 @@ export default class Interview extends Publisher{
 
 
         this.tracksLoaded = function(msg){
-            console.log(msg.data);
             for(let t in msg.data){
                 addTrackByType(msg.data[t]);
             }

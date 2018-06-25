@@ -125,8 +125,8 @@ export default class VizTrackText extends VizTrack{
     }
     
     connect(fragmentMedia){
-        var ivltext = new FragmentText(cursorPlay.this.time_s,
-                                       cursorPlay.this.time_s+0.01);
+//        var ivltext = new FragmentText(cursorPlay.this.time_s, // DEPRECATED
+//                                       cursorPlay.this.time_s+0.01);
         if(this.div.track.addFragment(ivltext))
         {
             console.log(fragmentMedia);

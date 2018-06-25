@@ -52,7 +52,7 @@ export default class Passport extends Subscriber {
             __form.classList.add('editForm');
             setTimeout(function(e){
                 delay[2] = false;
-                interview.setExterier(__inputExterier.innerText);
+                interview.setExterier(__inputExterier.value);
             }, 5000);
         }
 
@@ -84,7 +84,7 @@ export default class Passport extends Subscriber {
         this.onUpdate = function(itw){
             __inputInformants.value = itw.getInformants();
             __inputReporters.value = itw.getReporters();
-            __inputExterier.innerText = itw.getExterier();
+            __inputExterier.value = itw.getExterier();
 
             __form.classList.remove('editForm');
             __form.classList.toggle('savedForm');

@@ -60,7 +60,6 @@ export default class DescriptionBar extends Subscriber{
         }
 
         this.onUpdate = function(frg){
-            console.log(frg.getDescr());
             __inputDescr.innerHTML = frg.getDescr();
             __row.classList.remove('editButNotSentRow');
 

@@ -25,11 +25,12 @@ export default class TrackText extends Track{
             __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
                                                     f.end_s,
-                                                    f.descr,
                                                     f.track_id,
                                                     f.int_id,
-                                                    getMediaById(f.media_id),
-                                                    __dbClient);
+                                                    __dbClient,
+                                                    f.descr,
+                                                    getMediaById(f.media_id)
+                                                );
             this.update(this);
         }
 
@@ -59,11 +60,12 @@ export default class TrackText extends Track{
                 __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
                                                     f.end_s,
-                                                    f.descr,
                                                     f.track_id,
                                                     f.int_id,
-                                                    getMediaById(f.media_id),
-                                                    __dbClient);
+                                                    __dbClient,
+                                                    f.descr,
+                                                    getMediaById(f.media_id)
+                                                    );
             });
             this.update(this);
         }

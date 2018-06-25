@@ -5,8 +5,8 @@ const Act = new exports.Act();
     Fragment Text
 **************************************/
 export default class FragmentText extends Fragment{
-    constructor(id, start_s, end_s, descr, track_id, interview_id, media,dbClient){
-        super(id,start_s,end_s,track_id,interview_id,dbClient);
+    constructor(id, start_s, end_s, track_id, interview_id, dbClient, descr, media){
+        super(  id, start_s, end_s, track_id, interview_id, dbClient);
         var __descr = descr,
             __media = media,
             __dbClient = dbClient;

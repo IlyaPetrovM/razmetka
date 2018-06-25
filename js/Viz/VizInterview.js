@@ -248,7 +248,6 @@ if(q['id']){
         tmpInterview.addTrackMedia('Медиа трек');
         tmpInterview.addTrackText('Аудио трек');
     }else{
-        console.log('Загрузка');
         tmpInterview.loadTracks();
     }
 
