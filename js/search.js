@@ -47,12 +47,13 @@ export default class Search {
         __result.appendChild(err);
         __result.appendChild(__interviewBar);
         this.getResult = function(msg){
-            console.log(msg.data,fragments);
             if(msg.data.length<=0){
                 err.setQuery(__input.value);
+//                __result.classList.add('hidden');
                 err.classList.remove('hidden');
                 __interviewBar.classList.remove('hidden');
             }else{
+//                __result.classList.remove('hidden');
                 err.classList.add('hidden');
                 __interviewBar.classList.add('hidden');
             }
@@ -86,7 +87,7 @@ export default class Search {
                     fragments[f.id].update(fragments[f.id]);
                 }
             }
-           __result.style.cssText = `overflow-y: scroll; height:${document.body.clientHeight-30}px`;
+           __result.style.cssText = `overflow-y: scroll; height:${window.innerHeight-30}px`;
         }
 
         this.search = function(text){

@@ -5,20 +5,26 @@
     position:fixed;
     display: inline-block;
     height: 1.5em;
-    right: 5px;
+    left: 0px;
 }
 #interviewChooser{
     margin: 0 auto;
-    border: 2px solid gray;
-    text-align: center;
+/*    border: 2px solid gray;*/
+    text-align: left;
+    width: 90%;
 }
 .interviewLink:hover{
         background: #afa;
 }
+.interviewLink a{
+text-decoration: none;}
 .interviewLink{
     display: block;
-    margin:0 auto;
-    height: 1.5em;
+    margin:5px auto;
+    border-bottom: 1px #ccc dashed;
+
+
+/*    height: 1.5em;*/
 }
 #iControl{
     position: absolute;
@@ -104,6 +110,9 @@
     position: relative;
     opacity: 0.8;
     max-height: 40%;
+}
+.hidden {
+    display: none;
 }
 .choosen{
     background: #090;
