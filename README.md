@@ -18,8 +18,16 @@ https://dev.mysql.com/downloads/installer/
 Логин и пароль будет необходимо потом настроить впрограмме.
 
 ### 2. Установка Node.js
-
+Воспользуйтесь мануалами для установки:
+этим https://learn.javascript.ru/ajax-nodejs
+или этим
+https://medium.com/devschacht/node-hero-chapter-1-239f7afeb1d1
+(нужно уметь пользоваться консолью!)
 
 ### 3. Настройка модулей Node.js
+В консоли введите две команды:
+npm install node-static
+npm install mysql
 
 ### 4. Размещение файлов программы
+Скачайте последний релиз программы razmetka и распакуйте архив.
