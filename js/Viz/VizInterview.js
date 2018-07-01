@@ -233,11 +233,12 @@ export default class VizInterview extends Subscriber{
             return query;
         }
 let s = window.location.search;
+console.log();
 
 var q = parseSearch(s);
 if(q['id']){
     document.title='Интервью '+q['id'];
-    var ws = new WebSocket('ws://localhost:8081');
+    var ws = new WebSocket(`ws://${window.location.hostname}:8081`);
     var dbClient = new IDbTable(ws);
     var tmpInterview = new Interview(q['id'],'Деревенское интервью',new Date(),'','','',dbClient);
     var vi = new VizInterview(document.body,tmpInterview);

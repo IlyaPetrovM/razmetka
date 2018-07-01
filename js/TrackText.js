@@ -22,6 +22,7 @@ export default class TrackText extends Track{
 
         this.fragmentAdded = function(msg){
             let f = msg.data;
+            let media = getMediaById(f.media_id);
             __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
                                                     f.end_s,
@@ -29,8 +30,10 @@ export default class TrackText extends Track{
                                                     f.int_id,
                                                     __dbClient,
                                                     f.descr,
-                                                    getMediaById(f.media_id)
+                                                    media
                                                 );
+            console.log('addTextFragment');
+            media.addTextFragment(__fragments[f.id]);
             this.update(this);
         }
 
@@ -57,6 +60,7 @@ export default class TrackText extends Track{
         this.fragmentsLoaded = function(msg){
             let data = msg.data;
             data.forEach(function(f){
+                let mediaFrg = getMediaById(f.media_id);
                 __fragments[f.id] = new FragmentText(f.id,
                                                     f.start_s,
                                                     f.end_s,
@@ -64,8 +68,9 @@ export default class TrackText extends Track{
                                                     f.int_id,
                                                     __dbClient,
                                                     f.descr,
-                                                    getMediaById(f.media_id)
+                                                    mediaFrg
                                                     );
+                mediaFrg.addTextFragment(__fragments[f.id]);
             });
             this.update(this);
         }

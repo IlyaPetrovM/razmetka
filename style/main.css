@@ -177,7 +177,7 @@ html{
     border: 1px solid #ccc;
     display: table-cell;
 /*    float: right;*/
-    min-width: 100px;
+    min-width: 600px;
 }
 
 .timeField{

@@ -34,7 +34,8 @@ export default class VizFragment extends Subscriber{
                 let width_px = parseFloat(this.viz.style.width);
                 let start_s = x_px/zoom_px;
                 let end_s = (x_px+width_px)/zoom_px;
-                console.log('stop move');
+                console.log('1. stop move', __fragment);
+
                 __fragment.editFragment(start_s,end_s);//FIXME
             }
         };
@@ -78,6 +79,8 @@ export default class VizFragment extends Subscriber{
             redraw.call(this,frg);
         }
         this.onUpdate = function(frg){
+            console.log('4. edit fragment');
+
             redraw.call(this,frg);
             __timeline.update(frg,this);
         }

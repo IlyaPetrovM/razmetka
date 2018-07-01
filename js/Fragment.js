@@ -16,6 +16,9 @@ export default class Fragment extends Publisher {
         const __id = id,
               __interview_id = interview_id;
 
+        this.getEndS = function(){
+            return __end_s;
+        }
         this.getStartS = function(){
             return __start_s;
         }
@@ -36,10 +39,7 @@ export default class Fragment extends Publisher {
             __dbClient.send(__id+(__track_id+'setStart'),sql);
         }
         __dbClient.addSubscriber(__id+(__track_id+'setStart'),this.startSet.bind(this));
-        
-        this.getEndS = function(){
-            return __end_s;
-        }
+
         this.endSet = function(msg){
             __end_s = parseFloat(msg.data.end_s);
             this.update(this);
@@ -69,26 +69,8 @@ export default class Fragment extends Publisher {
             return __interview_id;
         }
 
-        this.fragmentEdited = function(edit){
-            __start_s = edit.data.start_s;
-            __end_s = edit.data.end_s;
-            this.update(this);
-        }
-        this.editFragment = function(st_s, en_s){
-            if(st_s<0) en_s -= st_s, st_s = 0.0; // Запретить перемещать в сторону нуля
-            let edit = {
-                start_s:st_s,
-                end_s:en_s
-            };
-            let sql = {
-                action: Act.UPDATE,
-                table: this.getTableName(),
-                id: __id,
-                data:edit
-            };
-             __dbClient.send(__id+(__track_id+'editFragment'),sql);
-        }
-        __dbClient.addSubscriber(__id+(__track_id+'editFragment'),this.fragmentEdited.bind(this));
+
+
         if(start_s > end_s){
             end_s = start_s + 1;
         }
@@ -97,7 +79,7 @@ export default class Fragment extends Publisher {
 
         this.index=__id;
         this.duration_s = function(){
-            return __end_s - __start_s;
+            return this.getEndS() - this.getStartS();
         }
 //        console.log('Создан интервал ',Fragment.cnt);
     }
