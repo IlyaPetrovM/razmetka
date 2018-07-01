@@ -133,7 +133,7 @@ export default class VizInterview extends Subscriber{
         __trackControlPanel.appendChild(__trackControlPanelText);
         
         __controls.appendChild(__buttonPlay);
-        __controls.appendChild(__buttonPlayAndMark);
+//        __controls.appendChild(__buttonPlayAndMark);
 
 
         var __timeline = new Timeline(__seq,__controls);

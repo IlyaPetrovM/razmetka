@@ -63,7 +63,8 @@ export default class VizTrackMedia extends VizTrack{
                 alert('Ваш браузер не поддерживает FormData - воспользуйтесь последней версией Google Chrome или Firefox');
                 return;
             }
-            if(fileInput.files[0].type != 'audio/mp3'){
+            if(fileInput.files[0].type.search('audio') == -1 &&
+              fileInput.files[0].type.search('video') == -1){
                 fileInput.value = '';
                 alert('Принимаются только mp3 файлы!');
                 return false;
