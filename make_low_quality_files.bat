@@ -1,0 +1,1 @@
+forfiles /C "cmd /c if @isdir==FALSE ffmpeg -i @file -b:v 128k -b:a 128k -framerate 20 -g 40 -preset ultrafast -vf scale=320:-1 _@fname.mp4"
